@@ -1,13 +1,53 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { createBrowserHistory } from 'history';
+import { configure } from 'mobx';
+import { Provider } from 'mobx-react';
+import { RouterStore, syncHistoryWithStore } from 'mobx-react-router';
+import { Router } from 'react-router';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
+import { ThemeProvider, createMuiTheme, CssBaseline } from '@material-ui/core';
+import { UserStore } from './stores/userStore';
+import { NetworkService } from './services/networkService';
+
+configure({ enforceActions: "observed" }) // don't allow state modifications outside actions
+
+const browserHistory = createBrowserHistory();
+const routingStore = new RouterStore();
+const networkService = new NetworkService(process.env.REACT_APP_API_SERVER!)
+const userStore = new UserStore(networkService);
+
+const stores = {
+  // Key can be whatever you want
+  routing: routingStore,
+  userStore
+  // ...other stores
+};
+
+const history = syncHistoryWithStore(browserHistory, routingStore);
+
+const theme = createMuiTheme({
+  palette: {
+    primary: {
+      main: '#607d8b',
+    },
+    secondary: {
+      main: '#0288d1',
+    },
+  },
+});
 
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
+  <Provider {...stores}>
+    <Router history={history}>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <App />
+      </ThemeProvider>
+    </Router>
+  </Provider>,
   document.getElementById('root')
 );
 
