@@ -44,7 +44,6 @@ class Login extends Component<Props, State> {
 
   async submit() {
     try {
-      console.log('submit')
       const user = await this.props.userStore?.authenticate(this.state.username, this.state.password)
       if (!user) {
         this.setState({ error: 'Invalid Username or Password'})
