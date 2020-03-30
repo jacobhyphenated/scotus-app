@@ -18,8 +18,7 @@ export default class App extends Component<Props> {
     const { push } = this.props.routing!;
     return (
       <div>
-        <header>
-          <Paper elevation={1}>
+          <Paper elevation={2}>
             <Grid
               container
               direction="row"
@@ -34,7 +33,6 @@ export default class App extends Component<Props> {
               <Button onClick={() => push('/admin')} color="primary" variant="text">admin</Button>
             </Grid>
           </Paper>
-        </header>
         <Switch>
           <Route exact path="/" component={Home} />
           <Route path="/admin" component={Admin} />

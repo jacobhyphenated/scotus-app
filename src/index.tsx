@@ -22,7 +22,7 @@ const userStore = new UserStore(networkService);
 const stores = {
   // Key can be whatever you want
   routing: routingStore,
-  userStore
+  userStore,
   // ...other stores
 };
 
@@ -48,7 +48,7 @@ ReactDOM.render(
       </ThemeProvider>
     </Router>
   </Provider>,
-  document.getElementById('root')
+  document.getElementById('root'),
 );
 
 // If you want your app to work offline and load faster, you can change

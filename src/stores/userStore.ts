@@ -7,6 +7,15 @@ export class UserStore {
     autorun( () => {
       this.networkService.authorizationToken = this.authHeaderToken;
     })
+    const rawUser = sessionStorage.getItem('user');
+    if (rawUser) {
+      const user = JSON.parse(rawUser);
+      runInAction(() => {
+        this.username = user.username;
+        this.password = user.password;
+        this.roles = user.roles;
+      });
+    }
   }
 
   @observable username?: string;
@@ -27,6 +36,7 @@ export class UserStore {
     this.password = undefined;
     this.roles = undefined;
     const user = await this.networkService.authenticate(username, password);
+    sessionStorage.setItem('user', JSON.stringify(user));
     runInAction(() => {
       this.username = user?.username;
       this.password = user?.password;

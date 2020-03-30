@@ -21,10 +21,10 @@ const styles = (theme: Theme) => ({
       maxWidth: 600,
     },
     [theme.breakpoints.up('md')]: {
-      maxWidth: 768
+      maxWidth: 768,
     },
     [theme.breakpoints.up('xl')]: {
-      maxWidth: 1200
+      maxWidth: 1200,
     },
     margin: `${theme.spacing(1)}px auto`,
     padding: '16px',
@@ -38,7 +38,7 @@ class Login extends Component<Props, State> {
     super(props);
     this.state = {
       username: '',
-      password: ''
+      password: '',
     };
   }
 
@@ -84,6 +84,11 @@ class Login extends Component<Props, State> {
             required
             label="Password"
             onChange={(event) => this.setState({ password: event.target.value })}
+            onKeyPress={(ev) => {
+              if (ev.key === 'Enter') {
+                this.submit();
+              }
+            }}
             value={this.state.password}
           />  
         </Grid>
