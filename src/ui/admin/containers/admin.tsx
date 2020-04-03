@@ -7,6 +7,7 @@ import { Switch, Route } from 'react-router';
 import { History } from 'history';
 import { withStyles } from '@material-ui/styles';
 import JusticePage from './justice';
+import CreateJusticePage from './createJustice';
 
 interface Props {
   userStore?: UserStore;
@@ -26,6 +27,11 @@ const styles = (theme: Theme) => ({
   leftButton: {
     justifyContent: 'start',
   },
+  main: {
+    height: '90vh',
+    'overflow-y': 'scroll',
+    padding: `${theme.spacing(2)}px`,
+  },
 });
 
 @inject('userStore', 'routing')
@@ -39,18 +45,22 @@ class Admin extends Component<Props> {
     const adminRoutes = [{
       route: 'justice',
       display: 'Justice',
+      click: () => push(`/admin/justice`),
     },
     {
       route: 'court',
       display: 'Court',
+      click: () => push(`/admin/court`),
     },
     {
       route: 'docket',
       display: 'Docket',
+      click: () => push(`/admin/docket`),
     },
     {
       route: 'case',
       display: 'Case',
+      click: () => push(`/admin/case`),
     }];
 
     return (
@@ -61,20 +71,31 @@ class Admin extends Component<Props> {
         <Grid className={classes.root} container direction="row" spacing={1}>
           <Grid item xs={12} sm={3} md={2}>
             <Paper className={classes.leftNav} elevation={1}>
-              {adminRoutes.map(({route, display}) => {
+              {adminRoutes.map(({route, display, click}) => {
                 return (
                   <Button fullWidth className={classes.leftButton} key={route} variant='text'
                     color={location.pathname.indexOf(`admin/${route}`) >= 0 ? 'secondary' : 'primary'} 
-                    onClick={() => push(`/admin/${route}`)}>{display}</Button>
+                    onClick={click}>{display}</Button>
                 );
               })}
             </Paper>
           </Grid>
           <Grid item xs={12} sm={9} md={10}>
-            {location.pathname}
-            <Switch>
-              <Route path="/admin/justice" component={JusticePage} />
-            </Switch>
+            <Paper className={classes.main} elevation={0}>
+              <Switch>
+                <Route path="/admin/justice/create" component={CreateJusticePage} />
+                <Route path="/admin/justice" component={JusticePage} />
+                {
+                  /*
+                  use render to pass props to route components
+                  <Route
+                    path='/dashboard'
+                    render={(props) => <Dashboard {...props} isAuthed={true} />}
+                  />
+                  */
+                }
+              </Switch>
+            </Paper>
           </Grid>
         </Grid>
       }

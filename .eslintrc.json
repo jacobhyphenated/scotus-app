@@ -1,6 +1,7 @@
 {
   "extends": "react-app",
   "rules": {
-    "comma-dangle": ["error", "always-multiline"]
+    "comma-dangle": ["error", "always-multiline"],
+    "react/jsx-no-bind": ["error"]
   }
 }

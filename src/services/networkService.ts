@@ -25,6 +25,10 @@ export class NetworkService {
     return this.fetchHelper<T>('POST', uri, undefined, body);
   }
 
+  async put<T>(uri: string, body?: any): Promise<T> {
+    return this.fetchHelper<T>('PUT', uri, undefined, body);
+  }
+
   private async fetchHelper<T>(verb: string, uri: string, params?: { [id: string]: string}, body?: any): Promise<T> {
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',

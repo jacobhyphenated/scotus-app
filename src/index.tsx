@@ -10,6 +10,7 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 import { ThemeProvider, createMuiTheme, CssBaseline } from '@material-ui/core';
 import { UserStore } from './stores/userStore';
+import { JusticeStore } from './stores/justiceStore'
 import { NetworkService } from './services/networkService';
 
 configure({ enforceActions: "observed" }) // don't allow state modifications outside actions
@@ -18,11 +19,12 @@ const browserHistory = createBrowserHistory();
 const routingStore = new RouterStore();
 const networkService = new NetworkService(process.env.REACT_APP_API_SERVER!)
 const userStore = new UserStore(networkService);
+const justiceStore = new JusticeStore(networkService)
 
 const stores = {
-  // Key can be whatever you want
   routing: routingStore,
   userStore,
+  justiceStore,
   // ...other stores
 };
 

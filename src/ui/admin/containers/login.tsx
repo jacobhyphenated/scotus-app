@@ -42,7 +42,7 @@ class Login extends Component<Props, State> {
     };
   }
 
-  async submit() {
+  submit = async () => {
     try {
       const user = await this.props.userStore?.authenticate(this.state.username, this.state.password)
       if (!user) {
@@ -50,6 +50,20 @@ class Login extends Component<Props, State> {
       }
     } catch (e) {
       this.setState({ error: e.message.toString()})
+    }
+  }
+
+  changeUsername = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ username: event.target.value })
+  }
+
+  changePassword = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ password: event.target.value })
+  }
+
+  keyPress = (ev: React.KeyboardEvent<HTMLDivElement>) => {
+    if (ev.key === 'Enter') {
+      this.submit();
     }
   }
 
@@ -69,7 +83,7 @@ class Login extends Component<Props, State> {
             name="username"
             required
             label="Username"
-            onChange={(event) => this.setState({ username: event.target.value })}
+            onChange={this.changeUsername}
             value={this.state.username}
           />
         </Grid>
@@ -83,12 +97,8 @@ class Login extends Component<Props, State> {
             type="password"
             required
             label="Password"
-            onChange={(event) => this.setState({ password: event.target.value })}
-            onKeyPress={(ev) => {
-              if (ev.key === 'Enter') {
-                this.submit();
-              }
-            }}
+            onChange={this.changePassword}
+            onKeyPress={this.keyPress}
             value={this.state.password}
           />  
         </Grid>
@@ -99,7 +109,7 @@ class Login extends Component<Props, State> {
             color="primary"
             variant="contained"
             fullWidth
-            onClick={() => this.submit()}
+            onClick={this.submit}
           >Log In</Button>
         </Grid>
       </Grid>

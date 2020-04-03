@@ -14,8 +14,15 @@ interface Props {
 @inject('routing')
 export default class App extends Component<Props> {
 
+  navHome = () => {
+    this.props.routing!.push('/');
+  }
+
+  navAdmin = () => {
+    this.props.routing!.push('/admin');
+  }
+
   render() {
-    const { push } = this.props.routing!;
     return (
       <div>
           <Paper elevation={2}>
@@ -25,12 +32,12 @@ export default class App extends Component<Props> {
               justify="space-between"
               alignItems="center"
             >
-              <IconButton onClick={() => push('/')}>
+              <IconButton onClick={this.navHome}>
                 <HomeIcon color="action" />
               </IconButton>
               
               SCOTUS App
-              <Button onClick={() => push('/admin')} color="primary" variant="text">admin</Button>
+              <Button onClick={this.navAdmin} color="primary" variant="text">admin</Button>
             </Grid>
           </Paper>
         <Switch>

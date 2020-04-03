@@ -5,7 +5,9 @@ export class UserStore {
 
   constructor(private networkService: NetworkService) {
     autorun( () => {
-      this.networkService.authorizationToken = this.authHeaderToken;
+      if (this.authHeaderToken) {
+        this.networkService.authorizationToken = this.authHeaderToken;
+      }
     })
     const rawUser = sessionStorage.getItem('user');
     if (rawUser) {
@@ -22,8 +24,8 @@ export class UserStore {
   @observable password?: string;
   @observable roles?: string[];
 
-  @computed get authHeaderToken(): string {
-    return `Basic ${btoa(`${this.username}:${this.password}`)}`;
+  @computed get authHeaderToken(): string | null {
+    return this.username ? `Basic ${btoa(`${this.username}:${this.password}`)}` : null;
   }
 
   @computed get isAdmin(): boolean {
