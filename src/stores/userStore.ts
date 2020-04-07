@@ -1,5 +1,5 @@
-import { observable, computed, action, runInAction, autorun} from 'mobx'
-import { NetworkService } from '../services/networkService'
+import { observable, computed, action, runInAction, autorun} from 'mobx';
+import { NetworkService } from '../services/networkService';
 
 export class UserStore {
 
@@ -8,7 +8,7 @@ export class UserStore {
       if (this.authHeaderToken) {
         this.networkService.authorizationToken = this.authHeaderToken;
       }
-    })
+    });
     const rawUser = sessionStorage.getItem('user');
     if (rawUser) {
       const user = JSON.parse(rawUser);
@@ -43,7 +43,7 @@ export class UserStore {
       this.username = user?.username;
       this.password = user?.password;
       this.roles = user?.roles;
-    })
+    });
     return user;
   }
 }

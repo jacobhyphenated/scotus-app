@@ -50,7 +50,7 @@ const JusticeCard = (props: Props) => {
         </CardActions>
       )}
     </Card>
-  )
-}
+  );
+};
 
 export default JusticeCard;

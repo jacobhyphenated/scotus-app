@@ -9,10 +9,10 @@ export class NetworkService {
       headers: {
         'Authorization': `Basic ${btoa(`${username}:${password}`)}`,
       },
-    })
+    });
     const userResponse = await response.json();
     if (response.status >= 300) {
-      throw new Error(userResponse.errorMessage)
+      throw new Error(userResponse.errorMessage);
     }
     return userResponse ? Object.assign(userResponse, { password }) : null;
   }
@@ -32,7 +32,7 @@ export class NetworkService {
   private async fetchHelper<T>(verb: string, uri: string, params?: { [id: string]: string}, body?: any): Promise<T> {
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
-    }
+    };
     if (this.authorizationToken) {
       headers['Authorization'] =  this.authorizationToken;
     }
@@ -53,9 +53,10 @@ export class NetworkService {
     });
     if (response.status >= 300) {
       const errorResponse = await response.json();
-      throw new Error(errorResponse)
+      console.warn(errorResponse);
+      throw new Error(errorResponse?.errorMessage);
     }
-    const result = await response.json() as T 
+    const result = await response.json() as T; 
     return result;
   }
 }

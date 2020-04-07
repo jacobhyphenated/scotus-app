@@ -44,21 +44,21 @@ class Login extends Component<Props, State> {
 
   submit = async () => {
     try {
-      const user = await this.props.userStore?.authenticate(this.state.username, this.state.password)
+      const user = await this.props.userStore?.authenticate(this.state.username, this.state.password);
       if (!user) {
-        this.setState({ error: 'Invalid Username or Password'})
+        this.setState({ error: 'Invalid Username or Password'});
       }
     } catch (e) {
-      this.setState({ error: e.message.toString()})
+      this.setState({ error: e.message.toString()});
     }
   }
 
   changeUsername = (event: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({ username: event.target.value })
+    this.setState({ username: event.target.value });
   }
 
   changePassword = (event: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({ password: event.target.value })
+    this.setState({ password: event.target.value });
   }
 
   keyPress = (ev: React.KeyboardEvent<HTMLDivElement>) => {

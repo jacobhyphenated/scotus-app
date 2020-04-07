@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import './App.css';
 import { Route, Switch, Redirect } from 'react-router';
-import Home from './ui/home/containers/home'
-import Admin from './ui/admin/containers/admin'
-import HomeIcon from '@material-ui/icons/Home'
+import Home from './ui/home/containers/home';
+import Admin from './ui/admin/containers/admin';
+import HomeIcon from '@material-ui/icons/Home';
 import { inject } from 'mobx-react';
 import { History } from 'history';
 import { Button, Grid, Paper, IconButton } from '@material-ui/core';

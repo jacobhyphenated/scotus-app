@@ -10,21 +10,24 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 import { ThemeProvider, createMuiTheme, CssBaseline } from '@material-ui/core';
 import { UserStore } from './stores/userStore';
-import { JusticeStore } from './stores/justiceStore'
+import { JusticeStore } from './stores/justiceStore';
 import { NetworkService } from './services/networkService';
+import { CourtStore } from './stores/courtStore';
 
-configure({ enforceActions: "observed" }) // don't allow state modifications outside actions
+configure({ enforceActions: "observed" }); // don't allow state modifications outside actions
 
 const browserHistory = createBrowserHistory();
 const routingStore = new RouterStore();
-const networkService = new NetworkService(process.env.REACT_APP_API_SERVER!)
+const networkService = new NetworkService(process.env.REACT_APP_API_SERVER!);
 const userStore = new UserStore(networkService);
-const justiceStore = new JusticeStore(networkService)
+const justiceStore = new JusticeStore(networkService);
+const courtStore = new CourtStore(networkService);
 
 const stores = {
   routing: routingStore,
   userStore,
   justiceStore,
+  courtStore,
   // ...other stores
 };
 

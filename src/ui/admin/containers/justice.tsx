@@ -4,26 +4,21 @@ import { History } from 'history';
 import { JusticeStore, Justice } from '../../../stores/justiceStore';
 import { Theme, Typography, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, Fab } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
-import { KeyboardDatePicker } from '@material-ui/pickers';
 import JusticeCard from '../components/justiceCard';
+import DatePicker from '../components/datePicker';
 import { LocalDate } from '@js-joda/core';
-import createJsJodaUtils from '@prinzdezibel/date-io-js-joda'
-import { MuiPickersUtilsProvider } from '@material-ui/pickers';
-import AddIcon from '@material-ui/icons/Add'
-import { Locale as JsJodaLocale } from "@js-joda/locale_en-us";
+import AddIcon from '@material-ui/icons/Add';
 
-const styles = (theme: Theme) => ({
+const styleDecorator = withStyles((theme: Theme) => ({
   root: {
     padding: `${theme.spacing(1)}px`,
   },
   fab: {
-    position: 'fixed' as 'fixed', // TypeScript is hard
+    position: 'fixed',
     right: '42%',
     bottom: '10vh',
   },
-});
-
-const dateUtils = createJsJodaUtils(LocalDate);
+}));
 
 interface Props {
   routing?: History;
@@ -60,7 +55,7 @@ class JusticePage extends Component<Props, State> {
   }
 
   handleRetireDateChange = (date: LocalDate | null) => {
-    this.setState({retireDate: date ?? undefined })
+    this.setState({retireDate: date ?? undefined });
   };
 
   createJustice = () => {
@@ -73,9 +68,7 @@ class JusticePage extends Component<Props, State> {
 
     return (
       <>
-        <Typography variant="h4" component="h2">Justices</Typography>
-        Search for all justices somewhere up top?
-        <Typography variant="h5">Active:</Typography>
+        <Typography variant="h5">Active Justices:</Typography>
         {active?.map( justice => (
           <JusticeCard key={justice.id} justice={justice} retireCallback={this.attemptRetire}></JusticeCard>
         )) }
@@ -95,22 +88,11 @@ class JusticePage extends Component<Props, State> {
             <DialogContentText id="alert-dialog-description">
               Are you sure you want to mark {retireModalJustice?.name} as retired?
             </DialogContentText>
-            <MuiPickersUtilsProvider utils={dateUtils} locale={JsJodaLocale.US}>
-              <KeyboardDatePicker
-                disableToolbar
-                variant="inline"
-                format="MM/dd/yyyy"
-                margin="normal"
-                id="date-picker-inline"
-                label="Date picker inline"
-                value={this.state?.retireDate}
-                onChange={this.handleRetireDateChange}
-                KeyboardButtonProps={{
-                  'aria-label': 'change date',
-                }}
-                
-              />
-            </MuiPickersUtilsProvider>
+            <DatePicker
+              disableToolbar
+              onChange={this.handleRetireDateChange}
+              value={this.state?.retireDate}
+            />
           </DialogContent>
           <DialogActions>
             <Button onClick={this.closeRetireModal} color="primary">
@@ -122,8 +104,8 @@ class JusticePage extends Component<Props, State> {
           </DialogActions>
         </Dialog>
       </>
-    )
+    );
   }
 }
 
-export default withStyles(styles)(JusticePage);
+export default styleDecorator(JusticePage);

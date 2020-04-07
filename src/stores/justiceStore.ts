@@ -1,5 +1,5 @@
-import { NetworkService } from '../services/networkService'
-import { observable, runInAction } from 'mobx'
+import { NetworkService } from '../services/networkService';
+import { observable, runInAction } from 'mobx';
 import { LocalDate } from '@js-joda/core';
 
 export class JusticeStore {
@@ -22,12 +22,17 @@ export class JusticeStore {
     return this.mapRaw(result);
   }
 
+  async createJustice(name: string, birthday: LocalDate, dateConfirmed: LocalDate): Promise<Justice> {
+    const result = await this.networkService.post<RawJustice>('/justices', { name, birthday, dateConfirmed });
+    return this.mapRaw(result);
+  }
+
   private mapRaw(raw: RawJustice): Justice {
     return {
       ...raw,
       dateConfirmed: LocalDate.parse(raw.dateConfirmed),
       dateRetired: raw.dateRetired ? LocalDate.parse(raw.dateRetired) : undefined,
-    }
+    };
   }
 
 }

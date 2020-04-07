@@ -8,6 +8,8 @@ import { History } from 'history';
 import { withStyles } from '@material-ui/styles';
 import JusticePage from './justice';
 import CreateJusticePage from './createJustice';
+import CourtPage from './court';
+import CreateCourtPage from './createCourt';
 
 interface Props {
   userStore?: UserStore;
@@ -85,6 +87,8 @@ class Admin extends Component<Props> {
               <Switch>
                 <Route path="/admin/justice/create" component={CreateJusticePage} />
                 <Route path="/admin/justice" component={JusticePage} />
+                <Route path="/admin/court/create" component={CreateCourtPage} />
+                <Route path="/admin/court" component={CourtPage} />
                 {
                   /*
                   use render to pass props to route components
@@ -100,7 +104,7 @@ class Admin extends Component<Props> {
         </Grid>
       }
       </>
-    )
+    );
   }
 }
 
