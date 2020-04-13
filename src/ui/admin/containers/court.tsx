@@ -58,7 +58,6 @@ class CourtPage extends Component<Props> {
         <Fab className={this.props.classes.fab} onClick={this.createCourt} color="primary" aria-label="add">
           <AddIcon />
         </Fab>
-
       </>
     );
   }

@@ -1,6 +1,7 @@
 import { NetworkService } from '../services/networkService';
 import { observable, runInAction } from 'mobx';
 import { Court } from './courtStore';
+import { LocalDate } from '@js-joda/core';
 
 interface BaseDocket {
   id: number;
@@ -12,17 +13,43 @@ interface BaseDocket {
   status: DocketStatus;
 }
 
-export type BareDocket = BaseDocket &  { lowerCourtId: number }
-export type FullDocket = BaseDocket &  { lowerCourt: Court }
-
-export enum DocketStatus {
-  PENDING,
-  CERT_GRANTED,
-  SCHEDULED,
-  DONE // affirmed/remanded/reversed?
+//TODO: move
+interface Term {
+  id: number;
+  name: string;
+  otName: string;
+}
+interface Case {
+  id: number;
+  case: string;
+  shortSummary: string;
+  status: string;
+  result?: string;
+  argumentDate?: LocalDate;
+  decisionDate?: LocalDate;
+  term: Term;
 }
 
-export class CourtStore {
+export type BareDocket = BaseDocket &  { lowerCourtId: number }
+export type FullDocket = BaseDocket &  { lowerCourt: Court, case?: Case }
+
+export enum DocketStatus {
+  PENDING = "PENDING",
+  CERT_GRANTED = "CERT_GRANTED",
+  SCHEDULED = "SCHEDULED",
+  DONE = "DONE" // affirmed/remanded/reversed?
+}
+
+export interface DocketEdit {
+  title?: string;
+  docketNumber?: string;
+  lowerCourtOverruled?: boolean;
+  lowerCourtRuling?: string;
+  caseId?: number;
+  status?: DocketStatus;
+}
+
+export class DocketStore {
   constructor(private networkService: NetworkService) {
     this.refreshUnassigned();
   }
@@ -56,13 +83,35 @@ export class CourtStore {
   }
 
   async getDocketById(id: number): Promise<FullDocket> {
-    return this.networkService.get<FullDocket>(`/dockets/${id}`);
+    const result = await this.networkService.get<FullDocket>(`/dockets/${id}`);
+    return this.mapFullDocket(result);
   }
 
-  //TODO: search for docket by title
-  //TODO: edit docket
-  //TODO: assign to a case? - lower priority
+  async searchDocket(titleSearch: string): Promise<BareDocket[]> {
+    return this.networkService.get(`/dockets/title/${encodeURIComponent(titleSearch)}`);
+  }
 
+  async editDocket(id: number, editRequest: DocketEdit): Promise<FullDocket> {
+    const result = await this.networkService.patch<FullDocket>(`/dockets/${id}`, editRequest);
+    return this.mapFullDocket(result);
+  }
+
+  private mapFullDocket(docket: FullDocket): FullDocket {
+    if (!docket.case){
+      return docket;
+    }
+    const argumentDate = docket.case.argumentDate ? LocalDate.parse(String(docket.case.argumentDate)) : undefined;
+    const decisionDate = docket.case.decisionDate ? LocalDate.parse(String(docket.case.decisionDate)) : undefined;
+    const mappedCase = {
+      ...docket.case,
+      argumentDate,
+      decisionDate,
+    };
+    return {
+      ...docket,
+      case: {
+        ...mappedCase,
+      },
+    };
+  }
 }
-
-

@@ -35,7 +35,7 @@ interface Props {
 }
 
 @inject('routing', 'courtStore')
-class CreateJusticePage extends Component<Props, State> {
+class CreateCourtPage extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
@@ -76,7 +76,7 @@ class CreateJusticePage extends Component<Props, State> {
       await this.props.courtStore.createCourt(name, shortName);
       this.props.routing.goBack();
     } catch (e) {
-      this.setState({ formError: e?.message ?? 'An error occurred creating this justice'});
+      this.setState({ formError: e?.message ?? 'An error occurred creating this court'});
     } finally {
       this.setState({ submitting: false });
     }
@@ -152,4 +152,4 @@ class CreateJusticePage extends Component<Props, State> {
   }
 }
 
-export default styleDecorator(CreateJusticePage);
+export default styleDecorator(CreateCourtPage);

@@ -13,6 +13,7 @@ import { UserStore } from './stores/userStore';
 import { JusticeStore } from './stores/justiceStore';
 import { NetworkService } from './services/networkService';
 import { CourtStore } from './stores/courtStore';
+import { DocketStore } from './stores/docketStore';
 
 configure({ enforceActions: "observed" }); // don't allow state modifications outside actions
 
@@ -22,12 +23,14 @@ const networkService = new NetworkService(process.env.REACT_APP_API_SERVER!);
 const userStore = new UserStore(networkService);
 const justiceStore = new JusticeStore(networkService);
 const courtStore = new CourtStore(networkService);
+const docketStore = new DocketStore(networkService);
 
 const stores = {
   routing: routingStore,
   userStore,
   justiceStore,
   courtStore,
+  docketStore,
   // ...other stores
 };
 

@@ -29,6 +29,10 @@ export class NetworkService {
     return this.fetchHelper<T>('PUT', uri, undefined, body);
   }
 
+  async patch<T>(uri: string, body: any): Promise<T> {
+    return this.fetchHelper<T>('PATCH', uri, undefined, body);
+  }
+
   private async fetchHelper<T>(verb: string, uri: string, params?: { [id: string]: string}, body?: any): Promise<T> {
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
@@ -52,6 +56,9 @@ export class NetworkService {
       body: body ? JSON.stringify(body) : null,
     });
     if (response.status >= 300) {
+      if (response.status === 404) {
+        throw new Error('Not Found');
+      }
       const errorResponse = await response.json();
       console.warn(errorResponse);
       throw new Error(errorResponse?.errorMessage);
