@@ -1,6 +1,7 @@
 import { NetworkService } from '../services/networkService';
 import { observable, runInAction } from 'mobx';
 import { Court } from './courtStore';
+import { Case } from './caseStore';
 import { LocalDate } from '@js-joda/core';
 
 interface BaseDocket {
@@ -11,23 +12,6 @@ interface BaseDocket {
   lowerCourtRuling: string;
   lowerCourtOverruled: boolean | null;
   status: DocketStatus;
-}
-
-//TODO: move
-interface Term {
-  id: number;
-  name: string;
-  otName: string;
-}
-interface Case {
-  id: number;
-  case: string;
-  shortSummary: string;
-  status: string;
-  result?: string;
-  argumentDate?: LocalDate;
-  decisionDate?: LocalDate;
-  term: Term;
 }
 
 export type BareDocket = BaseDocket &  { lowerCourtId: number }

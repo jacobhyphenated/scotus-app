@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Grid, Typography, IconButton, TextField, Theme, Button, withStyles, MenuItem, FormControlLabel, Checkbox } from '@material-ui/core';
+import { Grid, Typography, IconButton, Theme, withStyles, MenuItem, FormControlLabel, Checkbox } from '@material-ui/core';
 import BackIcon from '@material-ui/icons/ArrowBack';
 import { inject, observer } from 'mobx-react';
 import { History } from 'history';
@@ -7,7 +7,6 @@ import { DocketStore, DocketStatus, FullDocket, DocketEdit } from '../../../stor
 import { CourtStore } from '../../../stores/courtStore';
 import { match } from 'react-router';
 import ViewEditInputText from '../components/viewEditInputText';
-import docket from './docket';
 
 const styleDecorator = withStyles((theme: Theme) => ({
   formContainer: {

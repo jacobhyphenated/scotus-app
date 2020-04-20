@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { createBrowserHistory } from 'history';
-import { configure } from 'mobx';
+import { configure as mobxConfigure } from 'mobx';
 import { Provider } from 'mobx-react';
 import { RouterStore, syncHistoryWithStore } from 'mobx-react-router';
 import { Router } from 'react-router';
@@ -14,8 +14,9 @@ import { JusticeStore } from './stores/justiceStore';
 import { NetworkService } from './services/networkService';
 import { CourtStore } from './stores/courtStore';
 import { DocketStore } from './stores/docketStore';
+import { CaseStore } from './stores/caseStore';
 
-configure({ enforceActions: "observed" }); // don't allow state modifications outside actions
+mobxConfigure({ enforceActions: "observed" }); // don't allow state modifications outside actions
 
 const browserHistory = createBrowserHistory();
 const routingStore = new RouterStore();
@@ -24,6 +25,7 @@ const userStore = new UserStore(networkService);
 const justiceStore = new JusticeStore(networkService);
 const courtStore = new CourtStore(networkService);
 const docketStore = new DocketStore(networkService);
+const caseStore = new CaseStore(networkService);
 
 const stores = {
   routing: routingStore,
@@ -31,7 +33,7 @@ const stores = {
   justiceStore,
   courtStore,
   docketStore,
-  // ...other stores
+  caseStore,
 };
 
 const history = syncHistoryWithStore(browserHistory, routingStore);

@@ -13,6 +13,9 @@ import CreateCourtPage from './createCourt';
 import DocketPage from './docket';
 import CreateDocketPage from './createDocket';
 import EditDocketPage from './editDocket';
+import CasePage from './case';
+import CreateTermPage from './createTerm';
+import CreateCasePage from './createCase';
 
 interface Props {
   userStore?: UserStore;
@@ -95,6 +98,9 @@ class Admin extends Component<Props> {
                 <Route path="/admin/docket/create" component={CreateDocketPage} />
                 <Route path="/admin/docket/edit/:id" component={EditDocketPage} />
                 <Route path="/admin/docket" component={DocketPage} />
+                <Route path="/admin/case/term/create" component={CreateTermPage} />
+                <Route path="/admin/case/create" component={CreateCasePage} />
+                <Route path="/admin/case" component={CasePage} />
                 {
                   /*
                   use render to pass props to route components

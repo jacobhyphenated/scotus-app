@@ -1,11 +1,12 @@
 import React from 'react';
-import { Theme, Card, CardContent, Typography, CardActions, Button, makeStyles } from '@material-ui/core';
+import { Theme, Typography, Button, makeStyles, Paper, Grid } from '@material-ui/core';
 import { Justice } from '../../../stores/justiceStore';
 import { DateTimeFormatter } from '@js-joda/core';
 
 const useStyles = makeStyles( (theme: Theme) => ({
   justiceCard: {
     margin: `${theme.spacing(1)}px`,
+    padding: `${theme.spacing(1)}px`,
     [theme.breakpoints.down('sm')]: {
       maxWidth: 300,
     },
@@ -30,26 +31,24 @@ const JusticeCard = (props: Props) => {
 
   const cb = props.retireCallback ? () => { props.retireCallback!(justice) } : null;
   return (
-    <Card className={styles.justiceCard}  key={justice.id}>
-      <CardContent>
-        <Typography color="textSecondary" gutterBottom>
-          Confirmed: {justice.dateConfirmed.format(formatter)}
+    <Paper className={styles.justiceCard}  key={justice.id}>
+      <Typography color="textSecondary" variant="subtitle2">
+        Confirmed: {justice.dateConfirmed.format(formatter)}
+      </Typography>
+      <Typography variant="h6">
+        {justice.name}
+      </Typography>
+      {justice.dateRetired && (
+        <Typography color="textSecondary">
+          Retired: {justice.dateRetired.format(formatter)}
         </Typography>
-        <Typography variant="h6">
-          {justice.name}
-        </Typography>
-        {justice.dateRetired && (
-          <Typography color="textSecondary">
-            Retired: {justice.dateRetired.format(formatter)}
-          </Typography>
-        )}
-      </CardContent>
-      {!justice.dateRetired && cb &&(
-        <CardActions>
-          <Button size="small" color="primary" onClick={cb}>Retire</Button>
-        </CardActions>
       )}
-    </Card>
+      {!justice.dateRetired && cb &&(
+        <Grid container justify="flex-end">
+          <Button size="small" color="primary" onClick={cb}>Retire</Button>
+        </Grid>
+      )}
+    </Paper>
   );
 };
 

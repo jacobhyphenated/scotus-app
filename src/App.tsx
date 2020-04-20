@@ -25,21 +25,21 @@ export default class App extends Component<Props> {
   render() {
     return (
       <div>
-          <Paper elevation={2}>
-            <Grid
-              container
-              direction="row"
-              justify="space-between"
-              alignItems="center"
-            >
-              <IconButton onClick={this.navHome}>
-                <HomeIcon color="action" />
-              </IconButton>
-              
-              SCOTUS App
-              <Button onClick={this.navAdmin} color="primary" variant="text">admin</Button>
-            </Grid>
-          </Paper>
+        <Paper elevation={2}>
+          <Grid
+            container
+            direction="row"
+            justify="space-between"
+            alignItems="center"
+          >
+            <IconButton onClick={this.navHome}>
+              <HomeIcon color="action" />
+            </IconButton>
+            
+            SCOTUS App
+            <Button onClick={this.navAdmin} color="primary" variant="text">admin</Button>
+          </Grid>
+        </Paper>
         <Switch>
           <Route exact path="/" component={Home} />
           <Route path="/admin" component={Admin} />
