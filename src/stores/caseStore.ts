@@ -2,6 +2,8 @@ import { NetworkService } from '../services/networkService';
 import { observable, runInAction } from 'mobx';
 import { LocalDate } from '@js-joda/core';
 import { Court } from './courtStore';
+import { DocketStore } from './docketStore';
+import { Opinion } from './opinionStore';
 
 export enum CaseStatus {
   GRANTED = 'GRANTED',
@@ -31,22 +33,6 @@ export interface Case {
   term: Term;
 }
 
-// TODO: Move to Opinion store?
-export interface OpinionJustice {
-  justiceId: number;
-  isAuthor: boolean;
-  justiceName: string;
-}
-
-export enum OpinionType {
-  MAJORITY = 'MAJORITY',
-  PER_CURIUM = 'PER_CURIUM',
-  CONCURRENCE = 'CONCURRENCE',
-  DISSENT = 'DISSENT',
-  CONCUR_JUDGEMENT = 'CONCUR_JUDGEMENT',
-  DISSENT_JUDGEMENT = 'DISSENT_JUDGEMENT'
-}
-
 export interface CaseDocket {
   docketId: number;
   docketNumber: string;
@@ -54,16 +40,20 @@ export interface CaseDocket {
   lowerCourtOverruled?: boolean;
 } 
 
-export interface CaseOpinion {
-  opinionId: number;
-  opinionType: OpinionType;
-  summary: string;
-  justices: OpinionJustice[];
+export interface FullCase extends Case {
+  opinions: Opinion[];
+  dockets: CaseDocket[];
 }
 
-export interface FullCase extends Case {
-  opinions: CaseOpinion[];
-  dockets: CaseDocket[];
+export interface EditCase {
+  case?: string;
+  shortSummary?: string;
+  status?: CaseStatus;
+  argumentDate?: LocalDate;
+  decisionDate?: LocalDate;
+  result?: string;
+  decisionSummary?: string;
+  termId?: number;
 }
 
 export class CaseStore {
@@ -73,7 +63,8 @@ export class CaseStore {
 
   termSorter = (t1: Term, t2: Term) => t2.otName.localeCompare(t1.otName);
 
-  constructor(private networkService: NetworkService) {
+  constructor(private networkService: NetworkService,
+              private docketStore: DocketStore) {
     this.refreshAllTerms();
   }
 
@@ -116,7 +107,26 @@ export class CaseStore {
       termId,
       docketIds,
     });
+    if (docketIds && docketIds.length > 0) {
+      this.docketStore.refreshUnassigned();
+    }
     return this.mapCase(result);
+  }
+
+  async editCase(id: number, request: EditCase): Promise<FullCase> {
+    const result = await this.networkService.patch<FullCase>(`/cases/${id}`, request);
+    return this.mapCase(result);
+  }
+
+  async assignDocket(caseId: number, docketId: number): Promise<FullCase> {
+    const result = await this.networkService.put<FullCase>(`/cases/${caseId}/dockets/${docketId}`);
+    this.docketStore.refreshUnassigned();
+    return this.mapCase(result);
+  }
+
+  async removeDocket(caseId: number, docketId: number): Promise<void> {
+    await this.networkService.delete<void>(`/cases/${caseId}/dockets/${docketId}`);
+    this.docketStore.refreshUnassigned();
   }
 
   private mapCase<T extends Case>(rawCase: T): T {

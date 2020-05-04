@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Grid, Typography, IconButton, TextField, Theme, Button, withStyles, MenuItem } from '@material-ui/core';
 import BackIcon from '@material-ui/icons/ArrowBack';
-import Autocomplete, { AutocompleteChangeReason, AutocompleteChangeDetails } from '@material-ui/lab/Autocomplete';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import { inject, observer } from 'mobx-react';
 import { History } from 'history';
 import { DocketStore, BareDocket } from '../../../stores/docketStore';
@@ -90,7 +90,7 @@ class CreateCasePage extends Component<Props, State> {
     this.setState({ status: event.target.value as CaseStatus });
   };
 
-  changeDockets = (event: React.ChangeEvent<{}>, value: BareDocket[], reason: AutocompleteChangeReason, details?: AutocompleteChangeDetails<BareDocket> | undefined) => {
+  changeDockets = (_: React.ChangeEvent<{}>, value: BareDocket[]) => {
     this.setState({ dockets: value});
   }
 
@@ -113,7 +113,7 @@ class CreateCasePage extends Component<Props, State> {
     this.setState({ submitting: true });
     try {
       await this.props.caseStore.createCase(title, shortSummary, status, termId, dockets.map(d => d.id));
-      this.props.routing.push('/admin/cases');
+      this.props.routing.push('/admin/case');
     } catch (e) {
       console.log(e);
       this.setState({formError: e?.message ?? 'There was a problem creating this case'});

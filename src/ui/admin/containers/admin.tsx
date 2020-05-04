@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import Login from './login';
 import { UserStore } from '../../../stores/userStore';
-import { Grid, Paper, Button, Theme } from '@material-ui/core';
+import { Grid, Paper, Button, Theme, Hidden } from '@material-ui/core';
 import { Switch, Route } from 'react-router';
 import { History } from 'history';
 import { withStyles } from '@material-ui/styles';
@@ -16,6 +16,7 @@ import EditDocketPage from './editDocket';
 import CasePage from './case';
 import CreateTermPage from './createTerm';
 import CreateCasePage from './createCase';
+import EditCasePage from './editCase';
 
 interface Props {
   userStore?: UserStore;
@@ -30,6 +31,9 @@ const styles = (theme: Theme) => ({
   },
   leftNav: {
     height: '90vh',
+    padding: `${theme.spacing(1)}px`,
+  },
+  collapsedNav: {
     padding: `${theme.spacing(1)}px`,
   },
   leftButton: {
@@ -78,15 +82,28 @@ class Admin extends Component<Props> {
         :
         <Grid className={classes.root} container direction="row" spacing={1}>
           <Grid item xs={12} sm={3} md={2}>
-            <Paper className={classes.leftNav} elevation={1}>
-              {adminRoutes.map(({route, display, click}) => {
-                return (
-                  <Button fullWidth className={classes.leftButton} key={route} variant='text'
-                    color={location.pathname.indexOf(`admin/${route}`) >= 0 ? 'secondary' : 'primary'} 
-                    onClick={click}>{display}</Button>
-                );
-              })}
-            </Paper>
+            <Hidden xsDown>
+              <Paper className={classes.leftNav} elevation={1}>
+                {adminRoutes.map(({route, display, click}) => {
+                  return (
+                    <Button fullWidth className={classes.leftButton} key={route} variant='text'
+                      color={location.pathname.includes(`admin/${route}`) ? 'secondary' : 'primary'} 
+                      onClick={click}>{display}</Button>
+                  );
+                })}
+              </Paper>
+            </Hidden>
+            <Hidden smUp>
+              <Paper className={classes.collapsedNav} elevation={1}>
+                {adminRoutes.map(({route, display, click}) => {
+                  return (
+                    <Button className={classes.leftButton} key={route} variant='text'
+                      color={location.pathname.includes(`admin/${route}`) ? 'secondary' : 'primary'} 
+                      onClick={click}>{display}</Button>
+                  );
+                })}
+              </Paper>
+            </Hidden>
           </Grid>
           <Grid item xs={12} sm={9} md={10}>
             <Paper className={classes.main} elevation={0}>
@@ -100,6 +117,7 @@ class Admin extends Component<Props> {
                 <Route path="/admin/docket" component={DocketPage} />
                 <Route path="/admin/case/term/create" component={CreateTermPage} />
                 <Route path="/admin/case/create" component={CreateCasePage} />
+                <Route path="/admin/case/edit/:id" component={EditCasePage} />
                 <Route path="/admin/case" component={CasePage} />
                 {
                   /*

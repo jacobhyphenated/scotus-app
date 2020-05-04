@@ -29,6 +29,10 @@ export class NetworkService {
     return this.fetchHelper<T>('PUT', uri, undefined, body);
   }
 
+  async delete<T>(uri: string): Promise<T> {
+    return this.fetchHelper<T>('DELETE', uri);
+  }
+
   async patch<T>(uri: string, body: any): Promise<T> {
     return this.fetchHelper<T>('PATCH', uri, undefined, body);
   }
@@ -62,6 +66,9 @@ export class NetworkService {
       const errorResponse = await response.json();
       console.warn(errorResponse);
       throw new Error(errorResponse?.errorMessage);
+    }
+    if (response.status === 204) {
+      return {} as T; // No Content
     }
     const result = await response.json() as T; 
     return result;

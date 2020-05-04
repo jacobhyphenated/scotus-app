@@ -7,11 +7,11 @@ const useStyles = makeStyles( (theme: Theme) => ({
   },
 }));
 
-
 interface Props {
   onSave: (value: string) => void;
   label: string;
   value: string;
+  display?: string;
   children?: ReactNode;
   disabled?: boolean;
 
@@ -26,7 +26,7 @@ interface Props {
 
 const ViewEditInputText = (props: Props) => {
 
-  const {onSave, label, value, children, ...inputProps} = props;
+  const {onSave, label, value, display, children, ...inputProps} = props;
 
   const [editMode, setEditMode] = useState(false);
   const [editValue, setEditValue] = useState(value);
@@ -59,7 +59,7 @@ const ViewEditInputText = (props: Props) => {
           <Grid item xs={10}>
             <Grid container direction="column">
               <Typography color="textSecondary" variant="subtitle2">{label}</Typography>
-              <Typography>{value}</Typography>
+              <Typography>{display ?? value}</Typography>
             </Grid>
           </Grid>
           <Grid item xs={2}>
