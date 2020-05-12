@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Grid, Typography, IconButton, Theme, withStyles, MenuItem, FormControlLabel, Checkbox } from '@material-ui/core';
+import { Grid, Typography, IconButton, Theme, withStyles, MenuItem, FormControlLabel, FormControl, FormLabel, RadioGroup, Radio } from '@material-ui/core';
 import BackIcon from '@material-ui/icons/ArrowBack';
 import { inject, observer } from 'mobx-react';
 import { History } from 'history';
@@ -109,7 +109,8 @@ class EditDocketPage extends Component<Props, State> {
   }
 
   changeLowerCourtOverruled = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    this.edit({lowerCourtOverruled: event.target.checked});
+    const lowerCourtOverruled = event.target.value === 'true' ? true : event.target.value === 'false' ? false : undefined;
+    this.edit({lowerCourtOverruled});
   }
 
   back = () => {
@@ -193,17 +194,16 @@ class EditDocketPage extends Component<Props, State> {
                 </ViewEditInputText>
               </Grid>
               <Grid item xs={12}>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={!!this.state.docket!.lowerCourtOverruled}
+                <FormControl component="fieldset">
+                  <FormLabel component="legend">Lower Court Overruled?</FormLabel>
+                  <RadioGroup row aria-label="lower court overruled" name="lowerCourtOverruled"
+                    value={this.state.docket.lowerCourtOverruled}
                     onChange={this.changeLowerCourtOverruled}
-                    name="lowerCourtOverruled"
-                    color="primary"
-                  />
-                }
-                label="Lower Court Overruled?"
-              />
+                  >
+                    <FormControlLabel value={true} control={<Radio />} label="Yes" />
+                    <FormControlLabel value={false} control={<Radio />} label="No" />
+                  </RadioGroup>
+                </FormControl>
               </Grid>
             </Grid> 
           :

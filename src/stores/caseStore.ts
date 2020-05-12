@@ -9,6 +9,7 @@ export enum CaseStatus {
   GRANTED = 'GRANTED',
   ARGUMENT_SCHEDULED = 'ARGUMENT_SCHEDULED',
   ARGUED = 'ARGUED',
+  DISMISSED = 'DISMISSED',
   DIG = 'DIG',
   GVR = 'GVR',
   AFFIRMED = 'AFFIRMED',
@@ -30,6 +31,7 @@ export interface Case {
   argumentDate?: LocalDate;
   decisionDate?: LocalDate;
   decisionSummary?: string;
+  important: boolean;
   term: Term;
 }
 
@@ -54,6 +56,7 @@ export interface EditCase {
   result?: string;
   decisionSummary?: string;
   termId?: number;
+  important?: boolean;
 }
 
 export class CaseStore {
@@ -99,12 +102,13 @@ export class CaseStore {
     return this.mapCase(result);
   }
 
-  async createCase(caseTitle: string, shortSummary: string, status: CaseStatus, termId: number, docketIds: number[]): Promise<FullCase> {
+  async createCase(caseTitle: string, shortSummary: string, status: CaseStatus, termId: number, important: boolean, docketIds: number[]): Promise<FullCase> {
     const result = await this.networkService.post<FullCase>('/cases', {
       case: caseTitle,
       shortSummary,
       status,
       termId,
+      important,
       docketIds,
     });
     if (docketIds && docketIds.length > 0) {

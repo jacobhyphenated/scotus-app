@@ -21,10 +21,15 @@ export enum OpinionType {
   MAJORITY = 'MAJORITY',
   PER_CURIUM = 'PER_CURIUM',
   CONCURRENCE = 'CONCURRENCE',
-  DISSENT = 'DISSENT',
   CONCUR_JUDGEMENT = 'CONCUR_JUDGEMENT',
+  DISSENT = 'DISSENT',
   DISSENT_JUDGEMENT = 'DISSENT_JUDGEMENT'
 }
+
+export const opinionSort = (o1: Opinion, o2: Opinion) => {
+  const types = Object.values(OpinionType);
+  return types.indexOf(o1.opinionType) - types.indexOf(o2.opinionType);
+};
 
 export class OpinionStore {
 

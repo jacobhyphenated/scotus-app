@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Grid, Typography, IconButton, Theme, withStyles, MenuItem, Paper, TextField } from '@material-ui/core';
+import { Grid, Typography, IconButton, Theme, withStyles, MenuItem, Paper, TextField, FormControlLabel, Checkbox, Button } from '@material-ui/core';
 import BackIcon from '@material-ui/icons/ArrowBack';
 import CloseIcon from '@material-ui/icons/Close';
 import AddIcon from '@material-ui/icons/Add';
@@ -14,18 +14,24 @@ import { LocalDate } from '@js-joda/core';
 import { Autocomplete } from '@material-ui/lab';
 import OpinionEditCard from '../components/opinionEditCard';
 import OpinionCreateCard from '../components/createOpinionCard';
-import { OpinionStore, Opinion, OpinionType, CreateOpinionJustice } from '../../../stores/opinionStore';
+import { OpinionStore, Opinion, OpinionType, CreateOpinionJustice, opinionSort } from '../../../stores/opinionStore';
 import { JusticeStore } from '../../../stores/justiceStore';
 
 const styleDecorator = withStyles((theme: Theme) => ({
   formContainer: {
-    'margin-top': `${theme.spacing(2)}px`,
+    marginTop: `${theme.spacing(2)}px`,
   },
   docketCard: {
-    'margin-top': `${theme.spacing(1)}px`,
-    'margin-bottom': `${theme.spacing(1)}px`,
-    'padding-left': `${theme.spacing(1)}px`,
-    'padding-right': `${theme.spacing(1)}px`,
+    marginTop: `${theme.spacing(1)}px`,
+    marginBottom: `${theme.spacing(1)}px`,
+    paddingLeft: `${theme.spacing(1)}px`,
+    paddingRight: `${theme.spacing(1)}px`,
+  },
+  border: {
+    border: '1px solid rgba(0,0,0,0.12)',
+    borderRadius: 4,
+    marginRight: `${theme.spacing(1)}px`,
+    marginLeft: `${theme.spacing(1)}px`,
   },
 }));
 
@@ -85,7 +91,7 @@ class EditCasePage extends Component<Props, State> {
       const fullCase = await this.props.caseStore.editCase(this.state.case!.id, caseEdit);
       this.setState({ case: fullCase });
     } catch (e) {
-      this.setState({ formError: e?.errorMessage ?? 'Failed to update case'});
+      this.setState({ formError: e?.message ?? 'Failed to update case'});
     } finally {
       this.setState({ submitting: false});
     } 
@@ -117,6 +123,10 @@ class EditCasePage extends Component<Props, State> {
 
   saveTerm = async (termId: string) => {
     this.edit({termId: Number(termId)});
+  };
+
+  saveImportant = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.edit({important: event.target.checked});
   };
 
   saveArgumentDate = async (argumentDate: LocalDate | null) => {
@@ -159,6 +169,12 @@ class EditCasePage extends Component<Props, State> {
       } catch (e) {
         this.setState({formError: e?.message ?? 'Something went wrong removing the docket'});
       }
+    };
+  };
+
+  onClickDocket = (docket: CaseDocket): () => void => {
+    return () => {
+      this.props.routing.push(`/admin/docket/edit/${docket.docketId}`);
     };
   };
 
@@ -223,6 +239,7 @@ class EditCasePage extends Component<Props, State> {
     const unassignedDockets = this.props.docketStore.unassignedDockets;
     const activeJustices = this.props.justiceStore.activeJustices;
 
+    const opinions = this.state.case?.opinions.slice().sort(opinionSort);
     return (
       <Grid container direction="column">
         <Grid item>
@@ -284,6 +301,19 @@ class EditCasePage extends Component<Props, State> {
                       <MenuItem key={index} value={status}>{status}</MenuItem>
                     ))}
                   </ViewEditInputText>
+                </Grid>
+                <Grid className={this.props.classes.border} item xs={12}>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={!!this.state.case.important}
+                        onChange={this.saveImportant}
+                        name="caseImportant"
+                        color="primary"
+                      />
+                    }
+                    label="Important?"
+                  />
                 </Grid>
                 <Grid item xs={12}>
                   <ViewEditInputText
@@ -358,9 +388,9 @@ class EditCasePage extends Component<Props, State> {
                     <Paper key={docket.docketId} variant="elevation" className={this.props.classes.docketCard}>
                       <Grid container direction="row" justify="space-between" alignItems="center">
                         <Grid item>
-                          <Typography>
+                          <Button disableRipple color="primary" onClick={this.onClickDocket(docket)}>
                             {docket.docketNumber} {'\u2014'} {docket.lowerCourt.shortName}
-                          </Typography>
+                          </Button>
                         </Grid>
                         <Grid item>
                           <IconButton onClick={this.onDeleteDocket(docket)}><CloseIcon /></IconButton>
@@ -399,7 +429,7 @@ class EditCasePage extends Component<Props, State> {
                 </Grid>
                 <Grid item>
                   <Typography variant="h5" component="h4">Opinions</Typography>
-                  {this.state.case?.opinions.map(opinion => 
+                  {opinions?.map(opinion => 
                     <OpinionEditCard
                       key={opinion.id}
                       opinion={opinion}

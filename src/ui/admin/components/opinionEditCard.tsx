@@ -10,7 +10,11 @@ const useStyles = makeStyles( (theme: Theme) => ({
   },
   chip: {
     'margin-left': '4px',
+    'margin-bottom': '2px',
     'height': `${theme.spacing(3)}px`,
+  },
+  opinionSummary: {
+    'white-space': 'pre-line',
   },
 }));
 
@@ -49,12 +53,6 @@ const OpinionEditCard = (props: Props) => {
     setConfirmDelete(!confirmDelete);
   };
 
-  const keyPress = (ev: React.KeyboardEvent<HTMLDivElement>) => {
-    if (ev.key === 'Enter') {
-      saveSummary();
-    }
-  };
-
   const classes = useStyles();
   const author = opinion.justices.find(j => j.isAuthor);
   const joined = opinion.justices.filter(j => !j.isAuthor);
@@ -81,7 +79,7 @@ const OpinionEditCard = (props: Props) => {
             <Grid container direction="row" alignItems="center" justify="space-between">
               <Grid item xs={10}>
                 <Grid container direction="column">
-                  <Typography>{opinion.summary}</Typography>
+                  <Typography className={classes.opinionSummary}>{opinion.summary}</Typography>
                 </Grid>
               </Grid>
               <Grid item xs={2}>
@@ -95,11 +93,10 @@ const OpinionEditCard = (props: Props) => {
                   label="Summary"
                   fullWidth
                   multiline
-                  rows={2}
+                  rows={4}
                   value={summaryText}
                   variant="outlined"
                   color="secondary"
-                  onKeyPress={keyPress}
                   onChange={onChangeSummary}
                 />
               </Grid>
@@ -110,7 +107,7 @@ const OpinionEditCard = (props: Props) => {
           }
         </Grid>
         <Grid item>
-          <Typography>Author: {author?.justiceName}</Typography>
+          <Typography>Author: <strong>{author?.justiceName}</strong></Typography>
           {joined.length > 0 &&
             <>
               <Typography component="span">Joined By:</Typography>

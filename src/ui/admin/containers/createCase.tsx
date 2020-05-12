@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Grid, Typography, IconButton, TextField, Theme, Button, withStyles, MenuItem } from '@material-ui/core';
+import { Grid, Typography, IconButton, TextField, Theme, Button, withStyles, MenuItem, FormControlLabel, Checkbox } from '@material-ui/core';
 import BackIcon from '@material-ui/icons/ArrowBack';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { inject, observer } from 'mobx-react';
@@ -33,6 +33,7 @@ interface State {
   termId: number;
   status: CaseStatus;
   dockets: BareDocket[];
+  important: boolean;
 
   formError?: string;
   caseError?: string;
@@ -58,6 +59,7 @@ class CreateCasePage extends Component<Props, State> {
     termId: 0,
     dockets: [],
     status: CaseStatus.GRANTED,
+    important: false,
     submitting: false,
   }
 
@@ -94,8 +96,12 @@ class CreateCasePage extends Component<Props, State> {
     this.setState({ dockets: value});
   }
 
+  changeImportant = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({important: event.target.checked});
+  }
+
   submit = async () => {
-    const { title, shortSummary, termId, status, dockets } = this.state;
+    const { title, shortSummary, termId, status, dockets, important } = this.state;
     let valid = true;
     if (!title) {
       this.setState({ caseError: 'Case Title is required' });
@@ -112,15 +118,12 @@ class CreateCasePage extends Component<Props, State> {
 
     this.setState({ submitting: true });
     try {
-      await this.props.caseStore.createCase(title, shortSummary, status, termId, dockets.map(d => d.id));
+      await this.props.caseStore.createCase(title, shortSummary, status, termId, important, dockets.map(d => d.id));
       this.props.routing.push('/admin/case');
     } catch (e) {
       console.log(e);
-      this.setState({formError: e?.message ?? 'There was a problem creating this case'});
-    } finally {
-      this.setState({ submitting: false });
+      this.setState({formError: e?.message ?? 'There was a problem creating this case', submitting: false});
     }
-
   };
 
   render() {
@@ -181,7 +184,7 @@ class CreateCasePage extends Component<Props, State> {
                   helperText={shortSummaryError}
                 />
               </Grid>
-              { allTerms && 
+              { termId > 0 && 
                 <Grid item>
                   <TextField
                     id="create-case-term-select"
@@ -218,6 +221,19 @@ class CreateCasePage extends Component<Props, State> {
                     <MenuItem key={status} value={status}>{status}</MenuItem>
                   ))}
                 </TextField>
+              </Grid>
+              <Grid item>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={this.state.important}
+                      onChange={this.changeImportant}
+                      name="caseImportant"
+                      color="primary"
+                    />
+                  }
+                  label="Important?"
+                />
               </Grid>
               <Grid item>
                 <Autocomplete<BareDocket>
