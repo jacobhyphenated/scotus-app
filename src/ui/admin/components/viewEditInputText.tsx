@@ -4,6 +4,7 @@ import { Typography, Paper, Grid, Button, TextField, Theme, makeStyles } from '@
 const useStyles = makeStyles( (theme: Theme) => ({
   paper: {
     padding: `${theme.spacing(1)}px`,
+    whiteSpace: 'pre-wrap',
   },
 }));
 
@@ -45,7 +46,7 @@ const ViewEditInputText = (props: Props) => {
   };
 
   const keyPress = (ev: React.KeyboardEvent<HTMLDivElement>) => {
-    if (ev.key === 'Enter') {
+    if (ev.key === 'Enter' && (!props.multiline || !ev.shiftKey)) {
       onSaveClick();
     }
   };

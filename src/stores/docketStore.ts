@@ -20,6 +20,7 @@ export type FullDocket = BaseDocket &  { lowerCourt: Court, case?: Case }
 export enum DocketStatus {
   PENDING = "PENDING",
   CERT_GRANTED = "CERT_GRANTED",
+  CERT_DENIED = "CERT_DENIED",
   SCHEDULED = "SCHEDULED",
   DONE = "DONE" // affirmed/remanded/reversed?
 }

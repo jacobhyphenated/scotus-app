@@ -12,7 +12,7 @@ export class CourtStore {
   async refreshCourts() {
     const result = await this.networkService.get<Court[]>('/courts');
     runInAction(() => {
-      this.allCourts = result;
+      this.allCourts = result.sort((c1, c2) => c1.shortName.localeCompare(c2.shortName));
     });
   }
 
