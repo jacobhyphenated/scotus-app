@@ -19,7 +19,6 @@
     "noEmit": true,
     "jsx": "react",
     "experimentalDecorators": true,
-    "noImplicitAny": true,
   },
   "include": [
     "src"

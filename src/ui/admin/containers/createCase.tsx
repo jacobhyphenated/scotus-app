@@ -5,7 +5,7 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import { inject, observer } from 'mobx-react';
 import { History } from 'history';
 import { DocketStore, BareDocket } from '../../../stores/docketStore';
-import { CaseStore, CaseStatus } from '../../../stores/caseStore';
+import { CaseStore, CaseStatus, FullCase } from '../../../stores/caseStore';
 import { autorun } from 'mobx';
 
 const styleDecorator = withStyles((theme: Theme) => ({
@@ -17,13 +17,6 @@ const styleDecorator = withStyles((theme: Theme) => ({
     [theme.breakpoints.up('md')]: {
       maxWidth: 450,
     },
-  },
-  chips: {
-    display: 'flex',
-    flexWrap: 'wrap',
-  },
-  chip: {
-    margin: 2,
   },
 }));
 
@@ -100,7 +93,7 @@ class CreateCasePage extends Component<Props, State> {
     this.setState({important: event.target.checked});
   }
 
-  submit = async () => {
+  submit = async (): Promise<FullCase | null> => {
     const { title, shortSummary, termId, status, dockets, important } = this.state;
     let valid = true;
     if (!title) {
@@ -113,18 +106,32 @@ class CreateCasePage extends Component<Props, State> {
     }
 
     if(!valid) {
-      return;
+      return Promise.resolve(null);
     }
 
     this.setState({ submitting: true });
     try {
-      await this.props.caseStore.createCase(title, shortSummary, status, termId, important, dockets.map(d => d.id));
-      this.props.routing.push('/admin/case');
+      return this.props.caseStore.createCase(title, shortSummary, status, termId, important, dockets.map(d => d.id));
     } catch (e) {
       console.log(e);
       this.setState({formError: e?.message ?? 'There was a problem creating this case', submitting: false});
+      return null;
     }
   };
+
+  save = async () => {
+    const newCase = await this.submit();
+    if (newCase) {
+      this.props.routing.push('/admin/case');
+    }
+  }
+
+  saveAndEdit = async () => {
+    const newCase = await this.submit();
+    if (newCase) {
+      this.props.routing.push(`/admin/case/edit/${newCase.id}`);
+    }
+  }
 
   render() {
     const unassignedDockets = this.props.docketStore.unassignedDockets;
@@ -236,7 +243,7 @@ class CreateCasePage extends Component<Props, State> {
                 />
               </Grid>
               <Grid item>
-                <Autocomplete<BareDocket>
+                <Autocomplete<BareDocket, true>
                   multiple
                   id="case-create-docket-autocomplete"
                   options={unassignedDockets}
@@ -256,13 +263,26 @@ class CreateCasePage extends Component<Props, State> {
                 />
               </Grid>
               <Grid item>
-                <Button 
-                  disabled={ submitting || !!caseError || !!shortSummaryError }
-                  color="primary"
-                  variant="contained"
-                  fullWidth
-                  onClick={this.submit}
-                >Create</Button>
+                <Grid container spacing={2}>
+                  <Grid item xs={6}>
+                    <Button 
+                      disabled={ submitting || !!caseError || !!shortSummaryError }
+                      color="primary"
+                      variant="contained"
+                      fullWidth
+                      onClick={this.save}
+                    >Create</Button>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Button 
+                      disabled={ submitting || !!caseError || !!shortSummaryError }
+                      color="secondary"
+                      variant="contained"
+                      fullWidth
+                      onClick={this.saveAndEdit}
+                    >Create and Edit</Button>
+                  </Grid>
+                </Grid>
               </Grid>
             </Grid>
           </form>

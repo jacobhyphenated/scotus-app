@@ -177,7 +177,7 @@ const CreateOpinionCard = (props: Props) => {
             </TextField>
           </Grid>
           <Grid item>
-            <Autocomplete<number>
+            <Autocomplete<number, true>
               multiple
               id="opinion-justices-autocomplete"
               options={props.activeJustices.map(j => j.id).filter(id => id !== authorId)}
