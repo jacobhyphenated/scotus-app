@@ -43,7 +43,7 @@ class CasePage extends Component<Props, State> {
     searching: true,
   }
 
-  async componentDidMount() {
+  componentDidMount() {
     autorun((reaction) => {
       if (this.props.caseStore.allTerms.length > 0 && !this.state.selectedTermId) {
         this.setSelectedTerm(this.props.caseStore.allTerms[0].id);
