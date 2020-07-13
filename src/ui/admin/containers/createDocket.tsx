@@ -78,7 +78,6 @@ class CreateDocketPage extends Component<Props, State> {
   }
 
   submit = async () => {
-    console.log('submit');
     const { title, docketNumber, lowerCourtId, lowerCourtRuling, status } = this.state;
     let valid = true;
     if (!title) {

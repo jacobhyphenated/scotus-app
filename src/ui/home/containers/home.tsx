@@ -9,13 +9,14 @@ import { inject, observer } from 'mobx-react';
 import { autorun } from 'mobx';
 import { History } from 'history';
 import CasePreviewCard from '../components/casePreview';
+import TermSummaryInProgress from '../components/termSummaryInProgress';
 
 const styles = (theme: Theme) => createStyles({
   paper: {
     marginTop: theme.spacing(1),
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
-    height: 'calc(100vh - 64px)',
+    height: `calc(100vh - ${theme.spacing(8)}px)`,
     overflow: 'scroll',
   },
   search: {
@@ -111,7 +112,7 @@ class Home extends Component<Props, State> {
     const { searchText, selectedTermId, searchResults, termCases } = this.state;
     const allTerms = this.props.caseStore.allTerms;
 
-    const undecidedThisTerm = termCases.filter(c => !c.decisionDate && ![CaseStatus.DISMISSED, CaseStatus.DIG, CaseStatus.GVR].includes(c.status)) 
+    const undecidedThisTerm = termCases.filter(c => !c.decisionDate && ![CaseStatus.DISMISSED, CaseStatus.DIG, CaseStatus.GVR].includes(c.status)); 
     const arguedThisTerm = termCases.filter(c => !!c.argumentDate);
 
     return (
@@ -179,12 +180,7 @@ class Home extends Component<Props, State> {
               </>
             : (undecidedThisTerm.length / termCases.length < .1) ? //TODO: .25
               <h1>75% complete - end of term page</h1>
-            : <>
-                <h1>Term in progress page.</h1>
-                <p>total cases: {termCases.length}</p>
-                <p>argued cases: {arguedThisTerm.length}</p>
-                <p>undecided cases: {undecidedThisTerm.length}</p>
-              </>
+            : <TermSummaryInProgress cases={termCases} />
             }
           </div>
         }
