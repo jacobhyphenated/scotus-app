@@ -8,8 +8,7 @@ import { debounceTime, flatMap, filter } from 'rxjs/operators';
 import { inject, observer } from 'mobx-react';
 import { autorun } from 'mobx';
 import { History } from 'history';
-import CasePreviewCard from '../components/casePreview';
-import TermSummaryInProgress from '../components/termSummaryInProgress';
+import { CasePreviewCard, TermSummaryInProgress, TermSummaryNearEnd } from '../components';
 
 const styles = (theme: Theme) => createStyles({
   paper: {
@@ -106,7 +105,11 @@ class Home extends Component<Props, State> {
 
   changeSelectedTerm: React.ChangeEventHandler<HTMLInputElement> = event => {
     this.setSelectedTerm(Number(event.target.value));
-  }
+  };
+
+  onCaseClick: (scotusCase: Case) => void = scotusCase => {
+    this.props.routing.push(`/case/${scotusCase.id}`);
+  };
 
   render() {
     const { searchText, selectedTermId, searchResults, termCases } = this.state;
@@ -137,29 +140,30 @@ class Home extends Component<Props, State> {
             />
           </Grid>
         </Grid>
-        <Grid container direction="row" justify="center" spacing={1} alignItems="center">
-          <Grid item>
-            <Typography>Term: </Typography>
+        { searchResults.length === 0 &&
+          <Grid container direction="row" justify="center" spacing={1} alignItems="center">
+            <Grid item>
+              <Typography>Term: </Typography>
+            </Grid>
+            <Grid item>
+              {selectedTermId && 
+                <TextField
+                  id="admin-case-term-filter"
+                  size="small"
+                  color="primary"
+                  variant="outlined"
+                  select
+                  value={selectedTermId}
+                  onChange={this.changeSelectedTerm}
+                >
+                  {allTerms.map(term => (
+                    <MenuItem key={term.id} value={term.id}>{term.name}</MenuItem>
+                  ))}
+                </TextField>
+              }
+            </Grid>
           </Grid>
-          <Grid item>
-            {selectedTermId && 
-              <TextField
-                id="admin-case-term-filter"
-                size="small"
-                color="primary"
-                variant="outlined"
-                disabled={searchResults.length > 0}
-                select
-                value={selectedTermId}
-                onChange={this.changeSelectedTerm}
-              >
-                {allTerms.map(term => (
-                  <MenuItem key={term.id} value={term.id}>{term.name}</MenuItem>
-                ))}
-              </TextField>
-            }
-          </Grid>
-        </Grid>
+        }
         {!this.state.loading &&
           <div className={this.props.classes.body}>
             {searchResults.length > 0 ? 
@@ -168,7 +172,7 @@ class Home extends Component<Props, State> {
                 <Grid container direction="row" justify="flex-start" spacing={2} className={this.props.classes.searchGrid}>
                 {searchResults.map(r => (
                   <Grid item xs={12} sm={6} md={4} lg={3} key={r.id}>
-                    <CasePreviewCard case={r} />
+                    <CasePreviewCard case={r} onClick={this.onCaseClick} />
                   </Grid>
                 ))}
                 </Grid>
@@ -178,9 +182,9 @@ class Home extends Component<Props, State> {
                 <h1>Term Finished</h1>
                 <p>Argued Cases: {arguedThisTerm.length}</p>
               </>
-            : (undecidedThisTerm.length / termCases.length < .1) ? //TODO: .25
-              <h1>75% complete - end of term page</h1>
-            : <TermSummaryInProgress cases={termCases} />
+            : (undecidedThisTerm.length / termCases.length < .25) ?
+              <TermSummaryNearEnd cases={termCases} onCaseClick={this.onCaseClick} />
+            : <TermSummaryInProgress cases={termCases} onCaseClick={this.onCaseClick} />
             }
           </div>
         }

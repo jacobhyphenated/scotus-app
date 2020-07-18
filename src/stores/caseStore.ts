@@ -38,6 +38,7 @@ export interface Case {
 export interface CaseDocket {
   docketId: number;
   docketNumber: string;
+  title: string;
   lowerCourt: Court;
   lowerCourtOverruled?: boolean;
 } 
@@ -58,6 +59,8 @@ export interface EditCase {
   termId?: number;
   important?: boolean;
 }
+
+export const dismissedCases: (c: Case) => boolean = c => [CaseStatus.DIG, CaseStatus.DISMISSED, CaseStatus.GVR].includes(c.status);
 
 export class CaseStore {
 

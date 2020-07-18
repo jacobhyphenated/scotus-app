@@ -31,6 +31,23 @@ export const opinionSort = (o1: Opinion, o2: Opinion) => {
   return types.indexOf(o1.opinionType) - types.indexOf(o2.opinionType);
 };
 
+export const displayType: (type: OpinionType) => string = type => {
+  switch(type) {
+    case OpinionType.MAJORITY:
+      return 'Majority';
+    case OpinionType.PER_CURIUM:
+      return 'Per Curium';
+    case OpinionType.CONCURRENCE:
+      return 'Concurring';
+    case OpinionType.CONCUR_JUDGEMENT:
+      return 'Concurring in Judgement';
+    case OpinionType.DISSENT:
+      return 'Dissent';
+    case OpinionType.DISSENT_JUDGEMENT:
+      return 'Dissenting in Judgement';
+  }
+};
+
 export class OpinionStore {
 
   constructor(private networkService: NetworkService) {}

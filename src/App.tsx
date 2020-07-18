@@ -3,6 +3,7 @@ import './App.css';
 import { Route, Switch, Redirect } from 'react-router';
 import Home from './ui/home/containers/home';
 import Admin from './ui/admin/containers/admin';
+import CasePage from './ui/case/containers/case';
 import HomeIcon from '@material-ui/icons/Home';
 import { inject } from 'mobx-react';
 import { History } from 'history';
@@ -43,6 +44,7 @@ export default class App extends Component<Props> {
         <Switch>
           <Route exact path="/" component={Home} />
           <Route path="/admin" component={Admin} />
+          <Route path="/case/:id" component={CasePage} />
           <Redirect to="/" />
         </Switch>
       </div>
