@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { withStyles, WithStyles, createStyles } from '@material-ui/styles';
-import { Theme, Paper, Grid, Typography } from '@material-ui/core';
+import { Theme, Paper, Grid, Typography, IconButton } from '@material-ui/core';
+import BackIcon from '@material-ui/icons/ArrowBack';
 import { match } from 'react-router';
 import { CaseStore, FullCase, CaseStatus } from '../../../stores/caseStore';
 import { inject, observer } from 'mobx-react';
@@ -25,6 +26,7 @@ const styles = (theme: Theme) => createStyles({
   paragraph: {
     marginLeft: theme.spacing(2),
     marginRight: theme.spacing(5),
+    whiteSpace: 'pre-wrap',
   },
   flexEnd: {
     marginRight: theme.spacing(6),
@@ -71,37 +73,40 @@ class CasePage extends Component<Props, State> {
     }
   }
 
-  render() {
+  courtStatusText: (fullCase: FullCase) => JSX.Element = fullCase => {
+    let text: JSX.Element | null = null;
+    switch(fullCase.status) {
+      case CaseStatus.DISMISSED:
+        text = <><span className={this.props.classes.bold}>Dismissed:</span> The court declined to review this case</>;
+        break;
+      case CaseStatus.DIG:
+        text = <>
+            <span className={this.props.classes.bold}>Dismissed as Improvidently Granted:</span>
+            The court originally granted this case to hear arguments, but later decided that granting the case was a mistake. The case is dismissed.
+          </>;
+        break;
+      case CaseStatus.GVR:
+        text = <>
+            <span className={this.props.classes.bold}>Grant, Vacate, and Remand: </span>
+            The court granted this case and, without hearing arguments, vacates the ruling of the lower court and remands for further consideration.
+            This is the SCOTUS equivanet of saying the lower court got this so wrong that it doesn't even merit arguments.
+          </>;
+        break;
+    }
+    return text ? 
+      <Grid item>
+        <Typography paragraph>{text}</Typography>
+      </Grid>
+    : <></>;
+  };
 
+  back = () => {
+    this.props.routing.goBack();
+  };
+
+  render() {
     const { classes } = this.props;
     const { fullCase } = this.state;
-
-    const courtStatusText: (fullCase: FullCase) => JSX.Element = fullCase => {
-      let text: JSX.Element | null = null;
-      switch(fullCase.status) {
-        case CaseStatus.DISMISSED:
-          text = <><span className={classes.bold}>Dismissed:</span> The court declined to review this case</>;
-          break;
-        case CaseStatus.DIG:
-          text = <>
-              <span className={classes.bold}>Dismissed as Improvidently Granted:</span>
-              The court originally granted this case to hear arguments, but later decided that granting the case was a mistake. The case is dismissed.
-            </>;
-          break;
-        case CaseStatus.GVR:
-          text = <>
-              <span className={classes.bold}>Grant, Vacate, and Remand: </span>
-              The court granted this case and, without hearing arguments, vacates the ruling of the lower court and remands for further consideration.
-              This is the SCOTUS equivanet of saying the lower court got this so wrong that it doesn't even merit arguments.
-            </>;
-          break;
-      }
-      return text ? 
-        <Grid item>
-          <Typography paragraph>{text}</Typography>
-        </Grid>
-      : <></>;
-    };
 
     const combinedWith = fullCase?.dockets.filter(d => d.title !== fullCase.case) ?? [];
 
@@ -112,11 +117,20 @@ class CasePage extends Component<Props, State> {
             <Grid item>
               <Grid container direction="row" justify="space-between">
                 <Grid item>
-                  <Typography color="textSecondary" variant="subtitle2">
-                    {fullCase.status === CaseStatus.ARGUED && !!fullCase.argumentDate ? 
-                      `${fullCase.status} (${fullCase.argumentDate.format(this.monthFormatter)})`
-                    : fullCase.status}{fullCase.result && `: ${fullCase.result}` }
-                  </Typography>
+                  <Grid container direction="row" justify="flex-start" alignItems="baseline" spacing={2}>
+                    <Grid item>
+                      <IconButton onClick={this.back}>
+                        <BackIcon color="action" />
+                      </IconButton>
+                    </Grid>
+                    <Grid item>
+                      <Typography color="textSecondary" variant="subtitle2">
+                        {fullCase.status === CaseStatus.ARGUED && !!fullCase.argumentDate ? 
+                          `${fullCase.status} (${fullCase.argumentDate.format(this.monthFormatter)})`
+                        : fullCase.status}{fullCase.result && `: ${fullCase.result}` }
+                      </Typography>
+                    </Grid>
+                  </Grid>
                 </Grid>
                 <Grid item className={classes.flexEnd}>
                   <Typography color="textSecondary" variant="subtitle2">
@@ -139,7 +153,7 @@ class CasePage extends Component<Props, State> {
                 ))}
               </Grid>
             }
-            {courtStatusText(fullCase)}
+            {this.courtStatusText(fullCase)}
             <Grid item>
               <Typography className={classes.paragraph} paragraph color="textPrimary">
                 <span className={classes.bold}>At Issue:</span> {fullCase.shortSummary}

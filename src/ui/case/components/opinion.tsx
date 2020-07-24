@@ -13,6 +13,9 @@ const useStyles = makeStyles( (theme: Theme) => ({
     maxHeight: 200,
     overflowY: 'hidden',
   },
+  allowBreak: {
+    whiteSpace: 'pre-wrap',
+  },
 }));
 
 interface Props {
@@ -46,7 +49,7 @@ const OpinionView = (props: Props) => {
         <Typography variant="h6">
           {displayType(opinion.opinionType)}
         </Typography>
-        <Typography paragraph className={collapsed ? classes.collapsedSummary : ''}>
+        <Typography paragraph className={`${classes.allowBreak} ${collapsed && classes.collapsedSummary}`}>
           {opinion.summary}
         </Typography>
         {joinedBy.length > 0 && opinion.opinionType !== OpinionType.PER_CURIUM &&
