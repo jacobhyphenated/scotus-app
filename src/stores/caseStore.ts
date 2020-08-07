@@ -4,6 +4,7 @@ import { LocalDate } from '@js-joda/core';
 import { Court } from './courtStore';
 import { DocketStore } from './docketStore';
 import { Opinion } from './opinionStore';
+import { Justice } from './justiceStore';
 
 export enum CaseStatus {
   GRANTED = 'GRANTED',
@@ -58,6 +59,32 @@ export interface EditCase {
   decisionSummary?: string;
   termId?: number;
   important?: boolean;
+}
+
+export interface TermSummary {
+  termId: number;
+  termEndDate: LocalDate;
+  justiceSummary: TermJusticeSummary[];
+  courtSummary: TermCourtSummary[];
+}
+
+export interface TermJusticeSummary {
+  justice: Justice;
+  majorityAuthor: number;
+  concurringAuthor: number;
+  concurJudgementAuthor: number;
+  dissentAuthor: number;
+  dissentJudgementAuthor: number;
+  casesWithOpinion: number;
+  casesInMajority: number;
+  percentInMajority: number;
+}
+
+export interface TermCourtSummary {
+  court: Court;
+  cases: number;
+  affirmed: number;
+  reversedRemanded: number;
 }
 
 export const dismissedCases: (c: Case) => boolean = c => [CaseStatus.DIG, CaseStatus.DISMISSED, CaseStatus.GVR].includes(c.status);
@@ -134,6 +161,14 @@ export class CaseStore {
   async removeDocket(caseId: number, docketId: number): Promise<void> {
     await this.networkService.delete<void>(`/cases/${caseId}/dockets/${docketId}`);
     this.docketStore.refreshUnassigned();
+  }
+
+  async getTermSummary(termId: number): Promise<TermSummary> {
+    const result = await this.networkService.get<TermSummary>(`/cases/term/${termId}/summary`);
+    return {
+      ...result,
+      termEndDate: this.localDateParse(result.termEndDate) ?? LocalDate.MIN,
+    };
   }
 
   private mapCase<T extends Case>(rawCase: T): T {

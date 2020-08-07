@@ -73,9 +73,9 @@ const DocketCard = (props: Props) => {
           <Typography paragraph>{props.docket.lowerCourtRuling}</Typography>
           {!!fullDocket?.case && 
             <Grid container direction="row">
-              {!!fullDocket?.case?.decisionDate ?
+              {!!fullDocket?.case?.result ?
                 <Typography color="textSecondary">
-                  Result: {fullDocket?.case?.result} ({fullDocket.case.decisionDate.format(formatter)})
+                  Result: {fullDocket.case.result} ({fullDocket.case.decisionDate?.format(formatter) ?? ''})
                   - {fullDocket.lowerCourtOverruled ? 'Reversed' : 'Affirmed'}
                 </Typography>
                 : !!fullDocket?.case?.argumentDate ?

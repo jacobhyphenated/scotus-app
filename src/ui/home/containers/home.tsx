@@ -2,13 +2,13 @@ import React, { Component } from 'react';
 import { withStyles, WithStyles, createStyles } from '@material-ui/styles';
 import { Theme, TextField, InputAdornment, Paper, Grid, Typography, MenuItem } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
-import { Case, CaseStore, CaseStatus } from '../../../stores/caseStore';
+import { Case, CaseStore, dismissedCases } from '../../../stores/caseStore';
 import { Subject } from 'rxjs';
 import { debounceTime, flatMap, filter } from 'rxjs/operators';
 import { inject, observer } from 'mobx-react';
 import { autorun } from 'mobx';
 import { History } from 'history';
-import { CasePreviewCard, TermSummaryInProgress, TermSummaryNearEnd } from '../components';
+import { CasePreviewCard, TermSummaryInProgress, TermSummaryNearEnd, TermSummaryComplete } from '../components';
 
 const styles = (theme: Theme) => createStyles({
   paper: {
@@ -115,8 +115,7 @@ class Home extends Component<Props, State> {
     const { searchText, selectedTermId, searchResults, termCases } = this.state;
     const allTerms = this.props.caseStore.allTerms;
 
-    const undecidedThisTerm = termCases.filter(c => !c.decisionDate && ![CaseStatus.DISMISSED, CaseStatus.DIG, CaseStatus.GVR].includes(c.status)); 
-    const arguedThisTerm = termCases.filter(c => !!c.argumentDate);
+    const undecidedThisTerm = termCases.filter(c => !c.decisionDate && !dismissedCases(c)); 
 
     return (
       <Paper className={this.props.classes.paper}>
@@ -178,10 +177,7 @@ class Home extends Component<Props, State> {
                 </Grid>
               </>
             : undecidedThisTerm.length === 0 ? 
-              <>
-                <h1>Term Finished</h1>
-                <p>Argued Cases: {arguedThisTerm.length}</p>
-              </>
+              <TermSummaryComplete cases={termCases} termId={this.state.selectedTermId!} caseStore={this.props.caseStore} onCaseClick={this.onCaseClick} />
             : (undecidedThisTerm.length / termCases.length < .25) ?
               <TermSummaryNearEnd cases={termCases} onCaseClick={this.onCaseClick} />
             : <TermSummaryInProgress cases={termCases} onCaseClick={this.onCaseClick} />
