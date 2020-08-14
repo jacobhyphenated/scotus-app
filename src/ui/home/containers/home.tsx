@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { withStyles, WithStyles, createStyles } from '@material-ui/styles';
-import { Theme, TextField, InputAdornment, Paper, Grid, Typography, MenuItem } from '@material-ui/core';
+import { Theme, TextField, InputAdornment, Paper, Grid, Typography, MenuItem, Button } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 import { Case, CaseStore, dismissedCases } from '../../../stores/caseStore';
 import { Subject } from 'rxjs';
@@ -9,6 +9,7 @@ import { inject, observer } from 'mobx-react';
 import { autorun } from 'mobx';
 import { History } from 'history';
 import { CasePreviewCard, TermSummaryInProgress, TermSummaryNearEnd, TermSummaryComplete } from '../components';
+import { match } from 'react-router';
 
 const styles = (theme: Theme) => createStyles({
   paper: {
@@ -42,6 +43,7 @@ const styles = (theme: Theme) => createStyles({
 interface Props extends WithStyles<typeof styles> {
   caseStore: CaseStore;
   routing: History;
+  match: match<{ id: string }>;
 }
 
 interface State {
@@ -77,7 +79,12 @@ class Home extends Component<Props, State> {
 
     autorun((reaction) => {
       if (this.props.caseStore.allTerms.length > 0 && !this.state.selectedTermId) {
-        this.setSelectedTerm(this.props.caseStore.allTerms[0].id);
+        const termId = this.props.match.params.id;
+        if (termId && !isNaN(Number(termId))) {
+          this.setSelectedTerm(Number(termId));
+        } else {
+          this.setSelectedTerm(this.props.caseStore.allTerms[0].id);
+        }
         reaction.dispose();
       }
     });
@@ -92,6 +99,11 @@ class Home extends Component<Props, State> {
     catch (e) {
       console.error(e?.message ?? 'Error occurred getting cases by term', e);
     }
+  };
+
+  handleInvalidTerm = () => {
+    this.setSelectedTerm(this.props.caseStore.allTerms[0].id);
+    this.props.routing.push('/');
   };
   
   updateSearchText: React.ChangeEventHandler<HTMLInputElement> = event => {
@@ -109,6 +121,11 @@ class Home extends Component<Props, State> {
 
   onCaseClick: (scotusCase: Case) => void = scotusCase => {
     this.props.routing.push(`/case/${scotusCase.id}`);
+  };
+
+  allCasesClick = () => {
+    this.props.routing.replace(`/term/${this.state.selectedTermId}`);
+    this.props.routing.push(`/term/${this.state.selectedTermId}/all`);
   };
 
   render() {
@@ -177,10 +194,19 @@ class Home extends Component<Props, State> {
                 </Grid>
               </>
             : undecidedThisTerm.length === 0 ? 
-              <TermSummaryComplete cases={termCases} termId={this.state.selectedTermId!} caseStore={this.props.caseStore} onCaseClick={this.onCaseClick} />
+              <TermSummaryComplete
+                cases={termCases}
+                termId={this.state.selectedTermId!}
+                caseStore={this.props.caseStore}
+                invalidTerm={this.handleInvalidTerm}
+                onCaseClick={this.onCaseClick} 
+              />
             : (undecidedThisTerm.length / termCases.length < .25) ?
               <TermSummaryNearEnd cases={termCases} onCaseClick={this.onCaseClick} />
             : <TermSummaryInProgress cases={termCases} onCaseClick={this.onCaseClick} />
+            }
+            {searchResults.length === 0 &&
+              <Button variant="text" color="primary" onClick={this.allCasesClick}>All Term Cases</Button>
             }
           </div>
         }

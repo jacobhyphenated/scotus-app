@@ -16,12 +16,16 @@ const useStyles = makeStyles( (theme: Theme) => ({
     marginTop: theme.spacing(1),
     marginBottom: theme.spacing(3),
   },
+  error: {
+    marginBottom: theme.spacing(5),
+  },
 }));
 
 interface Props {
   cases: Case[]
   termId: number;
   caseStore: CaseStore;
+  invalidTerm: () => void;
   onCaseClick?: (scotusCase: Case) => void;
 }
 
@@ -39,14 +43,20 @@ const TermSummaryComplete = (props: Props) => {
     return c2.cases - c1.cases;
   };
 
+  const { invalidTerm, caseStore, termId } = props;
   useEffect(() => {
     const getTermSummary = async () => {
-      const summaryResult = await props.caseStore.getTermSummary(props.termId);
-      setSummary(summaryResult);
+      try {
+        const summaryResult = await caseStore.getTermSummary(termId);
+        setSummary(summaryResult);
+      } catch (e) {
+        console.error(e);
+        invalidTerm();
+      }
     };
 
     getTermSummary();
-  }, [props.caseStore, props.termId]);
+  }, [caseStore, termId, invalidTerm]);
 
   return (
     <>
