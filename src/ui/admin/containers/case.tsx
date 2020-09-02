@@ -1,28 +1,30 @@
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
-import { Typography, withStyles, Theme, Grid, Fab, TextField, Button, MenuItem } from '@material-ui/core';
+import { Typography, withStyles, Theme, Grid, Fab, TextField, Button, MenuItem, WithStyles, createStyles } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import { History } from 'history';
-import { CaseStore, Case } from '../../../stores/caseStore';
+import { CaseStore, Case, CaseStatus } from '../../../stores/caseStore';
 import { autorun } from 'mobx';
 import CaseCard from '../components/caseCard';
 
-const styleDecorator = withStyles((theme: Theme) => ({
+const styles = (theme: Theme) => createStyles(({
   fab: {
     position: 'fixed',
     right: '25%',
     bottom: '10vh',
   },
-  search: {
+  filters: {
     'margin-top': `${theme.spacing(5)}px`,
     'margin-bottom': `${theme.spacing(4)}px`,
   },
+  searchBox: {
+    width: 250,
+  },
 }));
 
-interface Props {
+interface Props extends WithStyles<typeof styles> {
   routing: History;
   caseStore: CaseStore;
-  classes: {[id: string]: string};
 }
 
 interface State {
@@ -30,6 +32,7 @@ interface State {
   searchText: string;
   selectedTermId: number | null;
   searching: boolean;
+  caseStatus: CaseStatus | 'all';
 }
 
 @inject('routing', 'caseStore')
@@ -41,6 +44,7 @@ class CasePage extends Component<Props, State> {
     searchText: '',
     selectedTermId: null,
     searching: true,
+    caseStatus: 'all',
   }
 
   componentDidMount() {
@@ -83,12 +87,17 @@ class CasePage extends Component<Props, State> {
     this.props.routing.push('/admin/case/term/create');
   }
 
+  changeCaseStatus = (event: React.ChangeEvent<{value: unknown}>) => {
+    this.setState({ caseStatus: event.target.value as CaseStatus | 'all' });
+  };
+
   render() {
-    const { termResults, searchText, selectedTermId, searching } = this.state;
+    const { termResults, searchText, selectedTermId, searching, caseStatus } = this.state;
     const allTerms = this.props.caseStore.allTerms;
-    const filteredCases = !searchText ? 
+    const filteredCases = (!searchText ? 
       termResults : 
-      termResults.filter(c => c.case.toLocaleLowerCase().indexOf(searchText.toLocaleLowerCase()) !== -1);
+      termResults.filter(c => c.case.toLocaleLowerCase().indexOf(searchText.toLocaleLowerCase()) !== -1))
+      .filter(c => caseStatus === 'all' || c.status === caseStatus);
     return (
       <>
         <Grid container direction="row" spacing={3} alignItems="center">
@@ -121,16 +130,37 @@ class CasePage extends Component<Props, State> {
           <Typography variant="h6" color="textSecondary">Searching...</Typography>  
           :
           <>
-            <TextField
-              id="admin-case-search"
-              className={this.props.classes.search}
-              label="Filter"
-              size="small"
-              color="primary"
-              variant="outlined"
-              value={searchText}
-              onChange={this.changeSearchText}
-            />
+            <Grid container direction="row" alignItems="baseline" spacing={2} className={this.props.classes.filters}>
+              <Grid item>
+                <TextField
+                  id="admin-case-search"
+                  label="Filter"
+                  size="small"
+                  color="primary"
+                  variant="outlined"
+                  value={searchText}
+                  onChange={this.changeSearchText}
+                />
+              </Grid>
+              <Grid item>
+                <TextField
+                  id="create-case-status-select"
+                  label="Status"
+                  size="small"
+                  color="primary"
+                  variant="outlined"
+                  className={this.props.classes.searchBox}
+                  select
+                  value={caseStatus}
+                  onChange={this.changeCaseStatus}
+                >
+                  <MenuItem value="all">All</MenuItem>
+                  {Object.keys(CaseStatus).map(status => (
+                    <MenuItem key={status} value={status}>{status}</MenuItem>
+                  ))}
+                </TextField>
+              </Grid>
+            </Grid>
             <Grid container>
               {filteredCases.map(filteredCase => (
                 <Grid item key={filteredCase.id} xs={12} md={6} lg={4}>
@@ -149,4 +179,4 @@ class CasePage extends Component<Props, State> {
 
 }
 
-export default styleDecorator(CasePage);
+export default withStyles(styles)(CasePage);

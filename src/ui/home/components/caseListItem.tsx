@@ -111,8 +111,8 @@ const CaseListItem = (props: Props) => {
         <Hidden smDown><Grid item md={2} lg={1}>
           <Typography title="Date Argued">{scotusCase.argumentDate?.format(formatter)}</Typography>
         </Grid></Hidden>
-        <Hidden xsDown><Grid item sm={2} md={2} lg={1}>
-          <Typography>{scotusCase.status}</Typography>
+        <Hidden xsDown><Grid item sm={2} md={2} lg={1} className={classes.noWrap}>
+          <Typography noWrap title={scotusCase.status}>{scotusCase.status}</Typography>
         </Grid></Hidden>
         <Hidden mdDown><Grid item lg={2}>
           <Typography title="Author">{author}</Typography>

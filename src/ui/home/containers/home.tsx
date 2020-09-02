@@ -78,12 +78,13 @@ class Home extends Component<Props, State> {
       });
 
     autorun((reaction) => {
-      if (this.props.caseStore.allTerms.length > 0 && !this.state.selectedTermId) {
+      const allTerms = this.props.caseStore.allTerms;
+      if (allTerms.length > 0 && !this.state.selectedTermId) {
         const termId = this.props.match.params.id;
         if (termId && !isNaN(Number(termId))) {
           this.setSelectedTerm(Number(termId));
         } else {
-          this.setSelectedTerm(this.props.caseStore.allTerms[0].id);
+          this.setSelectedTerm(allTerms[allTerms.length - 1].id);
         }
         reaction.dispose();
       }

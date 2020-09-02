@@ -63,10 +63,10 @@ class AllTermCasesPage extends Component<Props, State> {
 
   caseSorter = (c1: Case, c2: Case) => {
     if (!c1.argumentDate) {
-      return -1;
+      return 1;
     }
     if (!c2.argumentDate) {
-      return 1;
+      return -1;
     }
     return c1.argumentDate.compareTo(c2.argumentDate);
   }
