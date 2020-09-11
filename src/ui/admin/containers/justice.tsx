@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
 import { History } from 'history';
 import { JusticeStore, Justice } from '../../../stores/justiceStore';
-import { Theme, Typography, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, Fab } from '@material-ui/core';
+import { Theme, Typography, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, Fab, Grid } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
 import JusticeCard from '../components/justiceCard';
 import DatePicker from '../components/datePicker';
@@ -22,18 +22,25 @@ const styleDecorator = withStyles((theme: Theme) => ({
 
 interface Props {
   routing?: History;
-  justiceStore?: JusticeStore;
+  justiceStore: JusticeStore;
   classes?: {[id: string]: string};
 }
 
 interface State {
   retireModal?: Justice;
   retireDate?: LocalDate;
+  showAll: boolean;
+  allJustices: Justice[];
 }
 
 @inject('routing', 'justiceStore')
 @observer
 class JusticePage extends Component<Props, State> {
+
+  state: State = {
+    showAll: false,
+    allJustices: [],
+  }
 
   attemptRetire = (justice: Justice) => {
     this.setState({retireModal: justice, retireDate: LocalDate.now()});
@@ -62,14 +69,37 @@ class JusticePage extends Component<Props, State> {
     this.props.routing!.push('/admin/justice/create');
   }
 
+  toggleShowAll = async () => {
+    const showAllCurrent = this.state.showAll;
+    this.setState({ showAll: !showAllCurrent });
+    if (!showAllCurrent) {
+      try {
+        const allJustices = await this.props.justiceStore.getAllJustices();
+        this.setState({ allJustices });
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  }
+
   render() {
-    const active = this.props.justiceStore!.activeJustices;
+    const active = this.props.justiceStore.activeJustices;
     const retireModalJustice = this.state?.retireModal;
+    const justiceList = this.state.showAll ? this.state.allJustices : active;
 
     return (
       <>
-        <Typography variant="h5">Active Justices:</Typography>
-        {active?.map( justice => (
+        <Grid container direction="row" spacing={3}>
+          <Grid item>
+            <Typography variant="h5">{this.state.showAll ? 'All Justices' : 'Active Justices'}:</Typography>
+          </Grid>
+          <Grid item>
+            <Button variant="outlined" color="primary" onClick={this.toggleShowAll}>
+              {this.state.showAll ? 'Show Active' : 'Show All'}
+            </Button>
+          </Grid>
+        </Grid>
+        {justiceList?.map( justice => (
           <JusticeCard key={justice.id} justice={justice} retireCallback={this.attemptRetire}></JusticeCard>
         )) }
         

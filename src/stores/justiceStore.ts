@@ -17,6 +17,11 @@ export class JusticeStore {
     });
   }
 
+  async getAllJustices(): Promise<Justice[]> {
+    const result = await this.networkService.get<RawJustice[]>('/justices');
+    return result.map(this.mapRaw);
+  }
+
   async retireJustice(id: number, date: LocalDate): Promise<Justice> {
     const result = await this.networkService.put<RawJustice>(`/justices/${id}/retire`, { retireDate: date });
     return this.mapRaw(result);
