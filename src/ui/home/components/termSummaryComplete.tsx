@@ -48,6 +48,18 @@ const TermSummaryComplete = (props: Props) => {
     const getTermSummary = async () => {
       try {
         const summaryResult = await caseStore.getTermSummary(termId);
+        let caseTotal = 0;
+        let reverseRemandTotal = 0;
+        summaryResult.courtSummary.forEach(item => {
+          caseTotal += item.cases;
+          reverseRemandTotal += item.reversedRemanded;
+        });
+        summaryResult.courtSummary.push({
+          cases: caseTotal,
+          reversedRemanded: reverseRemandTotal,
+          court: { id: 0, name: 'All Cases', shortName: 'all' },
+          affirmed: caseTotal - reverseRemandTotal,
+        });
         setSummary(summaryResult);
       } catch (e) {
         console.error(e);

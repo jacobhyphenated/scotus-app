@@ -207,7 +207,7 @@ class Home extends Component<Props, State> {
             : <TermSummaryInProgress cases={termCases} onCaseClick={this.onCaseClick} />
             }
             {searchResults.length === 0 &&
-              <Button variant="text" color="primary" onClick={this.allCasesClick}>All Term Cases</Button>
+              <Button variant="text" color="secondary" onClick={this.allCasesClick}>All Term Cases</Button>
             }
           </div>
         }
