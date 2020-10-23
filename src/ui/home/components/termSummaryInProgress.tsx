@@ -38,4 +38,4 @@ const TermSummaryInProgress = (props: Props) => {
   );
 };
 
-export default TermSummaryInProgress;
+export default React.memo(TermSummaryInProgress);

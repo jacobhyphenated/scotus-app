@@ -41,4 +41,4 @@ const TermSummaryNearEnd = (props: Props) => {
   );
 };
 
-export default TermSummaryNearEnd;
+export default React.memo(TermSummaryNearEnd);
