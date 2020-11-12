@@ -3,7 +3,7 @@ import { withStyles, WithStyles, createStyles } from '@material-ui/styles';
 import { Theme, TextField, InputAdornment, Paper, Grid, Typography, IconButton } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 import BackIcon from '@material-ui/icons/ArrowBack';
-import { Case, CaseStore, Term } from '../../../stores/caseStore';
+import { Case, CaseStatus, CaseStore, Term } from '../../../stores/caseStore';
 import { Subject, } from 'rxjs';
 import { debounceTime, map } from 'rxjs/operators';
 import { inject, observer } from 'mobx-react';
@@ -68,7 +68,12 @@ class AllTermCasesPage extends Component<Props, State> {
     if (!c2.argumentDate) {
       return -1;
     }
-    return c1.argumentDate.compareTo(c2.argumentDate);
+    const argumentOrder = c1.argumentDate.compareTo(c2.argumentDate);
+    if (argumentOrder !== 0) {
+      return argumentOrder;
+    }
+    const statusOrder = [CaseStatus.GRANTED, CaseStatus.GVR,  CaseStatus.DIG, CaseStatus.DISMISSED];
+    return statusOrder.indexOf(c1.status) - statusOrder.indexOf(c2.status);
   }
 
   async componentDidMount() {

@@ -123,7 +123,7 @@ export class CaseStore {
   }
 
   async searchCase(searchTerm: string): Promise<Case[]> {
-    const result = await this.networkService.get<Case[]>(`/cases/title/${encodeURIComponent(searchTerm)}`);
+    const result = await this.networkService.get<Case[]>(`/cases/search/${encodeURIComponent(searchTerm)}`);
     return result.map(c => this.mapCase(c));
   }
 
