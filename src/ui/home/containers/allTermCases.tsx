@@ -62,18 +62,18 @@ class AllTermCasesPage extends Component<Props, State> {
   searchText$ = new Subject<string>();
 
   caseSorter = (c1: Case, c2: Case) => {
+    const statusOrder = [CaseStatus.GRANTED, CaseStatus.GVR,  CaseStatus.DIG, CaseStatus.DISMISSED];
+    const statusSort = statusOrder.indexOf(c1.status) - statusOrder.indexOf(c2.status);
+    if (statusSort !== 0) {
+      return statusSort;
+    }
     if (!c1.argumentDate) {
       return 1;
     }
     if (!c2.argumentDate) {
       return -1;
     }
-    const argumentOrder = c1.argumentDate.compareTo(c2.argumentDate);
-    if (argumentOrder !== 0) {
-      return argumentOrder;
-    }
-    const statusOrder = [CaseStatus.GRANTED, CaseStatus.GVR,  CaseStatus.DIG, CaseStatus.DISMISSED];
-    return statusOrder.indexOf(c1.status) - statusOrder.indexOf(c2.status);
+    return c1.argumentDate.compareTo(c2.argumentDate);
   }
 
   async componentDidMount() {
