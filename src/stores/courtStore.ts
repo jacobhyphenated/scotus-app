@@ -1,8 +1,9 @@
 import { NetworkService } from '../services/networkService';
-import { observable, runInAction } from 'mobx';
+import { makeObservable, observable, runInAction } from 'mobx';
 
 export class CourtStore {
   constructor(private networkService: NetworkService) {
+    makeObservable(this);
     this.refreshCourts();
   }
 

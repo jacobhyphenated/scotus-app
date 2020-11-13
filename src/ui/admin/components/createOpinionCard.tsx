@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { Typography, Paper, Grid, Button, TextField, Theme, makeStyles, IconButton, MenuItem } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import { OpinionType, CreateOpinionJustice, Opinion } from '../../../stores/opinionStore';
@@ -33,29 +33,29 @@ const CreateOpinionCard = (props: Props) => {
   const [justiceIds, setJusticeIds] = useState<number[]>([]);
   const [submitting, setSubmitting] = useState(false);
 
-  const changeOpinionType = (event: React.ChangeEvent<{value: unknown}>) => {
+  const changeOpinionType = useCallback((event: React.ChangeEvent<{value: unknown}>) => {
     setOpinionType(event.target.value as OpinionType);
-  };
+  }, []);
 
-  const changeSummary = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const changeSummary = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     setSummary(event.target.value);
     setSummaryError(undefined);
-  };
+  }, []);
 
-  const changeAuthorId = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const changeAuthorId = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const newAuthorId = Number(event.target.value);
     setAuthorId(newAuthorId);
     setAuthorError(undefined);
     if (justiceIds.some(jid => jid === newAuthorId)) {
       setJusticeIds(justiceIds.filter(jid => jid !== newAuthorId ));
     }
-  };
+  }, [justiceIds]);
 
-  const changeJustices = (_: React.ChangeEvent<{}>, value: number[]) => {
+  const changeJustices = useCallback((_: React.ChangeEvent<{}>, value: number[]) => {
     setJusticeIds(value);
-  };
+  }, []);
 
-  const reset = () => {
+  const reset = useCallback(() => {
     setAuthorError(undefined);
     setSummaryError(undefined);
     setCreateError(undefined);
@@ -64,9 +64,9 @@ const CreateOpinionCard = (props: Props) => {
     setJusticeIds([]);
     setOpinionType(OpinionType.CONCURRENCE);
     setCreateMode(false);
-  };
+  }, []);
 
-  const submit = async () => {
+  const submit = useCallback(async () => {
     setCreateError(undefined);
     let valid = true;
     if (!summary) {
@@ -94,11 +94,9 @@ const CreateOpinionCard = (props: Props) => {
     } finally {
       setSubmitting(false);
     }
-  };
+  }, [authorId, justiceIds, opinionType, props, reset, summary]);
 
-  const toggleCreateMode = () => {
-    setCreateMode(!createMode);
-  };
+  const toggleCreateMode = useCallback(() => setCreateMode(!createMode), [createMode]);
 
   const classes = useStyles();
   return (

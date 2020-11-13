@@ -26,7 +26,7 @@ const TermSummaryInProgress = (props: Props) => {
   const awaitingDecision = random3Cases(props.cases.filter(c => !c.decisionDate && c.argumentDate && !dismissedCases(c)));
   const keyCases = random3Cases([
     ...open, 
-    ...props.cases.filter(c => ![...recentlyDecided, ...awaitingDecision].find(rd => rd.id === c.id)),
+    ...props.cases.filter(c => ![...recentlyDecided, ...awaitingDecision, ...open].find(rd => rd.id === c.id)),
   ]);
 
   return (

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { Typography, Paper, Grid, Button, TextField, Theme, makeStyles, IconButton, Chip, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import { Opinion } from '../../../stores/opinionStore';
@@ -31,27 +31,29 @@ const OpinionEditCard = (props: Props) => {
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [summaryText, setSummaryText] = useState(opinion.summary);
 
-  const deleteOpinion = () => {
+  const toggleConfirmDelete = useCallback(() => {
+    setConfirmDelete(!confirmDelete);
+  }, [confirmDelete]);
+
+  const deleteOpinion = useCallback(() => {
     toggleConfirmDelete();
     props.onDeleteOpinion(opinion);
-  };
+  }, [opinion, props, toggleConfirmDelete]);
 
-  const saveSummary = () => {
+  const saveSummary = useCallback(() => {
     setEditMode(false);
     props.editOpinionSummary(opinion.id, summaryText);
-  };
+  }, [opinion.id, props, summaryText]);
 
-  const onChangeSummary = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onChangeSummary = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setSummaryText(e.target.value);
-  };
+  }, []);
 
-  const toggleEditMode = () => {
+  const toggleEditMode = useCallback(() => {
     setEditMode(!editMode);
-  };
+  }, [editMode]);
 
-  const toggleConfirmDelete = () => {
-    setConfirmDelete(!confirmDelete);
-  };
+  
 
   const classes = useStyles();
   const author = opinion.justices.find(j => j.isAuthor);

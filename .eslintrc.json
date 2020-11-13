@@ -4,5 +4,8 @@
     "comma-dangle": ["error", "always-multiline"],
     "react/jsx-no-bind": ["error"],
     "semi": ["error", "always", { "omitLastInOneLineBlock": true }]
-  }
+  },
+  "plugins": [
+    "@typescript-eslint"
+  ]
 }

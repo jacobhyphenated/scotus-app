@@ -1,5 +1,5 @@
 import { NetworkService } from '../services/networkService';
-import { observable, runInAction } from 'mobx';
+import { makeObservable, observable, runInAction } from 'mobx';
 import { LocalDate } from '@js-joda/core';
 import { Court } from './courtStore';
 import { DocketStore } from './docketStore';
@@ -98,6 +98,7 @@ export class CaseStore {
 
   constructor(private networkService: NetworkService,
               private docketStore: DocketStore) {
+    makeObservable(this);
     this.refreshAllTerms();
   }
 

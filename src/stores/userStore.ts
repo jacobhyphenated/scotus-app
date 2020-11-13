@@ -1,14 +1,13 @@
-import { observable, computed, action, runInAction, autorun} from 'mobx';
+import { observable, computed, action, runInAction, autorun, makeObservable} from 'mobx';
 import { NetworkService } from '../services/networkService';
 
 export class UserStore {
+  @observable username?: string;
+  @observable password?: string;
+  @observable roles?: string[];
 
   constructor(private networkService: NetworkService) {
-    autorun( () => {
-      if (this.authHeaderToken) {
-        this.networkService.authorizationToken = this.authHeaderToken;
-      }
-    });
+    makeObservable(this);
     const rawUser = sessionStorage.getItem('user');
     if (rawUser) {
       const user = JSON.parse(rawUser);
@@ -18,11 +17,12 @@ export class UserStore {
         this.roles = user.roles;
       });
     }
+    autorun( () => {
+      if (this.authHeaderToken) {
+        this.networkService.authorizationToken = this.authHeaderToken;
+      }
+    }, {requiresObservable: true});
   }
-
-  @observable username?: string;
-  @observable password?: string;
-  @observable roles?: string[];
 
   @computed get authHeaderToken(): string | null {
     return this.username ? `Basic ${btoa(`${this.username}:${this.password}`)}` : null;

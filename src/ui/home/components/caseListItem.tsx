@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/styles';
 import { Theme, Grid, Typography, Paper, Hidden } from '@material-ui/core';
 import { Case, CaseStore } from '../../../stores/caseStore';
@@ -89,9 +89,9 @@ const CaseListItem = (props: Props) => {
 
   const formatter = DateTimeFormatter.ofPattern('MM/dd/yyyy');
 
-  const onClick = () => {
+  const onClick = useCallback(() => {
     props.onCaseClick(props.scotusCase);
-  };
+  }, [props]);
 
   return (
     <Paper elevation={1} className={classes.row} onClick={onClick}>

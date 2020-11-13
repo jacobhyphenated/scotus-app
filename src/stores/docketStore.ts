@@ -1,5 +1,5 @@
 import { NetworkService } from '../services/networkService';
-import { observable, runInAction } from 'mobx';
+import { makeObservable, observable, runInAction } from 'mobx';
 import { Court } from './courtStore';
 import { Case } from './caseStore';
 import { LocalDate } from '@js-joda/core';
@@ -36,6 +36,7 @@ export interface DocketEdit {
 
 export class DocketStore {
   constructor(private networkService: NetworkService) {
+    makeObservable(this);
     this.refreshUnassigned();
   }
 

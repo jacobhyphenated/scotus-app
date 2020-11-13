@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Paper, makeStyles, Theme, Grid, Typography, IconButton, Button } from '@material-ui/core';
 import ArrowRight from '@material-ui/icons/ArrowRight';
 import ArrowDown from '@material-ui/icons/ArrowDropDown';
@@ -34,20 +34,27 @@ const DocketCard = (props: Props) => {
   const [fullDocket, setFullDocket] = useState<FullDocket | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const toggleExpanded = async () => {
+  const toggleExpanded = useCallback(async () => {
     setExpanded(!expanded);
     if (!fullDocket && !loading && !!props.getFullDocket) {
       setLoading(true);
       setFullDocket(await props.getFullDocket());
       setLoading(false);
     }
-  };
+  }, [expanded, fullDocket, loading, props]);
 
   const classes = useStyles();
   const formatter = DateTimeFormatter.ofPattern('MM/dd/yyyy');
 
-  const editClick = props.onEditClick ? () => { props.onEditClick!(props.docket) } : null;
-  const caseClick = (props.onCaseClick && !!props.docket.caseId) ? () => { props.onCaseClick!(props.docket.caseId!) } : null;
+  const editClick = useCallback(() => {
+    props.onEditClick?.(props.docket);
+  }, [props]);
+
+  const caseClick = useCallback(() => {
+    if (!!props.docket.caseId) {
+      props.onCaseClick?.(props.docket.caseId);
+    }
+  }, [props]);
 
   return (
     <Paper className={classes.docketCard} variant="elevation">
@@ -86,10 +93,10 @@ const DocketCard = (props: Props) => {
             </Grid>
           }
           <Grid container direction="row" justify="flex-end" spacing={1}>
-            {editClick &&
+            {props.onEditClick &&
               <Button onClick={editClick} color="primary">Edit</Button>
             }
-            {caseClick &&
+            {props.onCaseClick && props.docket.caseId &&
               <Button onClick={caseClick} color="secondary">View Case</Button>
             }
           </Grid>

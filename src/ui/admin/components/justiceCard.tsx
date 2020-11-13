@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Theme, Typography, Button, makeStyles, Paper, Grid } from '@material-ui/core';
 import { Justice } from '../../../stores/justiceStore';
 import { DateTimeFormatter } from '@js-joda/core';
@@ -29,7 +29,10 @@ const JusticeCard = (props: Props) => {
   const styles = useStyles();
   const formatter = DateTimeFormatter.ofPattern('MM/dd/yyyy');
 
-  const cb = props.retireCallback ? () => { props.retireCallback!(justice) } : null;
+  const retireClick = useCallback(() => {
+    props.retireCallback?.(justice);
+  }, [justice, props]);
+
   return (
     <Paper className={styles.justiceCard}  key={justice.id}>
       <Typography color="textSecondary" variant="subtitle2">
@@ -43,9 +46,9 @@ const JusticeCard = (props: Props) => {
           Retired: {justice.dateRetired.format(formatter)}
         </Typography>
       )}
-      {!justice.dateRetired && cb &&(
+      {!justice.dateRetired && props.retireCallback &&(
         <Grid container justify="flex-end">
-          <Button size="small" color="primary" onClick={cb}>Retire</Button>
+          <Button size="small" color="primary" onClick={retireClick}>Retire</Button>
         </Grid>
       )}
     </Paper>

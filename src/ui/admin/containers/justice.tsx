@@ -44,7 +44,6 @@ class JusticePage extends Component<Props, State> {
 
   attemptRetire = (justice: Justice) => {
     this.setState({retireModal: justice, retireDate: LocalDate.now()});
-    console.log('attempt retire', justice.id);
   }
 
   confirmRetire = async () => {

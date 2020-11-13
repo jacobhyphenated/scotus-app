@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { Typography, Paper, Grid, Button, Theme, makeStyles } from '@material-ui/core';
 import { LocalDate, DateTimeFormatter } from "@js-joda/core";
 import DatePicker from './datePicker';
@@ -27,23 +27,23 @@ const ViewEditDatePicker = (props: Props) => {
   const [editValue, setEditValue] = useState(value);
   const [disableSave,  setDisableSave] = useState(false);
 
-  const onEditClick = () => {
+  const onEditClick = useCallback(() => {
     setEditMode(true);
-  };
+  }, []);
 
-  const onChange = (event: LocalDate | null) => {
+  const onChange = useCallback((event: LocalDate | null) => {
     if (event && !(event instanceof LocalDate)){
       setDisableSave(true);
       return;
     }
     setDisableSave(false);
     setEditValue(event);
-  };
+  }, []);
 
-  const onSaveClick = () => {
+  const onSaveClick = useCallback(() => {
     onSave(editValue);
     setEditMode(false);
-  };
+  }, [editValue, onSave]);
 
   const classes = useStyles();
   const formatter = DateTimeFormatter.ofPattern('MM/dd/yyyy');

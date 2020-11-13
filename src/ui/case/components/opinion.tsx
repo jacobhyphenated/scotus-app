@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Opinion, OpinionType, displayType } from '../../../stores/opinionStore';
 import { makeStyles } from '@material-ui/styles';
 import { Theme, Paper, Grid, Typography } from '@material-ui/core';
@@ -28,9 +28,9 @@ const OpinionView = (props: Props) => {
 
   const [collapsed, setCollapsed] = useState(true);
 
-  const onClick: () => void = () => {
+  const onClick: () => void = useCallback(() => {
     setCollapsed(!collapsed);
-  };
+  }, [collapsed]);
 
   const author = opinion.justices.find(j => j.isAuthor);
   const joinedBy = opinion.justices.filter(j => !j.isAuthor);

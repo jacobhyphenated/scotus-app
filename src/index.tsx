@@ -17,8 +17,12 @@ import { DocketStore } from './stores/docketStore';
 import { CaseStore } from './stores/caseStore';
 import { OpinionStore } from './stores/opinionStore';
 
-mobxConfigure({ enforceActions: "observed" }); // don't allow state modifications outside actions
-
+mobxConfigure({
+  enforceActions: "observed", // don't allow state modifications outside actions
+  computedRequiresReaction: true,
+  reactionRequiresObservable: true,
+  observableRequiresReaction: true,
+}); 
 const browserHistory = createBrowserHistory();
 const routingStore = new RouterStore();
 const networkService = new NetworkService(process.env.REACT_APP_API_SERVER!);

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { makeStyles } from '@material-ui/styles';
 import { Theme, Paper, Grid, Typography } from '@material-ui/core';
 import { Case, CaseStatus } from '../../../stores/caseStore';
@@ -22,9 +22,9 @@ const CasePreviewCard = (props: Props) => {
   const classes = useStyles();
   const formatter = DateTimeFormatter.ofPattern('MMMM').withLocale(JsJodaLocale.US);
 
-  const click = () => {
+  const click = useCallback(() => {
     props.onClick?.(props.case);
-  };
+  }, [props]);
 
   return (
     <Paper onClick={click} className={classes.paper}>

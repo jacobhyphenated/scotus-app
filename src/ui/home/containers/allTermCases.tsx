@@ -4,7 +4,7 @@ import { Theme, TextField, InputAdornment, Paper, Grid, Typography, IconButton }
 import SearchIcon from '@material-ui/icons/Search';
 import BackIcon from '@material-ui/icons/ArrowBack';
 import { Case, CaseStatus, CaseStore, Term } from '../../../stores/caseStore';
-import { Subject, } from 'rxjs';
+import { Subject } from 'rxjs';
 import { debounceTime, map } from 'rxjs/operators';
 import { inject, observer } from 'mobx-react';
 import { autorun } from 'mobx';
@@ -62,18 +62,20 @@ class AllTermCasesPage extends Component<Props, State> {
   searchText$ = new Subject<string>();
 
   caseSorter = (c1: Case, c2: Case) => {
-    const statusOrder = [CaseStatus.GRANTED, CaseStatus.GVR,  CaseStatus.DIG, CaseStatus.DISMISSED];
-    const statusSort = statusOrder.indexOf(c1.status) - statusOrder.indexOf(c2.status);
-    if (statusSort !== 0) {
-      return statusSort;
-    }
-    if (!c1.argumentDate) {
+    if (!c1.argumentDate && !!c2.argumentDate) {
       return 1;
     }
-    if (!c2.argumentDate) {
+    if (!c2.argumentDate && !!c1.argumentDate) {
       return -1;
     }
-    return c1.argumentDate.compareTo(c2.argumentDate);
+    if (c1.argumentDate && c2.argumentDate) {
+      const argumentOrder = c1.argumentDate.compareTo(c2.argumentDate);
+      if (argumentOrder !== 0) {
+        return argumentOrder;
+      }
+    }
+    const statusOrder = [CaseStatus.GRANTED, CaseStatus.GVR,  CaseStatus.DIG, CaseStatus.DISMISSED];
+    return statusOrder.indexOf(c1.status) - statusOrder.indexOf(c2.status);
   }
 
   async componentDidMount() {

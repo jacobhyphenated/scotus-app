@@ -429,13 +429,13 @@ class EditCasePage extends Component<Props, State> {
                 </Grid>
                 <Grid item>
                   <Typography variant="h5" component="h4">Opinions</Typography>
-                  {opinions?.map(opinion => 
+                  {opinions?.map(opinion => (
                     <OpinionEditCard
                       key={opinion.id}
                       opinion={opinion}
                       onDeleteOpinion={this.deleteOpinion}
                       editOpinionSummary={this.editOpinionSummary}
-                    />
+                    />),
                   )}
                   {(this.state.case && activeJustices && activeJustices.length > 0 ) && 
                     <OpinionCreateCard 

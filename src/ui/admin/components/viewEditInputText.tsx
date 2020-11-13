@@ -1,4 +1,4 @@
-import React, { useState, ReactNode } from "react";
+import React, { useState, ReactNode, useCallback } from "react";
 import { Typography, Paper, Grid, Button, TextField, Theme, makeStyles } from '@material-ui/core';
 
 const useStyles = makeStyles( (theme: Theme) => ({
@@ -32,24 +32,24 @@ const ViewEditInputText = (props: Props) => {
   const [editMode, setEditMode] = useState(false);
   const [editValue, setEditValue] = useState(value);
 
-  const onEditClick = () => {
+  const onEditClick = useCallback(() => {
     setEditMode(true);
-  };
+  }, []);
 
-  const onChange = (event: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<{value: unknown}>) => {
+  const onChange = useCallback((event: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<{value: unknown}>) => {
     setEditValue(event.target.value as string);
-  };
+  }, []);
 
-  const onSaveClick = () => {
+  const onSaveClick = useCallback(() => {
     onSave(editValue);
     setEditMode(false);
-  };
+  }, [editValue, onSave]);
 
-  const keyPress = (ev: React.KeyboardEvent<HTMLDivElement>) => {
+  const keyPress = useCallback((ev: React.KeyboardEvent<HTMLDivElement>) => {
     if (ev.key === 'Enter' && (!props.multiline || !ev.shiftKey)) {
       onSaveClick();
     }
-  };
+  }, [onSaveClick, props.multiline]);
 
   const classes = useStyles();
   return (

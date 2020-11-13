@@ -1,9 +1,10 @@
 import { NetworkService } from '../services/networkService';
-import { observable, runInAction } from 'mobx';
+import { makeObservable, observable, runInAction } from 'mobx';
 import { LocalDate } from '@js-joda/core';
 
 export class JusticeStore {
   constructor(private networkService: NetworkService) {
+    makeObservable(this);
     this.refreshActiveJustices();
   }
 

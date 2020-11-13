@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Paper, makeStyles, Theme, Grid, Typography, IconButton, Button } from '@material-ui/core';
 import ArrowRight from '@material-ui/icons/ArrowRight';
 import ArrowDown from '@material-ui/icons/ArrowDropDown';
@@ -30,16 +30,13 @@ interface Props {
 }
 
 const DocketCard = (props: Props) => {
-
   const [expanded, setExpanded] = useState(false);
 
-  const toggleExpanded = async () => {
-    setExpanded(!expanded);
-  };
+  const toggleExpanded = useCallback(() => setExpanded(!expanded), [expanded]);
 
-  const editButton = () => {
+  const editButton = useCallback(() => {
     props.onEditCase!(props.case);
-  };
+  }, [props.onEditCase, props.case]);
 
   const classes = useStyles();
   const formatter = DateTimeFormatter.ofPattern('MM/dd/yyyy');

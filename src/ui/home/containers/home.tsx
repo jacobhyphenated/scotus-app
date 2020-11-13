@@ -157,7 +157,7 @@ class Home extends Component<Props, State> {
             />
           </Grid>
         </Grid>
-        { searchResults.length === 0 &&
+        { searchResults.length === 0 && !(searchText.length >= 3) &&
           <Grid container direction="row" justify="center" spacing={1} alignItems="center">
             <Grid item>
               <Typography>Term: </Typography>
@@ -194,7 +194,7 @@ class Home extends Component<Props, State> {
                 ))}
                 </Grid>
               </>
-            : searchText.length > 3 ?
+            : searchText.length >= 3 ?
               <Typography variant="h5" color="textSecondary">No Results</Typography>
             : undecidedThisTerm.length === 0 ? 
               <TermSummaryComplete
@@ -208,7 +208,7 @@ class Home extends Component<Props, State> {
               <TermSummaryNearEnd cases={termCases} onCaseClick={this.onCaseClick} />
             : <TermSummaryInProgress cases={termCases} onCaseClick={this.onCaseClick} />
             }
-            {searchResults.length === 0 && !(searchText.length > 3) &&
+            {searchResults.length === 0 && !(searchText.length >= 3) &&
               <Button variant="text" color="secondary" onClick={this.allCasesClick}>All Term Cases</Button>
             }
           </div>
