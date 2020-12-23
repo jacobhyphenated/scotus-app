@@ -236,7 +236,7 @@ class EditCasePage extends Component<Props, State> {
 
   render() {
     const allTerms = this.props.caseStore.allTerms;
-    const unassignedDockets = this.props.docketStore.unassignedDockets;
+    const unassignedDockets = this.props.docketStore.unassignedDockets.slice();
     const activeJustices = this.props.justiceStore.activeJustices;
 
     const opinions = this.state.case?.opinions.slice().sort(opinionSort);

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { withStyles, WithStyles, createStyles } from '@material-ui/styles';
-import { Theme, Paper, Grid, Typography, IconButton } from '@material-ui/core';
+import { Theme, Paper, Grid, Typography, IconButton, Button } from '@material-ui/core';
 import BackIcon from '@material-ui/icons/ArrowBack';
 import { match } from 'react-router';
 import { CaseStore, FullCase, CaseStatus } from '../../../stores/caseStore';
@@ -10,6 +10,7 @@ import { DateTimeFormatter, LocalDate } from '@js-joda/core';
 import { Locale as JsJodaLocale } from '@js-joda/locale_en-us';
 import { OpinionView } from '../components';
 import { opinionSort } from '../../../stores/opinionStore';
+import { UserStore } from '../../../stores/userStore';
 
 const styles = (theme: Theme) => createStyles({
   paper: {
@@ -29,13 +30,14 @@ const styles = (theme: Theme) => createStyles({
     whiteSpace: 'pre-wrap',
   },
   flexEnd: {
-    marginRight: theme.spacing(6),
+    marginRight: theme.spacing(2),
   },
 });
 
 interface Props extends WithStyles<typeof styles> {
   caseStore: CaseStore;
   routing: History;
+  userStore: UserStore;
   match: match<{ id: string }>;
 }
 
@@ -43,7 +45,7 @@ interface State {
   fullCase?: FullCase;
 }
 
-@inject('caseStore', 'routing')
+@inject('caseStore', 'routing', "userStore")
 @observer
 class CasePage extends Component<Props, State> {
 
@@ -89,7 +91,8 @@ class CasePage extends Component<Props, State> {
         text = <>
             <span className={this.props.classes.bold}>Grant, Vacate, and Remand: </span>
             The court granted this case and, without hearing arguments, vacates the ruling of the lower court and remands for further consideration.
-            This is the SCOTUS equivanet of saying the lower court got this so wrong that it doesn't even merit arguments.
+            This happens when SCOTUS believes the lower court decided incorrectly and that arguments are not necessary for a ruling.
+            GVRs can apply to petitions for certiorari, but are also used for petitions for a stay or preliminary injunction of a lower court ruling.
           </>;
         break;
     }
@@ -104,9 +107,14 @@ class CasePage extends Component<Props, State> {
     this.props.routing.goBack();
   };
 
+  editClick = () => {
+    this.props.routing.push(`/admin/case/edit/${this.props.match.params.id}`);
+  };
+
   render() {
     const { classes } = this.props;
     const { fullCase } = this.state;
+    const isAdmin = this.props.userStore.isAdmin;
 
     const combinedWith = fullCase?.dockets.filter(d => d.title !== fullCase.case) ?? [];
 
@@ -115,7 +123,7 @@ class CasePage extends Component<Props, State> {
         {fullCase &&
           <Grid container direction="column" spacing={1}>
             <Grid item>
-              <Grid container direction="row" justify="space-between">
+              <Grid container direction="row" alignItems="baseline" justify="space-between">
                 <Grid item>
                   <Grid container direction="row" justify="flex-start" alignItems="baseline" spacing={2}>
                     <Grid item>
@@ -133,9 +141,18 @@ class CasePage extends Component<Props, State> {
                   </Grid>
                 </Grid>
                 <Grid item className={classes.flexEnd}>
-                  <Typography color="textSecondary" variant="subtitle2">
-                    Term: {fullCase.term.name}
-                  </Typography>
+                  <Grid container direction="row" justify="flex-start" alignItems="baseline" spacing={2}>
+                    <Grid item>
+                      <Typography color="textSecondary" variant="subtitle2">
+                        Term: {fullCase.term.name}
+                      </Typography>
+                    </Grid>
+                    {isAdmin && 
+                      <Grid item>
+                        <Button variant="text" color="secondary" onClick={this.editClick}>EDIT</Button>
+                      </Grid>
+                    }
+                  </Grid>
                 </Grid>
               </Grid>
               

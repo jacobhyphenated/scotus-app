@@ -21,7 +21,6 @@ mobxConfigure({
   enforceActions: "observed", // don't allow state modifications outside actions
   computedRequiresReaction: true,
   reactionRequiresObservable: true,
-  observableRequiresReaction: true,
 }); 
 const browserHistory = createBrowserHistory();
 const routingStore = new RouterStore();
