@@ -153,6 +153,11 @@ export class CaseStore {
     return this.mapCase(result);
   }
 
+  async removeArgumentDate(id: number): Promise<FullCase> {
+    const result = await this.networkService.delete<FullCase>(`/cases/${id}/argumentDate`);
+    return this.mapCase(result);
+  }
+
   async assignDocket(caseId: number, docketId: number): Promise<FullCase> {
     const result = await this.networkService.put<FullCase>(`/cases/${caseId}/dockets/${docketId}`);
     this.docketStore.refreshUnassigned();

@@ -97,6 +97,21 @@ class EditCasePage extends Component<Props, State> {
     } 
   }
 
+  removeArgumentDate = async () => {
+    if (!this.state.case) {
+      return;
+    }
+    this.setState({ submitting: true, formError: undefined });
+    try {
+      const fullCase = await this.props.caseStore.removeArgumentDate(this.state.case.id);
+      this.setState({ case: fullCase });
+    } catch (e) {
+      this.setState({ formError: e?.message ?? 'Failed to update case'});
+    } finally {
+      this.setState({ submitting: false});
+    } 
+  }
+
   saveTitle = async (title: string) => {
     if (!title) {
       this.setState({formError: 'Cannot have an empty case title'});
@@ -131,9 +146,10 @@ class EditCasePage extends Component<Props, State> {
 
   saveArgumentDate = async (argumentDate: LocalDate | null) => {
     if (!argumentDate) {
-      return;
+      this.removeArgumentDate();
+    } else {
+      this.edit({argumentDate});
     }
-    this.edit({argumentDate});
   };
 
   saveDecisionDate = async (decisionDate: LocalDate | null) => {
