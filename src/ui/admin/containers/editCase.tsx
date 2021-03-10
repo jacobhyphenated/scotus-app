@@ -16,6 +16,7 @@ import OpinionEditCard from '../components/opinionEditCard';
 import OpinionCreateCard from '../components/createOpinionCard';
 import { OpinionStore, Opinion, OpinionType, CreateOpinionJustice, opinionSort } from '../../../stores/opinionStore';
 import { JusticeStore } from '../../../stores/justiceStore';
+import AlternateTitleEditCard from '../components/alternateTitleEditCard';
 
 const styleDecorator = withStyles((theme: Theme) => ({
   formContainer: {
@@ -173,6 +174,13 @@ class EditCasePage extends Component<Props, State> {
     this.edit({decisionSummary});
   }
 
+  saveAlternateTitles = async (alternateTitles: string[]) => {
+    if (!alternateTitles) {
+      return;
+    }
+    this.edit({ alternateTitles });
+  }
+
   onDeleteDocket = (docket: CaseDocket): () => void => {
     return async () => {
       try {
@@ -285,6 +293,12 @@ class EditCasePage extends Component<Props, State> {
                     label="Case Title"
                     value={this.state.case.case}
                     onSave={this.saveTitle}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <AlternateTitleEditCard
+                    existingTitles={this.state.case.alternateTitles}
+                    onSave={this.saveAlternateTitles}
                   />
                 </Grid>
                 <Grid item xs={12}>

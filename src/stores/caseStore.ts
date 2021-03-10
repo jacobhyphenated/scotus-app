@@ -47,6 +47,7 @@ export interface CaseDocket {
 export interface FullCase extends Case {
   opinions: Opinion[];
   dockets: CaseDocket[];
+  alternateTitles: string[];
 }
 
 export interface EditCase {
@@ -59,6 +60,7 @@ export interface EditCase {
   decisionSummary?: string;
   termId?: number;
   important?: boolean;
+  alternateTitles?: string[];
 }
 
 export interface TermSummary {
