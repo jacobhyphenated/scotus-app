@@ -54,7 +54,7 @@ const OpinionView = (props: Props) => {
         </Typography>
         {joinedBy.length > 0 && opinion.opinionType !== OpinionType.PER_CURIUM &&
           <Typography color="textSecondary">
-            Joined By: {joinedBy.map(j => j.justiceName).join(", ")}
+            <strong>Joined By:</strong> {joinedBy.map(j => j.justiceName).join(", ")}
           </Typography>
         } 
       </Grid>

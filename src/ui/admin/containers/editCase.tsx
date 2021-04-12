@@ -167,6 +167,13 @@ class EditCasePage extends Component<Props, State> {
     this.edit({result});
   }
 
+  saveDecisionLink = async (decisionLink: string) => {
+    if (!decisionLink) {
+      return;
+    }
+    this.edit({decisionLink});
+  }
+
   saveDecisionSummary = async (decisionSummary: string) => {
     if (!decisionSummary) {
       return;
@@ -392,6 +399,17 @@ class EditCasePage extends Component<Props, State> {
                     label="Result"
                     value={this.state.case.result ?? ''}
                     onSave={this.saveResult}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <ViewEditInputText
+                    id="case-edit-decision-link"
+                    fullWidth
+                    disabled={this.state.submitting}
+                    name="decisionLink"
+                    label="Decision Link"
+                    value={this.state.case.decisionLink ?? ''}
+                    onSave={this.saveDecisionLink}
                   />
                 </Grid>
                 <Grid item xs={12}>

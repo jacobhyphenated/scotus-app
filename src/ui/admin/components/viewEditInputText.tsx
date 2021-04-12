@@ -6,6 +6,9 @@ const useStyles = makeStyles( (theme: Theme) => ({
     padding: `${theme.spacing(1)}px`,
     whiteSpace: 'pre-wrap',
   },
+  noOverflow: {
+    overflow: 'hidden',
+  },
 }));
 
 interface Props {
@@ -58,9 +61,13 @@ const ViewEditInputText = (props: Props) => {
       <Paper variant="outlined" className={classes.paper}>
         <Grid container direction="row" alignItems="center" justify="space-between">
           <Grid item xs={10}>
-            <Grid container direction="column">
-              <Typography color="textSecondary" variant="subtitle2">{label}</Typography>
-              <Typography>{display ?? value}</Typography>
+            <Grid container direction="column" className={classes.noOverflow}>
+              <Grid item>
+                <Typography color="textSecondary" variant="subtitle2">{label}</Typography>
+              </Grid>
+              <Grid item>
+                <Typography>{display ?? value}</Typography>
+              </Grid>
             </Grid>
           </Grid>
           <Grid item xs={2}>

@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { withStyles, WithStyles, createStyles } from '@material-ui/styles';
-import { Theme, Paper, Grid, Typography, IconButton, Button } from '@material-ui/core';
+import { Theme, Paper, Grid, Typography, IconButton, Button, Link } from '@material-ui/core';
 import BackIcon from '@material-ui/icons/ArrowBack';
 import { match } from 'react-router';
 import { CaseStore, FullCase, CaseStatus } from '../../../stores/caseStore';
@@ -196,6 +196,13 @@ class CasePage extends Component<Props, State> {
               </Grid>
             }
             <Grid container direction="row" justify="flex-start">
+              {fullCase.decisionLink && 
+                <Grid item xs={12}>
+                  <Typography className={classes.paragraph}>
+                    <Link color="secondary" href={fullCase.decisionLink} target="_blank" rel="noreferrer">View the full opinion</Link>
+                  </Typography>
+                </Grid>
+              }
               {fullCase.opinions.sort(opinionSort).map(opinion => (
                 <Grid item key={opinion.id} xs={12} sm={6} md={4} lg={3}>
                   <OpinionView opinion={opinion} />
