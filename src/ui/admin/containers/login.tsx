@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
 import { inject } from 'mobx-react';
 import { UserStore } from '../../../stores/userStore';
-import { Grid, TextField, Button, withStyles, Theme } from '@material-ui/core';
+import { Grid, TextField, Button, withStyles, Theme, createStyles, WithStyles } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 
-interface Props {
+interface Props extends WithStyles<typeof styles>  {
   userStore?: UserStore;
-  classes?: {[id: string]: string};
 }
 
 interface State {
@@ -15,7 +14,7 @@ interface State {
   error?: string;
 }
 
-const styles = (theme: Theme) => ({
+const styles = (theme: Theme) => createStyles({
   paper: {
     [theme.breakpoints.down('sm')]: {
       maxWidth: 600,
@@ -49,7 +48,7 @@ class Login extends Component<Props, State> {
         this.setState({ error: 'Invalid Username or Password'});
       }
     } catch (e) {
-      this.setState({ error: e.message.toString()});
+      this.setState({ error: e.message?.toString() || 'Invalid Username or Password'});
     }
   }
 
@@ -74,6 +73,7 @@ class Login extends Component<Props, State> {
         <Grid item>
           <h2>Log In</h2>
         </Grid>
+        {this.state.error ? (<Alert severity="error">{this.state.error}</Alert>) : '' }
         <Grid item>
           <TextField
             size="small"
@@ -103,7 +103,6 @@ class Login extends Component<Props, State> {
           />  
         </Grid>
         
-        {this.state.error ? (<Alert severity="error">{this.state.error}</Alert>) : '' }
         <Grid item>
           <Button 
             color="primary"
