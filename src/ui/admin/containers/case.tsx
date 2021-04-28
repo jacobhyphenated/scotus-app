@@ -51,7 +51,7 @@ class CasePage extends Component<Props, State> {
     autorun((reaction) => {
       const allTerms = this.props.caseStore.allTerms;
       if (allTerms.length > 0 && !this.state.selectedTermId) {
-        this.setSelectedTerm(allTerms[allTerms.length - 1].id);
+        this.setSelectedTerm(allTerms[0].id);
         reaction.dispose();
       }
     });

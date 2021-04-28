@@ -22,6 +22,7 @@ export interface Term {
   id: number;
   name: string;
   otName: string;
+  inactive: boolean;
 }
 export interface Case {
   id: number;

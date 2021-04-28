@@ -78,13 +78,13 @@ class Home extends Component<Props, State> {
       });
 
     autorun((reaction) => {
-      const allTerms = this.props.caseStore.allTerms;
+      const allTerms = this.props.caseStore.allTerms.filter(t => !t.inactive);
       if (allTerms.length > 0 && !this.state.selectedTermId) {
         const termId = this.props.match.params.id;
         if (termId && !isNaN(Number(termId))) {
           this.setSelectedTerm(Number(termId));
         } else {
-          this.setSelectedTerm(allTerms[allTerms.length - 1].id);
+          this.setSelectedTerm(allTerms[0].id);
         }
         reaction.dispose();
       }
@@ -131,7 +131,7 @@ class Home extends Component<Props, State> {
 
   render() {
     const { searchText, selectedTermId, searchResults, termCases } = this.state;
-    const allTerms = this.props.caseStore.allTerms;
+    const activeTerms = this.props.caseStore.allTerms.filter(t => !t.inactive);
 
     const undecidedThisTerm = termCases.filter(c => !c.decisionDate && !dismissedCases(c)); 
 
@@ -173,7 +173,7 @@ class Home extends Component<Props, State> {
                   value={selectedTermId}
                   onChange={this.changeSelectedTerm}
                 >
-                  {allTerms.map(term => (
+                  {activeTerms.map(term => (
                     <MenuItem key={term.id} value={term.id}>{term.name}</MenuItem>
                   ))}
                 </TextField>
