@@ -5,7 +5,7 @@ import { UserStore } from '../../../stores/userStore';
 import { Grid, Paper, Button, Theme, Hidden } from '@material-ui/core';
 import { Switch, Route } from 'react-router';
 import { History } from 'history';
-import { withStyles } from '@material-ui/styles';
+import { createStyles, WithStyles, withStyles } from '@material-ui/styles';
 import JusticePage from './justice';
 import CreateJusticePage from './createJustice';
 import CourtPage from './court';
@@ -17,16 +17,17 @@ import CasePage from './case';
 import CreateTermPage from './createTerm';
 import CreateCasePage from './createCase';
 import EditCasePage from './editCase';
+import TermAdminPage from './term';
+import EditTermPage from './editTerm';
 
-interface Props {
+interface Props extends WithStyles<typeof styles> {
   userStore?: UserStore;
   routing?: History;
-  classes?: {[id: string]: string};
 }
 
-const styles = (theme: Theme) => ({
+const styles = (theme: Theme) => createStyles({
   root: {
-    'margin-top': `${theme.spacing(1)}px`,
+    marginTop: `${theme.spacing(1)}px`,
     overflow: 'none',
   },
   leftNav: {
@@ -41,7 +42,7 @@ const styles = (theme: Theme) => ({
   },
   main: {
     height: '90vh',
-    'overflow-y': 'scroll',
+    overflowY: 'scroll',
     padding: `${theme.spacing(2)}px`,
   },
 });
@@ -73,6 +74,11 @@ class Admin extends Component<Props> {
       route: 'case',
       display: 'Case',
       click: () => push(`/admin/case`),
+    },
+    {
+      route: 'term',
+      display: 'Term',
+      click: () => push(`/admin/term`),
     }];
 
     return (
@@ -119,6 +125,9 @@ class Admin extends Component<Props> {
                 <Route path="/admin/case/create" component={CreateCasePage} />
                 <Route path="/admin/case/edit/:id" component={EditCasePage} />
                 <Route path="/admin/case" component={CasePage} />
+                <Route path="/admin/term/create" component={CreateTermPage} />
+                <Route path="/admin/term/edit/:id" component={EditTermPage} />
+                <Route path="/admin/term" component={TermAdminPage} />
                 {
                   /*
                   use render to pass props to route components

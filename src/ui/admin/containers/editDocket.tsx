@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Grid, Typography, IconButton, Theme, withStyles, MenuItem, FormControlLabel, FormControl, FormLabel, RadioGroup, Radio } from '@material-ui/core';
+import { Grid, Typography, IconButton, Theme, withStyles, MenuItem, FormControlLabel, FormControl, FormLabel, RadioGroup, Radio, WithStyles, createStyles } from '@material-ui/core';
 import BackIcon from '@material-ui/icons/ArrowBack';
 import { inject, observer } from 'mobx-react';
 import { History } from 'history';
@@ -8,7 +8,7 @@ import { CourtStore } from '../../../stores/courtStore';
 import { match } from 'react-router';
 import ViewEditInputText from '../components/viewEditInputText';
 
-const styleDecorator = withStyles((theme: Theme) => ({
+const styles = (theme: Theme) => createStyles(({
   formContainer: {
     'margin-top': `${theme.spacing(2)}px`,
     [theme.breakpoints.down('sm')]: {
@@ -30,11 +30,10 @@ interface RouteParams {
   id: string;
 }
 
-interface Props {
+interface Props extends WithStyles<typeof styles> {
   routing: History;
   docketStore: DocketStore;
   courtStore: CourtStore;
-  classes: {[id: string]: string};
   match: match<RouteParams>;
 }
 
@@ -214,4 +213,4 @@ class EditDocketPage extends Component<Props, State> {
   }
 }
 
-export default styleDecorator(EditDocketPage);
+export default withStyles(styles)(EditDocketPage);

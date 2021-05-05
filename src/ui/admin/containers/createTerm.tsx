@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
-import { Typography, withStyles, Theme, Grid, TextField, Button, IconButton } from '@material-ui/core';
+import { Typography, withStyles, Theme, Grid, TextField, Button, IconButton, createStyles, WithStyles } from '@material-ui/core';
 import BackIcon from '@material-ui/icons/ArrowBack';
 import { History } from 'history';
 import { CaseStore } from '../../../stores/caseStore';
 
-const styleDecorator = withStyles((theme: Theme) => ({
+const styles = (theme: Theme) => createStyles({
   formContainer: {
     'margin-top': `${theme.spacing(2)}px`,
     [theme.breakpoints.down('sm')]: {
@@ -15,12 +15,11 @@ const styleDecorator = withStyles((theme: Theme) => ({
       maxWidth: 400,
     },
   },
-}));
+});
 
-interface Props {
+interface Props extends WithStyles<typeof styles> {
   routing: History;
   caseStore: CaseStore;
-  classes: {[id: string]: string};
 }
 
 interface State {
@@ -154,4 +153,4 @@ class CreateTermPage extends Component<Props, State> {
 
 }
 
-export default styleDecorator(CreateTermPage);
+export default withStyles(styles)(CreateTermPage);

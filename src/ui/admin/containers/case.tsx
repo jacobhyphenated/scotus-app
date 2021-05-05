@@ -14,8 +14,8 @@ const styles = (theme: Theme) => createStyles(({
     bottom: '10vh',
   },
   filters: {
-    'margin-top': `${theme.spacing(5)}px`,
-    'margin-bottom': `${theme.spacing(4)}px`,
+    marginTop: theme.spacing(5),
+    marginBottom: theme.spacing(4),
   },
   searchBox: {
     width: 250,

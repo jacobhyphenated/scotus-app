@@ -29,7 +29,7 @@ interface Props {
   onEditCase?: (scotusCase: Case) => void;
 }
 
-const DocketCard = (props: Props) => {
+const CaseCard = (props: Props) => {
   const [expanded, setExpanded] = useState(false);
 
   const toggleExpanded = useCallback(() => setExpanded(!expanded), [expanded]);
@@ -75,4 +75,4 @@ const DocketCard = (props: Props) => {
 
 };
 
-export default DocketCard;
+export default CaseCard;

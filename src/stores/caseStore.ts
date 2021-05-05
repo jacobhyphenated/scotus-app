@@ -92,6 +92,12 @@ export interface TermCourtSummary {
   reversedRemanded: number;
 }
 
+export interface EditTermProps {
+  name?: string;
+  otName?: string;
+  inactive?: boolean;
+}
+
 export const dismissedCases: (c: Case) => boolean = c => [CaseStatus.DIG, CaseStatus.DISMISSED, CaseStatus.GVR].includes(c.status);
 
 export class CaseStore {
@@ -115,10 +121,18 @@ export class CaseStore {
   }
 
   async createTerm(name: string, otName: string): Promise<Term> {
-    const result = await this.networkService.post<Term>('/cases/term', { name, otName });
+    const result = await this.networkService.post<Term>('/cases/term', { name, otName, inactive: true });
     runInAction(() => {
       this.allTerms.push(result);
       this.allTerms = this.allTerms.slice().sort(this.termSorter);
+    });
+    return result;
+  }
+
+  async editTerm(id: number, props: EditTermProps): Promise<Term> {
+    const result = await this.networkService.patch<Term>(`/cases/term/${id}`, props);
+    runInAction(() => {
+      this.allTerms = this.allTerms.map(t => t.id === result.id ? result : t);
     });
     return result;
   }
