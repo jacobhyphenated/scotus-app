@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
-import { Typography, withStyles, Theme, Grid, Fab, TextField, Button, MenuItem, WithStyles, createStyles } from '@material-ui/core';
+import { Typography, withStyles, Theme, Grid, Fab, TextField, MenuItem, WithStyles, createStyles } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import { History } from 'history';
 import { CaseStore, Case, CaseStatus } from '../../../stores/caseStore';
@@ -83,10 +83,6 @@ class CasePage extends Component<Props, State> {
     this.props.routing.push(`/admin/case/edit/${c.id}`);
   }
 
-  createTerm = () => {
-    this.props.routing.push('/admin/case/term/create');
-  }
-
   changeCaseStatus = (event: React.ChangeEvent<{value: unknown}>) => {
     this.setState({ caseStatus: event.target.value as CaseStatus | 'all' });
   };
@@ -120,11 +116,6 @@ class CasePage extends Component<Props, State> {
               </TextField>
             </Grid>
           }
-          <Grid item>
-            <Button onClick={this.createTerm} color="primary" size="small" variant="contained">
-              <AddIcon />Term
-            </Button>
-          </Grid>
         </Grid>
         {searching ?
           <Typography variant="h6" color="textSecondary">Searching...</Typography>  

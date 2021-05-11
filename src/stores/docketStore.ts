@@ -46,7 +46,7 @@ export class DocketStore {
   async refreshUnassigned() {
     const result = await this.networkService.get<BareDocket[]>('/dockets/unassigned');
     runInAction(() => {
-      this.unassignedDockets = result;
+      this.unassignedDockets = result.filter(d => d.status !== DocketStatus.CERT_DENIED);
     });
   }
 

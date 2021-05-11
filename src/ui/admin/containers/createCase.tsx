@@ -60,7 +60,7 @@ class CreateCasePage extends Component<Props, State> {
     autorun((reaction) => {
       const allTerms = this.props.caseStore.allTerms;
       if (allTerms.length > 0) {
-        this.setState({ termId: allTerms[allTerms.length - 1].id});
+        this.setState({ termId: allTerms[0].id});
         reaction.dispose();
       }
     });
