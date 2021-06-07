@@ -50,6 +50,11 @@ const styles = (theme: Theme) => createStyles({
 @inject('userStore', 'routing')
 @observer
 class Admin extends Component<Props> {
+
+  componentDidMount() {
+    document.title = 'SCOTUS App | Admin';
+  }
+
   render() {
     const isAdmin = this.props.userStore?.isAdmin;
     const { push, location } = this.props.routing!;

@@ -42,6 +42,10 @@ class JusticePage extends Component<Props, State> {
     allJustices: [],
   }
 
+  componentDidMount() {
+    document.title = 'SCOTUS App | Admin | Justice';
+  }
+
   attemptRetire = (justice: Justice) => {
     this.setState({retireModal: justice, retireDate: LocalDate.now()});
   }

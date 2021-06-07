@@ -48,6 +48,7 @@ class CasePage extends Component<Props, State> {
   }
 
   componentDidMount() {
+    document.title = 'SCOTUS App | Admin | Case';
     autorun((reaction) => {
       const allTerms = this.props.caseStore.allTerms;
       if (allTerms.length > 0 && !this.state.selectedTermId) {

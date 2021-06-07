@@ -94,6 +94,7 @@ class AllTermCasesPage extends Component<Props, State> {
       if (this.props.caseStore.allTerms.length > 0 && !this.state.term) {
         const term = this.props.caseStore.allTerms.find(t => t.id === Number(termId));
         this.setState({ term });
+        document.title = `SCOTUS App | Term ${term?.name}`;
         reaction.dispose();
       }
     });

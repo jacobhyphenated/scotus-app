@@ -76,6 +76,7 @@ class EditCasePage extends Component<Props, State> {
       if (!fullCase) {
         throw new Error(`No case found with id ${caseId}`);
       }
+      document.title = `SCOTUS App | Admin | Edit Case ${fullCase.case}`;
       this.setState({ case: fullCase });
     } catch (e) {
       console.warn(e);

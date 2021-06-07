@@ -63,6 +63,7 @@ class EditTermPage extends Component<Props, State> {
           console.warn(`No term found with id of ${termId}`);
           this.props.routing.push('/admin/term');
         } else {
+          document.title = `SCOTUS App | Admin | Edit Term ${term.name}`;
           this.setState({ term });
         }
       }

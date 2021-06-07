@@ -39,6 +39,10 @@ class DocketPage extends Component<Props, State> {
     searchText: '',
   }
 
+  componentDidMount() {
+    document.title = 'SCOTUS App | Admin | Docket';
+  }
+
   updateSearchText = (event: React.ChangeEvent<HTMLInputElement>) => {
     const searchText = event.target.value;
     if (!searchText) {

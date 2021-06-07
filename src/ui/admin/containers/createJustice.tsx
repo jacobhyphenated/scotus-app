@@ -53,6 +53,10 @@ class CreateJusticePage extends Component<Props, State> {
     };
   }
 
+  componentDidMount() {
+    document.title = 'SCOTUS App | Admin | Create Justice';
+  }
+
   back = () => {
     this.props.routing.goBack();
   };

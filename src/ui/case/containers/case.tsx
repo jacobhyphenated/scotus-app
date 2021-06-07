@@ -68,6 +68,7 @@ class CasePage extends Component<Props, State> {
       if (!fullCase) {
         throw new Error(`No case found with id ${caseId}`);
       }
+      document.title = `SCOTUS App | ${fullCase.case}`;
       this.setState({ fullCase });
     } catch (e) {
       console.warn(e);

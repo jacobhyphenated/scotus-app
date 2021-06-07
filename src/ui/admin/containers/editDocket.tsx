@@ -57,6 +57,7 @@ class EditDocketPage extends Component<Props, State> {
       if (!docket) {
         throw new Error(`No docket found with id ${docketId}`);
       }
+      document.title = `SCOTUS App | Admin | Edit Docket ${docket.docketNumber}`;
       this.setState({ docket });
     } catch (e) {
       console.warn(e);

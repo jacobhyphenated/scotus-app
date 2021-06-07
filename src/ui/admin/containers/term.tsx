@@ -42,6 +42,7 @@ class TermAdminPage extends Component<Props, State> {
   }
   
   componentDidMount() {
+    document.title = 'SCOTUS App | Admin | Term';
     autorun((reaction) => {
       const allTerms = this.props.caseStore.allTerms;
       if (allTerms.length > 0) {

@@ -41,6 +41,10 @@ class Login extends Component<Props, State> {
     };
   }
 
+  componentDidMount() {
+    document.title = 'SCOTUS App | Login';
+  }
+
   submit = async () => {
     try {
       const user = await this.props.userStore?.authenticate(this.state.username, this.state.password);

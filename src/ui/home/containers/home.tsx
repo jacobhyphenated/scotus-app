@@ -67,6 +67,7 @@ class Home extends Component<Props, State> {
   searchText$ = new Subject<string>();
 
   componentDidMount() {
+    document.title = 'SCOTUS App';
     this.searchText$.pipe(
       debounceTime(400),
       filter(searchText => searchText.length >= 3),

@@ -53,6 +53,10 @@ class CreateDocketPage extends Component<Props, State> {
     submitting: false,
   }
 
+  componentDidMount() {
+    document.title = 'SCOTUS App | Admin | Create Docket';
+  }
+
   back = () => {
     this.props.routing.goBack();
   };

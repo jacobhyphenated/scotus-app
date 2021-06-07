@@ -36,6 +36,10 @@ interface Props {
 @observer
 class CourtPage extends Component<Props> {
 
+  componentDidMount() {
+    document.title = 'SCOTUS App | Admin | Court';
+  }
+
   createCourt = () => {
     this.props.routing.push('/admin/court/create');
   };

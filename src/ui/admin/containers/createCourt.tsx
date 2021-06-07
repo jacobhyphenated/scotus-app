@@ -45,6 +45,10 @@ class CreateCourtPage extends Component<Props, State> {
     };
   }
 
+  componentDidMount() {
+    document.title = 'SCOTUS App | Admin | Create Court';
+  }
+
   back = () => {
     this.props.routing.goBack();
   };

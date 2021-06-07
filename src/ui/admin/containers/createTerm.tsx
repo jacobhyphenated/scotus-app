@@ -42,6 +42,10 @@ class CreateTermPage extends Component<Props, State> {
     submitting: false,
   }
 
+  componentDidMount() {
+    document.title = 'SCOTUS App | Admin | Create Term';
+  }
+
   back = () => {
     this.props.routing.goBack();
   };
