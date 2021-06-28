@@ -4,6 +4,11 @@ import CloseIcon from '@material-ui/icons/Close';
 import { OpinionType, CreateOpinionJustice, Opinion } from '../../../stores/opinionStore';
 import { Justice } from "../../../stores/justiceStore";
 import { Autocomplete } from "@material-ui/lab";
+import { useEffect } from "react";
+import Switch from '@material-ui/core/Switch';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import { useMemo } from "react";
+
 
 const useStyles = makeStyles( (theme: Theme) => ({
   paper: {
@@ -20,18 +25,33 @@ interface Props {
   onCreateOpinion: (opinion: Opinion) => void;
   caseId: number;
   activeJustices: Justice[];
+  getAllJustices: () => Promise<Justice[]>;
 }
 
 const CreateOpinionCard = (props: Props) => {
   const [createMode, setCreateMode] = useState(false);
   const [createError, setCreateError] = useState<string>();
-  const [opinionType, setOpinionType] = useState(OpinionType.CONCURRENCE);
+  const [opinionType, setOpinionType] = useState(OpinionType.MAJORITY);
   const [summary, setSummary] = useState('');
   const [summaryError, setSummaryError] = useState<string>();
-  const [authorId, setAuthorId] = useState(-1);
+  const [authorId, setAuthorId] = useState<number | null>(null);
   const [authorError, setAuthorError] = useState<string>();
   const [justiceIds, setJusticeIds] = useState<number[]>([]);
+  const [useAllJustices, setUseAllJustices] = useState(false);
+  const [allJustices, setAllJustics] = useState<Justice[]>([]);
   const [submitting, setSubmitting] = useState(false);
+
+  const { getAllJustices } = props;
+  useEffect(() => {
+    const loadAllJustices = async () => {
+      if(useAllJustices) {
+        const all = await getAllJustices();
+        setAllJustics(all);
+      }
+    };
+    loadAllJustices();
+    
+  }, [useAllJustices, getAllJustices]);
 
   const changeOpinionType = useCallback((event: React.ChangeEvent<{value: unknown}>) => {
     setOpinionType(event.target.value as OpinionType);
@@ -42,8 +62,7 @@ const CreateOpinionCard = (props: Props) => {
     setSummaryError(undefined);
   }, []);
 
-  const changeAuthorId = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    const newAuthorId = Number(event.target.value);
+  const changeAuthorId = useCallback((_: React.ChangeEvent<{}>, newAuthorId: number | null) => {
     setAuthorId(newAuthorId);
     setAuthorError(undefined);
     if (justiceIds.some(jid => jid === newAuthorId)) {
@@ -60,11 +79,15 @@ const CreateOpinionCard = (props: Props) => {
     setSummaryError(undefined);
     setCreateError(undefined);
     setSummary('');
-    setAuthorId(-1);
+    setAuthorId(null);
     setJusticeIds([]);
-    setOpinionType(OpinionType.CONCURRENCE);
+    setOpinionType(OpinionType.MAJORITY);
     setCreateMode(false);
   }, []);
+
+  const toggleAllJustices = useCallback(() => {
+    setUseAllJustices(!useAllJustices);
+  }, [useAllJustices]);
 
   const submit = useCallback(async () => {
     setCreateError(undefined);
@@ -73,7 +96,7 @@ const CreateOpinionCard = (props: Props) => {
       setSummaryError('Summary is required');
       valid = false;
     }
-    if (authorId <= 0) {
+    if (authorId === null) {
       setAuthorError('Opinion must have an author');
       valid = false;
     }
@@ -97,6 +120,14 @@ const CreateOpinionCard = (props: Props) => {
   }, [authorId, justiceIds, opinionType, props, reset, summary]);
 
   const toggleCreateMode = useCallback(() => setCreateMode(!createMode), [createMode]);
+
+  const justiceOptions = useMemo(() => {
+    return (useAllJustices && allJustices.length > 0) ? allJustices : props.activeJustices;
+  }, [allJustices, props.activeJustices, useAllJustices]);
+
+  const getJusticeLabel = useCallback((jid) => {
+    return justiceOptions.find(j => j.id === jid)?.name ?? 'Unknown Justice';
+  }, [justiceOptions]);
 
   const classes = useStyles();
   return (
@@ -156,31 +187,28 @@ const CreateOpinionCard = (props: Props) => {
             />
           </Grid>
           <Grid item>
-            <TextField
+            <Autocomplete<number, false>
               id="create-opinion-author-select"
-              label="Author"
-              size="small"
-              color="primary"
-              variant="outlined"
-              required
-              fullWidth
-              select
+              options={justiceOptions.map(j => j.id).filter(id => id !== authorId)}
+              getOptionLabel={getJusticeLabel}
               value={authorId}
               onChange={changeAuthorId}
-            >
-              <MenuItem value={-1}><Typography color="textSecondary">Select an author</Typography></MenuItem>
-              {props.activeJustices.map(justice => (
-                <MenuItem key={justice.id} value={justice.id}>{justice.name}</MenuItem>
-              ))}
-            </TextField>
+              // eslint-disable-next-line react/jsx-no-bind
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  variant="outlined"
+                  label="Author"
+                />
+              )}
+            />
           </Grid>
           <Grid item>
             <Autocomplete<number, true>
               multiple
               id="opinion-justices-autocomplete"
-              options={props.activeJustices.map(j => j.id).filter(id => id !== authorId)}
-              // eslint-disable-next-line react/jsx-no-bind
-              getOptionLabel={(jid) => props.activeJustices.find(j => j.id === jid)?.name ?? 'Unknown Justice'}
+              options={justiceOptions.map(j => j.id).filter(id => id !== authorId)}
+              getOptionLabel={getJusticeLabel}
               onChange={changeJustices}
               value={justiceIds}
               filterSelectedOptions
@@ -192,6 +220,19 @@ const CreateOpinionCard = (props: Props) => {
                   label="Joined By"
                 />
               )}
+            />
+          </Grid>
+          <Grid item>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={useAllJustices}
+                  onChange={toggleAllJustices}
+                  color="primary"
+                  name="use-old-justice-toggle"
+                />
+              }
+              label="Use old justices"
             />
           </Grid>
           <Grid item>

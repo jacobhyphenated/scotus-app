@@ -266,6 +266,10 @@ class EditCasePage extends Component<Props, State> {
     this.props.routing.push('/admin/docket/create');
   }
 
+  getAllJustices = () => {
+    return this.props.justiceStore.getAllJustices();
+  }
+
   render() {
     const allTerms = this.props.caseStore.allTerms;
     const unassignedDockets = this.props.docketStore.unassignedDockets.slice();
@@ -492,6 +496,7 @@ class EditCasePage extends Component<Props, State> {
                       createOpinion={this.createOpinion}
                       onCreateOpinion={this.onCreateOpinion}
                       activeJustices={activeJustices}
+                      getAllJustices={this.getAllJustices}
                     />
                   }
                 </Grid>
