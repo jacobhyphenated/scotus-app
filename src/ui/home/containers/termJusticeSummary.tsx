@@ -156,8 +156,8 @@ class TermJusticeSummary extends Component<Props, State> {
     const concurringAuthor = authored.filter(c => isAuthorOfType(c, [OpinionType.CONCURRENCE, OpinionType.CONCUR_JUDGEMENT]));
     const dissentJudgement = authored.filter(c => isAuthorOfType(c, [OpinionType.DISSENT_JUDGEMENT]));
     const dissentAuthor = authored.filter(c => isAuthorOfType(c, [OpinionType.DISSENT]));
-    const otherMajority = remaining.filter(isInMajority);
-    const otherDissent = remaining.filter(isInDissent);
+    const [otherMajority, nonMajority] = partitionArray(remaining, isInMajority);
+    const otherDissent = nonMajority.filter(isInDissent);
 
     return (
       <Paper className={this.props.classes.paper}>
