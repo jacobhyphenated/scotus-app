@@ -93,8 +93,13 @@ class AllTermCasesPage extends Component<Props, State> {
     autorun((reaction) => {
       if (this.props.caseStore.allTerms.length > 0 && !this.state.term) {
         const term = this.props.caseStore.allTerms.find(t => t.id === Number(termId));
+        if (!term) {
+          console.warn(`${termId} is not a valid term id`);
+          this.props.routing.replace('/');
+          return;
+        }
         this.setState({ term });
-        document.title = `SCOTUS App | Term ${term?.name}`;
+        document.title = `SCOTUS App | Term ${term.name}`;
         reaction.dispose();
       }
     });
@@ -131,7 +136,7 @@ class AllTermCasesPage extends Component<Props, State> {
 
     return (
       <Paper className={this.props.classes.paper}>
-        <Grid container direction="row" justify="flex-start" alignItems="center" spacing={1}>
+        <Grid container direction="row" justifyContent="flex-start" alignItems="center" spacing={1}>
           <Grid item>
             <IconButton onClick={this.back}>
               <BackIcon color="action" />

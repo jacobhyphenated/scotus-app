@@ -73,7 +73,7 @@ class Login extends Component<Props, State> {
   render() {
     const { classes } = this.props;
     return (
-      <Grid className={classes?.paper} container direction="column" justify="center" alignItems="stretch" spacing={2}>
+      <Grid className={classes?.paper} container direction="column" justifyContent="center" alignItems="stretch" spacing={2}>
         <Grid item>
           <h2>Log In</h2>
         </Grid>

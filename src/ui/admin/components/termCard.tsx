@@ -40,7 +40,7 @@ const TermCard = (props: Props) => {
 
   return (
     <Paper elevation={1} onClick={clickEvent} className={classes.termCard}>
-      <Grid container direction="row" justify='space-between' alignItems='center'>
+      <Grid container direction="row" justifyContent='space-between' alignItems='center'>
         <Grid item>
           <Grid container direction="column">
             <Grid item>

@@ -43,7 +43,7 @@ const CaseCard = (props: Props) => {
 
   return (
     <Paper className={classes.caseCard}>
-      <Grid container direction="row" justify="space-between" alignItems="center">
+      <Grid container direction="row" justifyContent="space-between" alignItems="center">
         <Typography color="textSecondary" variant="subtitle2">
           {props.case.status}{props.case.result && `: ${props.case.result}`}
         </Typography>
@@ -64,7 +64,7 @@ const CaseCard = (props: Props) => {
             {props.case.decisionSummary ? props.case.decisionSummary : props.case.shortSummary}
           </Typography>
           {props.onEditCase &&
-            <Grid container justify="flex-end">
+            <Grid container justifyContent="flex-end">
               <Button color="primary" onClick={editButton}>Edit</Button>
             </Grid>
           }

@@ -29,7 +29,7 @@ const CasePreviewCard = (props: Props) => {
   return (
     <Paper onClick={click} className={classes.paper}>
       <Grid container direction="column">
-        <Grid container direction="row" justify="space-between">
+        <Grid container direction="row" justifyContent="space-between">
           <Typography color="textSecondary" variant="subtitle2">
             {props.case.status === CaseStatus.ARGUED && !!props.case.argumentDate ? 
               `${props.case.status} (${props.case.argumentDate.format(formatter)})`

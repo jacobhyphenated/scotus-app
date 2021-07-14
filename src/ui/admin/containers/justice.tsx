@@ -1,13 +1,14 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { inject, observer } from 'mobx-react';
 import { History } from 'history';
 import { JusticeStore, Justice } from '../../../stores/justiceStore';
-import { Theme, Typography, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, Fab, Grid } from '@material-ui/core';
+import { Theme, Typography, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, Fab, Grid, FormControlLabel } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
 import JusticeCard from '../components/justiceCard';
 import DatePicker from '../components/datePicker';
 import { LocalDate } from '@js-joda/core';
 import AddIcon from '@material-ui/icons/Add';
+import Switch from '@material-ui/core/Switch';
 
 const styleDecorator = withStyles((theme: Theme) => ({
   root: {
@@ -51,7 +52,6 @@ class JusticePage extends Component<Props, State> {
   }
 
   confirmRetire = async () => {
-    console.log('retire at date', this.state.retireDate);
     if (!this.state?.retireModal || !this.state?.retireDate){
       return;
     }
@@ -92,14 +92,21 @@ class JusticePage extends Component<Props, State> {
 
     return (
       <>
-        <Grid container direction="row" spacing={3}>
+        <Grid container direction="column" spacing={1}>
           <Grid item>
             <Typography variant="h5">{this.state.showAll ? 'All Justices' : 'Active Justices'}:</Typography>
           </Grid>
           <Grid item>
-            <Button variant="outlined" color="primary" onClick={this.toggleShowAll}>
-              {this.state.showAll ? 'Show Active' : 'Show All'}
-            </Button>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={this.state.showAll}
+                  onChange={this.toggleShowAll}
+                  color="primary"
+                />
+              }
+              label="Show all justices"
+            />
           </Grid>
         </Grid>
         {justiceList?.map( justice => (

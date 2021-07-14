@@ -52,7 +52,7 @@ const ViewEditDatePicker = (props: Props) => {
     <>
       {!editMode ?
         <Paper variant="outlined" className={classes.paper}>
-          <Grid container direction="row" alignItems="center" justify="space-between">
+          <Grid container direction="row" alignItems="center" justifyContent="space-between">
             <Grid item xs={10}>
               <Grid container direction="column">
                 <Typography color="textSecondary" variant="subtitle2">{label}</Typography>

@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/styles';
 import { Theme, Grid, Typography, Paper, Hidden } from '@material-ui/core';
-import { Case, CaseStore } from '../../../stores/caseStore';
+import { Case, CaseStore, FullCase } from '../../../stores/caseStore';
 import { DateTimeFormatter } from '@js-joda/core';
 import { OpinionType } from '../../../stores/opinionStore';
 import StarRateRoundedIcon from '@material-ui/icons/StarRateRounded';
@@ -62,7 +62,7 @@ const useStyles = makeStyles( (theme: Theme) => ({
 }));
 
 interface Props {
-  scotusCase: Case;
+  scotusCase: Case | FullCase;
   caseStore: CaseStore;
   onCaseClick: (scotusCase: Case) => void;
 }
@@ -73,18 +73,28 @@ const CaseListItem = (props: Props) => {
   const [author, setAuthor] = useState<string | undefined>();
 
   useEffect(() => {
+    const setFullCase = (fullCase: FullCase) => {
+      const author = fullCase.opinions.find(o => o.opinionType === OpinionType.MAJORITY)
+        ?.justices.find(j => j.isAuthor)
+        ?.justiceName;
+      setAuthor(author);
+      if (!author && fullCase.opinions.some(o => o.opinionType === OpinionType.PER_CURIUM)) {
+        setAuthor('Per Curium');
+      } 
+    };
     const loadFullCase = async () => {
       try{
         const fullCase = await caseStore.getCaseById(scotusCase.id);
-        const author = fullCase.opinions.find(o => o.opinionType === OpinionType.MAJORITY)
-          ?.justices.find(j => j.isAuthor)
-          ?.justiceName;
-        setAuthor(author);
+        setFullCase(fullCase);
       } catch (e) {
         console.error(e);
       }
     };
-    loadFullCase();
+    if ('opinions' in scotusCase) {
+      setFullCase(scotusCase);
+    } else {
+      loadFullCase();
+    }
   },[scotusCase, caseStore]);
 
   const formatter = DateTimeFormatter.ofPattern('MM/dd/yyyy');

@@ -5,6 +5,7 @@ import Home from './ui/home/containers/home';
 import Admin from './ui/admin/containers/admin';
 import CasePage from './ui/case/containers/case';
 import AllTermCasesPage from './ui/home/containers/allTermCases';
+import TermJusticeSummary from './ui/home/containers/termJusticeSummary';
 import HomeIcon from '@material-ui/icons/Home';
 import { inject } from 'mobx-react';
 import { History } from 'history';
@@ -31,7 +32,7 @@ export default class App extends Component<Props> {
           <Grid
             container
             direction="row"
-            justify="space-between"
+            justifyContent="space-between"
             alignItems="center"
           >
             <IconButton onClick={this.navHome}>
@@ -44,6 +45,7 @@ export default class App extends Component<Props> {
         </Paper>
         <Switch>
           <Route exact path="/" component={Home} />
+          <Route path="/term/:termId/justice/:justiceId" component={TermJusticeSummary} />
           <Route path="/term/:id/all" component={AllTermCasesPage} />
           <Route path="/term/:id" component={Home} />
           <Route path="/admin" component={Admin} />

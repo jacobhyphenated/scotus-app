@@ -63,7 +63,7 @@ const OpinionEditCard = (props: Props) => {
     <Paper variant="elevation" className={classes.paper}>
       <Grid container direction="column" spacing={1}>
         <Grid item>
-          <Grid container direction="row" justify="space-between" alignItems="baseline">
+          <Grid container direction="row" justifyContent="space-between" alignItems="baseline">
             <Grid item>
               <Typography variant="subtitle2" color="textSecondary">
                 {opinion.opinionType}
@@ -78,7 +78,7 @@ const OpinionEditCard = (props: Props) => {
         </Grid>
         <Grid item>
           {!editMode ?
-            <Grid container direction="row" alignItems="center" justify="space-between">
+            <Grid container direction="row" alignItems="center" justifyContent="space-between">
               <Grid item xs={10}>
                 <Grid container direction="column">
                   <Typography className={classes.opinionSummary}>{opinion.summary}</Typography>

@@ -439,7 +439,7 @@ class EditCasePage extends Component<Props, State> {
                   <Typography variant="h5" component="h4">Dockets</Typography>
                   {this.state.case.dockets?.map(docket => (
                     <Paper key={docket.docketId} variant="elevation" className={this.props.classes.docketCard}>
-                      <Grid container direction="row" justify="space-between" alignItems="center">
+                      <Grid container direction="row" justifyContent="space-between" alignItems="center">
                         <Grid item>
                           <Button disableRipple color="primary" onClick={this.onClickDocket(docket)}>
                             {docket.docketNumber} {'\u2014'} {docket.lowerCourt.shortName}

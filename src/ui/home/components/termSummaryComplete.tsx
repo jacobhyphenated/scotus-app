@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { makeStyles } from '@material-ui/styles';
 import { Theme, Typography, Grid, Paper } from '@material-ui/core';
 import { Case, TermSummary, CaseStore, TermJusticeSummary, TermCourtSummary } from '../../../stores/caseStore';
@@ -11,6 +11,9 @@ const useStyles = makeStyles( (theme: Theme) => ({
     marginBottom: theme.spacing(1),
     overflow: 'hidden',
     whiteSpace: 'nowrap',
+  },
+  clickable: {
+    cursor: 'pointer',
   },
   termSummaryGrid: {
     marginTop: theme.spacing(1),
@@ -27,6 +30,7 @@ interface Props {
   caseStore: CaseStore;
   invalidTerm: () => void;
   onCaseClick?: (scotusCase: Case) => void;
+  navigateToJustice: (termId: number, justiceId: number) => void;
 }
 
 const TermSummaryComplete = (props: Props) => {
@@ -43,7 +47,7 @@ const TermSummaryComplete = (props: Props) => {
     return c2.cases - c1.cases;
   };
 
-  const { invalidTerm, caseStore, termId } = props;
+  const { invalidTerm, caseStore, termId, navigateToJustice } = props;
   useEffect(() => {
     const getTermSummary = async () => {
       try {
@@ -70,13 +74,17 @@ const TermSummaryComplete = (props: Props) => {
     getTermSummary();
   }, [caseStore, termId, invalidTerm]);
 
+  const onJusticeClick = useCallback((justiceId: number) => {
+    navigateToJustice(termId, justiceId);
+  }, [navigateToJustice, termId]);
+
   return (
     <>
       <Typography variant="h5" color="textSecondary">The Justices</Typography>
       <Grid container direction="row" className={classes.termSummaryGrid} spacing={1}>
         {summary && summary.justiceSummary.sort(sortJusticeSummary).map(item => (
           <Grid item key={item.justice.id} xs={6} sm={4} md={3} lg={2} xl={1}>
-            <TermJusticeSummaryBox item={item} />
+            <TermJusticeSummaryBox onJusticeClick={onJusticeClick} item={item} />
           </Grid>
         ))}
       </Grid>
@@ -99,16 +107,21 @@ export default TermSummaryComplete;
 
 interface TermJusticeSummaryProps {
   item: TermJusticeSummary;
+  onJusticeClick: (justiceId: number) => void;
 }
 
 const TermJusticeSummaryBox = (props: TermJusticeSummaryProps) => {
 
   const classes = useStyles();
 
-  const { item } = props;
+  const { item, onJusticeClick } = props;
+
+  const onClick = useCallback(() => {
+    onJusticeClick(item.justice.id);
+  }, [item, onJusticeClick]);
 
   return (
-    <Paper elevation={1} className={classes.summaryBox}>
+    <Paper elevation={1} className={`${classes.summaryBox} ${classes.clickable}`} onClick={onClick}>
       <Grid container direction="column">
         <Grid item>
           <Typography variant="subtitle2" color="textSecondary">Cases: {item.casesWithOpinion}</Typography>

@@ -25,7 +25,7 @@ const CaseGridRow = (props: Props) => {
       {cases.length > 0 &&
         <>
           <Typography variant="h5" color="textSecondary">{title}</Typography>
-          <Grid container direction="row" justify="flex-start" spacing={2} className={classes.row}>
+          <Grid container direction="row" justifyContent="flex-start" spacing={2} className={classes.row}>
             <Grid item xs={12} sm={6} md={4} lg={3}>
               <CasePreviewCard case={cases[0]} onClick={onCaseClick} />
             </Grid>

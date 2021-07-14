@@ -124,9 +124,9 @@ class CasePage extends Component<Props, State> {
         {fullCase &&
           <Grid container direction="column" spacing={1}>
             <Grid item>
-              <Grid container direction="row" alignItems="baseline" justify="space-between">
+              <Grid container direction="row" alignItems="baseline" justifyContent="space-between">
                 <Grid item>
-                  <Grid container direction="row" justify="flex-start" alignItems="baseline" spacing={2}>
+                  <Grid container direction="row" justifyContent="flex-start" alignItems="baseline" spacing={2}>
                     <Grid item>
                       <IconButton onClick={this.back}>
                         <BackIcon color="action" />
@@ -142,7 +142,7 @@ class CasePage extends Component<Props, State> {
                   </Grid>
                 </Grid>
                 <Grid item className={classes.flexEnd}>
-                  <Grid container direction="row" justify="flex-start" alignItems="baseline" spacing={2}>
+                  <Grid container direction="row" justifyContent="flex-start" alignItems="baseline" spacing={2}>
                     <Grid item>
                       <Typography color="textSecondary" variant="subtitle2">
                         Term: {fullCase.term.name}
@@ -196,7 +196,7 @@ class CasePage extends Component<Props, State> {
                 }
               </Grid>
             }
-            <Grid container direction="row" justify="flex-start">
+            <Grid container direction="row" justifyContent="flex-start">
               {fullCase.decisionLink && 
                 <Grid item xs={12}>
                   <Typography className={classes.paragraph}>

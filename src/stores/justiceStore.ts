@@ -33,6 +33,11 @@ export class JusticeStore {
     return this.mapRaw(result);
   }
 
+  async getById(id: number): Promise<Justice> {
+    const result = await this.networkService.get<RawJustice>(`/justices/${id}`);
+    return this.mapRaw(result);
+  }
+
   private mapRaw(raw: RawJustice): Justice {
     return {
       ...raw,

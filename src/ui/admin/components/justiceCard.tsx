@@ -47,7 +47,7 @@ const JusticeCard = (props: Props) => {
         </Typography>
       )}
       {!justice.dateRetired && props.retireCallback &&(
-        <Grid container justify="flex-end">
+        <Grid container justifyContent="flex-end">
           <Button size="small" color="primary" onClick={retireClick}>Retire</Button>
         </Grid>
       )}

@@ -1,4 +1,3 @@
-import React from 'react';
 import ReactDOM from 'react-dom';
 import { createBrowserHistory } from 'history';
 import { configure as mobxConfigure } from 'mobx';
@@ -8,7 +7,7 @@ import { Router } from 'react-router';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
-import { ThemeProvider, createMuiTheme, CssBaseline } from '@material-ui/core';
+import { ThemeProvider, createTheme, CssBaseline } from '@material-ui/core';
 import { UserStore } from './stores/userStore';
 import { JusticeStore } from './stores/justiceStore';
 import { NetworkService } from './services/networkService';
@@ -44,7 +43,7 @@ const stores = {
 
 const history = syncHistoryWithStore(browserHistory, routingStore);
 
-const theme = createMuiTheme({
+const theme = createTheme({
   palette: {
     primary: {
       main: '#607d8b',

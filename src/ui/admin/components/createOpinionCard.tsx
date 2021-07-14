@@ -140,7 +140,7 @@ const CreateOpinionCard = (props: Props) => {
       <Paper className={classes.paper}>
         <Grid container direction="column" spacing={2}>
           <Grid item>
-            <Grid direction="row" container justify="space-between" alignItems="baseline">
+            <Grid direction="row" container justifyContent="space-between" alignItems="baseline">
               <Grid item>
                 <Typography variant="h6">Create Opinion</Typography>
                 {createError && <Typography color="error">{createError}</Typography>}

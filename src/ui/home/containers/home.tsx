@@ -125,6 +125,10 @@ class Home extends Component<Props, State> {
     this.props.routing.push(`/case/${scotusCase.id}`);
   };
 
+  onTermJusticeClick = (termId: number, justiceId: number) => {
+    this.props.routing.push(`/term/${termId}/justice/${justiceId}`);
+  }
+
   allCasesClick = () => {
     this.props.routing.replace(`/term/${this.state.selectedTermId}`);
     this.props.routing.push(`/term/${this.state.selectedTermId}/all`);
@@ -138,7 +142,7 @@ class Home extends Component<Props, State> {
 
     return (
       <Paper className={this.props.classes.paper}>
-        <Grid container direction="row" justify="center">
+        <Grid container direction="row" justifyContent="center">
           <Grid item>
             <TextField
               className={this.props.classes.search}
@@ -159,7 +163,7 @@ class Home extends Component<Props, State> {
           </Grid>
         </Grid>
         { searchResults.length === 0 && !(searchText.length >= 3) &&
-          <Grid container direction="row" justify="center" spacing={1} alignItems="center">
+          <Grid container direction="row" justifyContent="center" spacing={1} alignItems="center">
             <Grid item>
               <Typography>Term: </Typography>
             </Grid>
@@ -187,7 +191,7 @@ class Home extends Component<Props, State> {
             {searchResults.length > 0 ? 
               <>
                 <Typography variant="h5" color="textSecondary">Search results</Typography>
-                <Grid container direction="row" justify="flex-start" spacing={2} className={this.props.classes.searchGrid}>
+                <Grid container direction="row" justifyContent="flex-start" spacing={2} className={this.props.classes.searchGrid}>
                 {searchResults.map(r => (
                   <Grid item xs={12} sm={6} md={4} lg={3} key={r.id}>
                     <CasePreviewCard case={r} onClick={this.onCaseClick} />
@@ -204,6 +208,7 @@ class Home extends Component<Props, State> {
                 caseStore={this.props.caseStore}
                 invalidTerm={this.handleInvalidTerm}
                 onCaseClick={this.onCaseClick} 
+                navigateToJustice={this.onTermJusticeClick}
               />
             : (undecidedThisTerm.length / termCases.length < .25) ?
               <TermSummaryNearEnd cases={termCases} onCaseClick={this.onCaseClick} />

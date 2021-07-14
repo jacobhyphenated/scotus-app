@@ -58,7 +58,7 @@ const DocketCard = (props: Props) => {
 
   return (
     <Paper className={classes.docketCard} variant="elevation">
-      <Grid container direction="row" justify="space-between" alignItems="center">
+      <Grid container direction="row" justifyContent="space-between" alignItems="center">
         <Typography color="textSecondary" variant="subtitle2">
           {props.docket.docketNumber}
         </Typography>
@@ -69,7 +69,7 @@ const DocketCard = (props: Props) => {
       <Typography variant="h6">{props.docket.title}</Typography>
       {expanded &&
         <>
-          <Grid container direction="row" justify="space-between">
+          <Grid container direction="row" justifyContent="space-between">
             <Typography color="textSecondary">
               {fullDocket ? fullDocket.lowerCourt.shortName : ''}
             </Typography>
@@ -92,7 +92,7 @@ const DocketCard = (props: Props) => {
               }
             </Grid>
           }
-          <Grid container direction="row" justify="flex-end" spacing={1}>
+          <Grid container direction="row" justifyContent="flex-end" spacing={1}>
             {props.onEditClick &&
               <Button onClick={editClick} color="primary">Edit</Button>
             }
