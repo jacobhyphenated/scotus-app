@@ -5,6 +5,7 @@ import { Court } from './courtStore';
 import { DocketStore } from './docketStore';
 import { Opinion } from './opinionStore';
 import { Justice } from './justiceStore';
+import { ObjectCache }  from '../util/cache';
 
 export enum CaseStatus {
   GRANTED = 'GRANTED',
@@ -105,11 +106,14 @@ export class CaseStore {
   @observable
   allTerms: Term[] = [];
 
+  caseCache: ObjectCache<FullCase, 'id'>;
+
   termSorter = (t1: Term, t2: Term) => t2.otName.localeCompare(t1.otName);
 
   constructor(private networkService: NetworkService,
               private docketStore: DocketStore) {
     makeObservable(this);
+    this.caseCache = new ObjectCache();
     this.refreshAllTerms();
   }
 
@@ -148,8 +152,14 @@ export class CaseStore {
   }
 
   async getCaseById(id: number): Promise<FullCase> {
+    const cachedValue = this.caseCache.getItem(id);
+    if (cachedValue) {
+      return Promise.resolve(cachedValue);
+    }
     const result = await this.networkService.get<FullCase>(`/cases/${id}`);
-    return this.mapCase(result);
+    const c = this.mapCase(result);
+    this.caseCache.putItem(c.id, c);
+    return c;
   }
 
   async createCase(caseTitle: string, shortSummary: string, status: CaseStatus, termId: number, important: boolean, docketIds: number[]): Promise<FullCase> {
@@ -164,28 +174,37 @@ export class CaseStore {
     if (docketIds && docketIds.length > 0) {
       this.docketStore.refreshUnassigned();
     }
-    return this.mapCase(result);
+    const c = this.mapCase(result);
+    this.caseCache.putItem(c.id, c);
+    return c;
   }
 
   async editCase(id: number, request: EditCase): Promise<FullCase> {
     const result = await this.networkService.patch<FullCase>(`/cases/${id}`, request);
-    return this.mapCase(result);
+    const c = this.mapCase(result);
+    this.caseCache.putItem(id, c);
+    return c;
   }
 
   async removeArgumentDate(id: number): Promise<FullCase> {
     const result = await this.networkService.delete<FullCase>(`/cases/${id}/argumentDate`);
-    return this.mapCase(result);
+    const c = this.mapCase(result);
+    this.caseCache.putItem(id, c);
+    return c;
   }
 
   async assignDocket(caseId: number, docketId: number): Promise<FullCase> {
     const result = await this.networkService.put<FullCase>(`/cases/${caseId}/dockets/${docketId}`);
     this.docketStore.refreshUnassigned();
-    return this.mapCase(result);
+    const c = this.mapCase(result);
+    this.caseCache.putItem(caseId, c);
+    return c;
   }
 
   async removeDocket(caseId: number, docketId: number): Promise<void> {
     await this.networkService.delete<void>(`/cases/${caseId}/dockets/${docketId}`);
     this.docketStore.refreshUnassigned();
+    this.caseCache.revoke(caseId);
   }
 
   async getTermSummary(termId: number): Promise<TermSummary> {
@@ -194,6 +213,10 @@ export class CaseStore {
       ...result,
       termEndDate: this.localDateParse(result.termEndDate) ?? LocalDate.MIN,
     };
+  }
+
+  revokeCaseCache(caseId: number): void {
+    this.caseCache.revoke(caseId);
   }
 
   private mapCase<T extends Case>(rawCase: T): T {

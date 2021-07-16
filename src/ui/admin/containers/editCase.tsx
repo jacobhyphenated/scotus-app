@@ -225,6 +225,7 @@ class EditCasePage extends Component<Props, State> {
   deleteOpinion = async (opinion: Opinion) => {
     try {
       await this.props.opinionStore.deleteOpinion(opinion.id);
+      this.props.caseStore.revokeCaseCache(opinion.caseId);
       this.setState({formError: undefined, case: {
         ...this.state.case!,
         opinions: this.state.case!.opinions.filter(o => o.id !== opinion.id),
@@ -237,6 +238,7 @@ class EditCasePage extends Component<Props, State> {
   editOpinionSummary = async (opinionId: number, summary: string) => {
     try {
       const opinion = await this.props.opinionStore.editOpinionSummary(opinionId, summary);
+      this.props.caseStore.revokeCaseCache(opinion.caseId);
       this.setState({formError: undefined, case: {
         ...this.state.case!,
         opinions: this.state.case!.opinions.map(o => o.id !== opinion.id ? o : opinion),
@@ -247,6 +249,7 @@ class EditCasePage extends Component<Props, State> {
   }
 
   onCreateOpinion = (opinion: Opinion) => {
+    this.props.caseStore.revokeCaseCache(opinion.caseId);
     this.setState({case: {
       ...this.state.case!,
       opinions: [...this.state.case!.opinions, opinion],
