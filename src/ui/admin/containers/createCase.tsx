@@ -115,7 +115,7 @@ class CreateCasePage extends Component<Props, State> {
     try {
       return this.props.caseStore.createCase(title, shortSummary, status, termId, important, dockets.map(d => d.id));
     } catch (e) {
-      console.log(e);
+      console.warn(e);
       this.setState({formError: e?.message ?? 'There was a problem creating this case', submitting: false});
       return null;
     }

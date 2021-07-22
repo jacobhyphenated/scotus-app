@@ -17,6 +17,7 @@ import OpinionCreateCard from '../components/createOpinionCard';
 import { OpinionStore, Opinion, OpinionType, CreateOpinionJustice, opinionSort } from '../../../stores/opinionStore';
 import { JusticeStore } from '../../../stores/justiceStore';
 import AlternateTitleEditCard from '../components/alternateTitleEditCard';
+import { whenDefined } from '../../../util/functional';
 
 const styleDecorator = withStyles((theme: Theme) => ({
   formContainer: {
@@ -154,39 +155,34 @@ class EditCasePage extends Component<Props, State> {
     }
   };
 
-  saveDecisionDate = async (decisionDate: LocalDate | null) => {
-    if (!decisionDate) {
-      return;
-    }
-    this.edit({decisionDate});
+  saveDecisionDate = async (date: LocalDate | null) => {
+    whenDefined(date, (decisionDate) => {
+      this.edit({decisionDate});
+    });
   };
 
-  saveResult = async (result: string) => {
-    if (!result) {
-      return;
-    }
-    this.edit({result});
+  saveResult = async (r: string) => {
+    whenDefined(r, (result) => {
+      this.edit({result});
+    });
   }
 
-  saveDecisionLink = async (decisionLink: string) => {
-    if (!decisionLink) {
-      return;
-    }
-    this.edit({decisionLink});
+  saveDecisionLink = (decisionLink: string) => {
+    whenDefined(decisionLink, (decisionLink) => {
+      this.edit({decisionLink});
+    });
   }
 
-  saveDecisionSummary = async (decisionSummary: string) => {
-    if (!decisionSummary) {
-      return;
-    }
-    this.edit({decisionSummary});
+  saveDecisionSummary = (summary: string) => {
+    whenDefined(summary, (decisionSummary) => {
+      this.edit({decisionSummary});
+    });
   }
 
-  saveAlternateTitles = async (alternateTitles: string[]) => {
-    if (!alternateTitles) {
-      return;
-    }
-    this.edit({ alternateTitles });
+  saveAlternateTitles = (altTitles: string[]) => {
+    whenDefined(altTitles, (alternateTitles => {
+      this.edit({ alternateTitles });
+    }));
   }
 
   onDeleteDocket = (docket: CaseDocket): () => void => {
