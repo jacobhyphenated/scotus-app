@@ -19,6 +19,17 @@ export enum CaseStatus {
   REMANDED = 'REMANDED',
 }
 
+export enum CaseSitting {
+  October = 'October',
+  November = 'November',
+  December = 'December',
+  January = 'January',
+  February = 'February',
+  March = 'March',
+  April = 'April',
+  May = 'May',
+}
+
 export interface Term {
   id: number;
   name: string;
@@ -32,6 +43,7 @@ export interface Case {
   status: CaseStatus;
   result?: string;
   argumentDate?: LocalDate;
+  sitting?: CaseSitting;
   decisionDate?: LocalDate;
   decisionSummary?: string;
   important: boolean;
@@ -65,6 +77,7 @@ export interface EditCase {
   termId?: number;
   important?: boolean;
   alternateTitles?: string[];
+  sitting?: CaseSitting;
 }
 
 export interface TermSummary {

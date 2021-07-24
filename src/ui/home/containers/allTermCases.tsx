@@ -3,7 +3,7 @@ import { withStyles, WithStyles, createStyles } from '@material-ui/styles';
 import { Theme, TextField, InputAdornment, Paper, Grid, Typography, IconButton } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 import BackIcon from '@material-ui/icons/ArrowBack';
-import { Case, CaseStatus, CaseStore, Term } from '../../../stores/caseStore';
+import { Case, CaseSitting, CaseStatus, CaseStore, Term } from '../../../stores/caseStore';
 import { Subject } from 'rxjs';
 import { debounceTime, map } from 'rxjs/operators';
 import { inject, observer } from 'mobx-react';
@@ -33,7 +33,9 @@ const styles = (theme: Theme) => createStyles({
       width: '30vw',
     },
   },
-
+  sitting: {
+    padding: theme.spacing(1),
+  },
 });
 
 interface Props extends WithStyles<typeof styles> {
@@ -106,7 +108,7 @@ class AllTermCasesPage extends Component<Props, State> {
 
     if (termId && !isNaN(Number(termId))) {
       const cases = await this.props.caseStore.getCaseByTerm(Number(termId));
-      this.setState({ termCases: cases.sort(this.caseSorter) });
+      this.setState({ termCases: cases });
       this.searchText$.next(this.state.searchText);
     } else {
       console.error(`${termId} is not a valid term`);
@@ -133,6 +135,12 @@ class AllTermCasesPage extends Component<Props, State> {
 
   render() {
     const { searchText, filteredCases } = this.state;
+    const mappedCases = filteredCases.reduce((acc, value) => {
+      const key = value.sitting ?? 'None';
+      acc.set(key, [...(acc.get(key) ?? []), value]);
+      return acc;
+    }, new Map<string, Case[]>());
+
 
     return (
       <Paper className={this.props.classes.paper}>
@@ -166,10 +174,17 @@ class AllTermCasesPage extends Component<Props, State> {
           }}
         />
 
-        <Grid container direction="column">
-        {filteredCases.map(termCase => (
-          <CaseListItem key={termCase.id} onCaseClick={this.onCaseClick} scotusCase={termCase} caseStore={this.props.caseStore} />
-        ))}
+        <Grid container direction="column" spacing={2}>
+          {[...Object.values(CaseSitting), 'None'].filter(sitting => mappedCases.has(sitting)).map((sitting) => (
+            <Grid item key={sitting}>
+              <Paper className={this.props.classes.sitting}>
+                {sitting !== 'None' && <Typography variant="h4">{sitting}</Typography> }
+                {mappedCases.get(sitting)?.sort(this.caseSorter).map(termCase => (
+                  <CaseListItem key={termCase.id} onCaseClick={this.onCaseClick} scotusCase={termCase} caseStore={this.props.caseStore} />
+                ))}
+              </Paper>
+            </Grid>
+          ))}
         </Grid>
       </Paper>
     );

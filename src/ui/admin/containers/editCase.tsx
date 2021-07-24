@@ -9,7 +9,8 @@ import { DocketStore, BareDocket } from '../../../stores/docketStore';
 import { match } from 'react-router';
 import ViewEditInputText from '../components/viewEditInputText';
 import ViewEditDatePicker from '../components/viewEditDatePicker';
-import { CaseStore, FullCase, EditCase, CaseStatus, CaseDocket } from '../../../stores/caseStore';
+import ArgumentDateEditField from '../components/argumentDateEditField';
+import { CaseStore, FullCase, EditCase, CaseStatus, CaseDocket, CaseSitting } from '../../../stores/caseStore';
 import { LocalDate } from '@js-joda/core';
 import { Autocomplete } from '@material-ui/lab';
 import OpinionEditCard from '../components/opinionEditCard';
@@ -147,11 +148,11 @@ class EditCasePage extends Component<Props, State> {
     this.edit({important: event.target.checked});
   };
 
-  saveArgumentDate = async (argumentDate: LocalDate | null) => {
+  saveArgumentDate = async (argumentDate: LocalDate | null, sitting: CaseSitting | undefined) => {
     if (!argumentDate) {
       this.removeArgumentDate();
     } else {
-      this.edit({argumentDate});
+      this.edit({argumentDate, sitting});
     }
   };
 
@@ -375,12 +376,12 @@ class EditCasePage extends Component<Props, State> {
                   </ViewEditInputText>
                 </Grid>
                 <Grid item xs={12}>
-                  <ViewEditDatePicker
+                  <ArgumentDateEditField
                     fullWidth
                     required
                     disabled={this.state.submitting}
-                    label="Argument Date"
-                    value={this.state.case.argumentDate ?? null}
+                    argumentDate={this.state.case.argumentDate ?? null}
+                    sitting={this.state.case.sitting}
                     onSave={this.saveArgumentDate}
                   />
                 </Grid>
