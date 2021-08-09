@@ -378,7 +378,6 @@ class EditCasePage extends Component<Props, State> {
                 <Grid item xs={12}>
                   <ArgumentDateEditField
                     fullWidth
-                    required
                     disabled={this.state.submitting}
                     argumentDate={this.state.case.argumentDate ?? null}
                     sitting={this.state.case.sitting}

@@ -83,7 +83,7 @@ const TermSummaryComplete = (props: Props) => {
       <Typography variant="h5" color="textSecondary">The Justices</Typography>
       <Grid container direction="row" className={classes.termSummaryGrid} spacing={1}>
         {summary && summary.justiceSummary.sort(sortJusticeSummary).map(item => (
-          <Grid item key={item.justice.id} xs={6} sm={4} md={3} lg={2} xl={1}>
+          <Grid item key={item.justice.id} xs={12} sm={6} md={3} lg={2} xl={1}>
             <TermJusticeSummaryBox onJusticeClick={onJusticeClick} item={item} />
           </Grid>
         ))}
@@ -92,7 +92,7 @@ const TermSummaryComplete = (props: Props) => {
       <Typography variant="h5" color="textSecondary">Appeals Court Stats</Typography>
       <Grid container direction="row" className={classes.termSummaryGrid} spacing={1}>
         {summary && summary.courtSummary.filter(c => c.cases > 1).sort(sortCourtSummary).map(item => (
-          <Grid item key={item.court.id} xs={1} sm={6} md={4} lg={3} xl={2}>
+          <Grid item key={item.court.id} xs={12} sm={6} md={4} lg={3} xl={2}>
             <TermCourtSummaryBox item={item} />
           </Grid>
         ))}

@@ -20,11 +20,14 @@ const styles = (theme: Theme) => createStyles({
     overflow: 'scroll',
   },
   search: {
-    marginTop: theme.spacing(15),
     marginBottom: theme.spacing(3),
     minWidth: 300,
+    [theme.breakpoints.up('xs')]: {
+      marginTop: theme.spacing(3),
+    },
     [theme.breakpoints.up('sm')]: {
       width: '40vw',
+      marginTop: theme.spacing(15),
     },
     [theme.breakpoints.up('xl')]: {
       width: '30vw',
@@ -126,6 +129,7 @@ class Home extends Component<Props, State> {
   };
 
   onTermJusticeClick = (termId: number, justiceId: number) => {
+    this.props.routing.replace(`/term/${termId}`);
     this.props.routing.push(`/term/${termId}/justice/${justiceId}`);
   }
 
