@@ -83,12 +83,14 @@ class AllTermCasesPage extends Component<Props, State> {
   async componentDidMount() {
     this.searchText$.pipe(
       debounceTime(200),
-      map(searchText => searchText.length >= 3 ?
-        this.state.termCases.filter(c => c.case.toLocaleLowerCase().includes(searchText.toLocaleLowerCase()))
-        : this.state.termCases))
-      .subscribe(cases => {
+      map(searchText => searchText.length >= 3 
+        ? this.state.termCases.filter(c => c.case.toLocaleLowerCase().includes(searchText.toLocaleLowerCase()))
+        : this.state.termCases),
+    ).subscribe({
+      next: cases => {
         this.setState({ filteredCases: cases });
-      });
+      },
+    });
 
     const termId = this.props.match.params.id;
 

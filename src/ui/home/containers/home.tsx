@@ -4,7 +4,7 @@ import { Theme, TextField, InputAdornment, Paper, Grid, Typography, MenuItem, Bu
 import SearchIcon from '@material-ui/icons/Search';
 import { Case, CaseStore, dismissedCases } from '../../../stores/caseStore';
 import { Subject } from 'rxjs';
-import { debounceTime, flatMap, filter } from 'rxjs/operators';
+import { debounceTime, filter, mergeMap } from 'rxjs/operators';
 import { inject, observer } from 'mobx-react';
 import { autorun } from 'mobx';
 import { History } from 'history';
@@ -74,12 +74,15 @@ class Home extends Component<Props, State> {
     this.searchText$.pipe(
       debounceTime(400),
       filter(searchText => searchText.length >= 3),
-      flatMap((searchText) => this.props.caseStore.searchCase(searchText)))
-      .subscribe(cases => {
+      mergeMap((searchText) => this.props.caseStore.searchCase(searchText)),
+    ).subscribe({
+      next: cases => {
         this.setState({ searchResults: cases });
-      }, err => {
+      },
+      error: err => {
         console.error(err?.message ?? 'Error searching for cases', err);
-      });
+      },
+    });
 
     autorun((reaction) => {
       const allTerms = this.props.caseStore.allTerms.filter(t => !t.inactive);
