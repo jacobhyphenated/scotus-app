@@ -35,7 +35,6 @@ const CreateOpinionCard = (props: Props) => {
   const [summary, setSummary] = useState('');
   const [summaryError, setSummaryError] = useState<string>();
   const [authorId, setAuthorId] = useState<number | null>(null);
-  const [authorError, setAuthorError] = useState<string>();
   const [justiceIds, setJusticeIds] = useState<number[]>([]);
   const [useAllJustices, setUseAllJustices] = useState(false);
   const [allJustices, setAllJustics] = useState<Justice[]>([]);
@@ -64,7 +63,7 @@ const CreateOpinionCard = (props: Props) => {
 
   const changeAuthorId = useCallback((_: React.ChangeEvent<{}>, newAuthorId: number | null) => {
     setAuthorId(newAuthorId);
-    setAuthorError(undefined);
+    setCreateError(undefined);
     if (justiceIds.some(jid => jid === newAuthorId)) {
       setJusticeIds(justiceIds.filter(jid => jid !== newAuthorId ));
     }
@@ -75,7 +74,6 @@ const CreateOpinionCard = (props: Props) => {
   }, []);
 
   const reset = useCallback(() => {
-    setAuthorError(undefined);
     setSummaryError(undefined);
     setCreateError(undefined);
     setSummary('');
@@ -97,7 +95,7 @@ const CreateOpinionCard = (props: Props) => {
       valid = false;
     }
     if (authorId === null) {
-      setAuthorError('Opinion must have an author');
+      setCreateError('Opinion must have an author');
       valid = false;
     }
     if (!valid) {
@@ -143,7 +141,7 @@ const CreateOpinionCard = (props: Props) => {
             <Grid direction="row" container justifyContent="space-between" alignItems="baseline">
               <Grid item>
                 <Typography variant="h6">Create Opinion</Typography>
-                {createError && <Typography color="error">{createError}</Typography>}
+                {(createError) && <Typography color="error">{createError}</Typography>}
               </Grid>
               <Grid>
                 <IconButton onClick={reset} >
@@ -237,7 +235,7 @@ const CreateOpinionCard = (props: Props) => {
           </Grid>
           <Grid item>
             <Button 
-              disabled={ submitting || !!summaryError || !!authorError }
+              disabled={ submitting || !!summaryError }
               color="primary"
               variant="contained"
               fullWidth
