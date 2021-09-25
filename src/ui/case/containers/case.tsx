@@ -53,7 +53,6 @@ class CasePage extends Component<Props, State> {
 
   };
 
-  monthFormatter = DateTimeFormatter.ofPattern('MMMM').withLocale(JsJodaLocale.US);
   dateFormatter = DateTimeFormatter.ofPattern('MM/dd/yyyy').withLocale(JsJodaLocale.US);
 
   async componentDidMount() {
@@ -134,8 +133,8 @@ class CasePage extends Component<Props, State> {
                     </Grid>
                     <Grid item>
                       <Typography color="textSecondary" variant="subtitle2">
-                        {fullCase.status === CaseStatus.ARGUED && !!fullCase.argumentDate ? 
-                          `${fullCase.status} (${fullCase.argumentDate.format(this.monthFormatter)})`
+                        {fullCase.status === CaseStatus.ARGUED && !!fullCase.sitting ? 
+                          `${fullCase.status} (${fullCase.sitting})`
                         : fullCase.status}{fullCase.result && `: ${fullCase.result}` }
                       </Typography>
                     </Grid>

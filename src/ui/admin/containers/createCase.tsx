@@ -5,7 +5,7 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import { inject, observer } from 'mobx-react';
 import { History } from 'history';
 import { DocketStore, BareDocket } from '../../../stores/docketStore';
-import { CaseStore, CaseStatus, FullCase } from '../../../stores/caseStore';
+import { CaseStore, FullCase } from '../../../stores/caseStore';
 import { autorun } from 'mobx';
 
 const styleDecorator = withStyles((theme: Theme) => ({
@@ -24,7 +24,6 @@ interface State {
   title: string;
   shortSummary: string;
   termId: number;
-  status: CaseStatus;
   dockets: BareDocket[];
   important: boolean;
 
@@ -51,7 +50,6 @@ class CreateCasePage extends Component<Props, State> {
     shortSummary: '',
     termId: 0,
     dockets: [],
-    status: CaseStatus.GRANTED,
     important: false,
     submitting: false,
   }
@@ -83,10 +81,6 @@ class CreateCasePage extends Component<Props, State> {
     this.setState({ termId: event.target.value as number });
   };
 
-  changeStatus = (event: React.ChangeEvent<{value: unknown}>) => {
-    this.setState({ status: event.target.value as CaseStatus });
-  };
-
   changeDockets = (_: React.ChangeEvent<{}>, value: BareDocket[]) => {
     this.setState({ dockets: value});
   }
@@ -96,7 +90,7 @@ class CreateCasePage extends Component<Props, State> {
   }
 
   submit = async (): Promise<FullCase | null> => {
-    const { title, shortSummary, termId, status, dockets, important } = this.state;
+    const { title, shortSummary, termId, dockets, important } = this.state;
     let valid = true;
     if (!title) {
       this.setState({ caseError: 'Case Title is required' });
@@ -113,7 +107,7 @@ class CreateCasePage extends Component<Props, State> {
 
     this.setState({ submitting: true });
     try {
-      return this.props.caseStore.createCase(title, shortSummary, status, termId, important, dockets.map(d => d.id));
+      return this.props.caseStore.createCase(title, shortSummary, termId, important, dockets.map(d => d.id));
     } catch (e) {
       console.warn(e);
       this.setState({formError: e?.message ?? 'There was a problem creating this case', submitting: false});
@@ -138,7 +132,7 @@ class CreateCasePage extends Component<Props, State> {
   render() {
     const unassignedDockets = this.props.docketStore.unassignedDockets;
     const allTerms = this.props.caseStore.allTerms;
-    const { title, shortSummary, termId, dockets, status, submitting, formError, caseError, shortSummaryError } = this.state;
+    const { title, shortSummary, termId, dockets, submitting, formError, caseError, shortSummaryError } = this.state;
 
     return (
       <Grid container direction="column">
@@ -213,24 +207,6 @@ class CreateCasePage extends Component<Props, State> {
                   </TextField>
                 </Grid>
               }
-              <Grid item>
-                <TextField
-                  id="create-case-status-select"
-                  label="Status"
-                  size="small"
-                  color="primary"
-                  variant="outlined"
-                  required
-                  fullWidth
-                  select
-                  value={status}
-                  onChange={this.changeStatus}
-                >
-                  {Object.keys(CaseStatus).map(status => (
-                    <MenuItem key={status} value={status}>{status}</MenuItem>
-                  ))}
-                </TextField>
-              </Grid>
               <Grid item>
                 <FormControlLabel
                   control={

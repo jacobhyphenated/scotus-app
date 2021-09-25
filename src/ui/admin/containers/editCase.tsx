@@ -133,11 +133,14 @@ class EditCasePage extends Component<Props, State> {
   }
 
   saveStatus = async (status: string) => {
+    if (!status) {
+      return;
+    }
     if (!Object.keys(CaseStatus).some(key => key === status)) {
       this.setState({formError: 'Invalid Status'});
       return;
     }
-    this.edit({status: status as CaseStatus});
+    this.edit({resultStatus: status as CaseStatus});
   }
 
   saveTerm = async (termId: string) => {
@@ -327,23 +330,6 @@ class EditCasePage extends Component<Props, State> {
                     onSave={this.saveShortSummary}
                   />
                 </Grid>
-                <Grid item xs={12}>
-                  <ViewEditInputText
-                    id="case-edit-status"
-                    fullWidth
-                    required
-                    disabled={this.state.submitting}
-                    name="status"
-                    label="Status"
-                    select
-                    value={this.state.case.status}
-                    onSave={this.saveStatus}
-                  >
-                    {Object.values(CaseStatus).map((status, index) => (
-                      <MenuItem key={index} value={status}>{status}</MenuItem>
-                    ))}
-                  </ViewEditInputText>
-                </Grid>
                 <Grid className={this.props.classes.border} item xs={12}>
                   <FormControlLabel
                     control={
@@ -383,6 +369,26 @@ class EditCasePage extends Component<Props, State> {
                     sitting={this.state.case.sitting}
                     onSave={this.saveArgumentDate}
                   />
+                </Grid>
+                <Grid item xs={12}>
+                  <ViewEditInputText
+                    id="case-edit-status"
+                    fullWidth
+                    required
+                    disabled={this.state.submitting}
+                    name="status"
+                    label="Result Status"
+                    select
+                    value={this.state.case.resultStatus ?? ''}
+                    onSave={this.saveStatus}
+                  >
+                    <MenuItem value="">Select a result</MenuItem>
+                    {Object.values(CaseStatus)
+                    .filter(status => ![CaseStatus.ARGUED, CaseStatus.ARGUMENT_SCHEDULED, CaseStatus.GRANTED].includes(status))
+                    .map((status, index) => (
+                      <MenuItem key={index} value={status}>{status}</MenuItem>
+                    ))}
+                  </ViewEditInputText>
                 </Grid>
                 <Grid item xs={12}>
                   <ViewEditDatePicker

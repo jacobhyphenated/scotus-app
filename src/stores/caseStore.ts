@@ -63,12 +63,13 @@ export interface FullCase extends Case {
   dockets: CaseDocket[];
   alternateTitles: string[];
   decisionLink?: string;
+  resultStatus?: CaseStatus;
 }
 
 export interface EditCase {
   case?: string;
   shortSummary?: string;
-  status?: CaseStatus;
+  resultStatus?: CaseStatus;
   argumentDate?: LocalDate;
   decisionDate?: LocalDate;
   result?: string;
@@ -175,11 +176,10 @@ export class CaseStore {
     return c;
   }
 
-  async createCase(caseTitle: string, shortSummary: string, status: CaseStatus, termId: number, important: boolean, docketIds: number[]): Promise<FullCase> {
+  async createCase(caseTitle: string, shortSummary: string, termId: number, important: boolean, docketIds: number[]): Promise<FullCase> {
     const result = await this.networkService.post<FullCase>('/cases', {
       case: caseTitle,
       shortSummary,
-      status,
       termId,
       important,
       docketIds,
