@@ -1,3 +1,4 @@
+import { LocalDate } from '@js-joda/core';
 import React from 'react';
 import { Case, dismissedCases } from '../../../stores/caseStore';
 import { shuffleArray } from '../../../util';
@@ -23,7 +24,9 @@ const TermSummaryInProgress = (props: Props) => {
     ...decided.filter(c => c.important),
     ...decided.filter(c => !c.important),
   ].slice(0,4);
-  const awaitingDecision = random3Cases(props.cases.filter(c => !c.decisionDate && c.argumentDate && !dismissedCases(c)));
+  const awaitingDecision = random3Cases(
+    props.cases.filter(c => !c.decisionDate && c.argumentDate?.isBefore(LocalDate.now()) && !dismissedCases(c)),
+  );
   const keyCases = random3Cases([
     ...open, 
     ...props.cases.filter(c => ![...recentlyDecided, ...awaitingDecision, ...open].find(rd => rd.id === c.id)),
