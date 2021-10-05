@@ -1,7 +1,8 @@
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Opinion, OpinionType, displayType } from '../../../stores/opinionStore';
 import { makeStyles } from '@material-ui/styles';
 import { Theme, Paper, Grid, Typography } from '@material-ui/core';
+import LinkableText from './linkableText';
 
 const useStyles = makeStyles( (theme: Theme) => ({
   paper: {
@@ -50,7 +51,7 @@ const OpinionView = (props: Props) => {
           {displayType(opinion.opinionType)}
         </Typography>
         <Typography paragraph className={`${classes.allowBreak} ${collapsed && classes.collapsedSummary}`}>
-          {opinion.summary}
+          <LinkableText text={opinion.summary} />
         </Typography>
         {joinedBy.length > 0 && opinion.opinionType !== OpinionType.PER_CURIUM &&
           <Typography color="textSecondary">

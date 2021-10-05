@@ -15,8 +15,8 @@ describe('Object Cache', () => {
       foo: 'someString',
     });
     expect(map.get(5)).not.toBeNull();
-    expect(map.get(5).item.foo).toBe('someString');
-    expect(map.get(5).expiration.isAfter(LocalDateTime.now())).toBeTruthy();
+    expect(map.get(5)?.item.foo).toBe('someString');
+    expect(map.get(5)?.expiration.isAfter(LocalDateTime.now())).toBeTruthy();
   });
 
   it('Should retrieve a newly inserted item', () => {

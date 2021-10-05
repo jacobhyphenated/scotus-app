@@ -11,6 +11,7 @@ import { Locale as JsJodaLocale } from '@js-joda/locale_en-us';
 import { OpinionView } from '../components';
 import { opinionSort } from '../../../stores/opinionStore';
 import { UserStore } from '../../../stores/userStore';
+import LinkableText from '../components/linkableText';
 
 const styles = (theme: Theme) => createStyles({
   paper: {
@@ -55,7 +56,18 @@ class CasePage extends Component<Props, State> {
 
   dateFormatter = DateTimeFormatter.ofPattern('MM/dd/yyyy').withLocale(JsJodaLocale.US);
 
-  async componentDidMount() {
+  componentDidMount() {
+    this.init();
+  }
+
+  componentDidUpdate() {
+    // route change doesn't always result in a new component
+    if (this.props.match.params.id !== `${this.state?.fullCase?.id ?? '' }`) {
+      this.init();
+    }
+  }
+
+  init = async () => {
     const caseId = this.props.match.params.id;
     if (!caseId || isNaN(Number(caseId))) {
       console.warn('No case id in url params');
@@ -73,7 +85,7 @@ class CasePage extends Component<Props, State> {
       console.warn(e);
       this.props.routing.push('/');
     }
-  }
+  };
 
   courtStatusText: (fullCase: FullCase) => JSX.Element = fullCase => {
     let text: JSX.Element | null = null;
@@ -173,13 +185,15 @@ class CasePage extends Component<Props, State> {
             {this.courtStatusText(fullCase)}
             <Grid item>
               <Typography className={classes.paragraph} paragraph color="textPrimary">
-                <span className={classes.bold}>At Issue:</span> {fullCase.shortSummary}
+                <span className={classes.bold}>At Issue:</span>
+                <LinkableText text={fullCase.shortSummary} />
               </Typography>
             </Grid>
             {fullCase.decisionSummary ?
               <Grid item>
                 <Typography className={classes.paragraph} paragraph color="textPrimary">
-                  <span className={classes.bold}>Ruling ({fullCase.result || 'opinion of the court'}):</span> {fullCase.decisionSummary}
+                  <span className={classes.bold}>Ruling ({fullCase.result || 'opinion of the court'}):</span>
+                  <LinkableText text={fullCase.decisionSummary} />
                 </Typography>
               </Grid>
             :

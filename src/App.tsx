@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import './App.css';
 import { Route, Switch, Redirect } from 'react-router';
 import Home from './ui/home/containers/home';

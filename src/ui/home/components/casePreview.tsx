@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import { makeStyles } from '@material-ui/styles';
 import { Theme, Paper, Grid, Typography } from '@material-ui/core';
 import { Case, CaseStatus } from '../../../stores/caseStore';
+import { stripLinks } from '../../../util/linkParse';
 
 const useStyles = makeStyles( (theme: Theme) => ({
   paper: {
@@ -40,7 +41,7 @@ const CasePreviewCard = (props: Props) => {
           {props.case.case}
         </Typography>
         <Typography paragraph>
-          {props.case.decisionSummary ? props.case.decisionSummary : props.case.shortSummary}
+          {stripLinks(props.case.decisionSummary ? props.case.decisionSummary : props.case.shortSummary)}
         </Typography>
       </Grid>
     </Paper>
