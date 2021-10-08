@@ -36,6 +36,7 @@ export interface Term {
   otName: string;
   inactive: boolean;
 }
+
 export interface Case {
   id: number;
   case: string;
@@ -132,14 +133,14 @@ export class CaseStore {
   }
 
   async refreshAllTerms() {
-    const result = await this.networkService.get<Term[]>('/cases/term');
+    const result = await this.networkService.get<Term[]>('/terms');
     runInAction(() => {
       this.allTerms = result.sort(this.termSorter);
     });
   }
 
   async createTerm(name: string, otName: string): Promise<Term> {
-    const result = await this.networkService.post<Term>('/cases/term', { name, otName, inactive: true });
+    const result = await this.networkService.post<Term>('/terms', { name, otName, inactive: true });
     runInAction(() => {
       this.allTerms.push(result);
       this.allTerms = this.allTerms.slice().sort(this.termSorter);
@@ -148,7 +149,7 @@ export class CaseStore {
   }
 
   async editTerm(id: number, props: EditTermProps): Promise<Term> {
-    const result = await this.networkService.patch<Term>(`/cases/term/${id}`, props);
+    const result = await this.networkService.patch<Term>(`/terms/${id}`, props);
     runInAction(() => {
       this.allTerms = this.allTerms.map(t => t.id === result.id ? result : t);
     });
