@@ -104,7 +104,7 @@ class CreateJusticePage extends Component<Props, State> {
       await this.props.justiceStore.createJustice(name!, birthday!, dateConfirmed!);
       this.props.justiceStore.refreshActiveJustices();
       this.props.routing.goBack();
-    } catch (e) {
+    } catch (e: any) {
       this.setState({ formError: e?.message ?? 'An error occurred creating this justice'});
     } finally {
       this.setState({ submitting: false });

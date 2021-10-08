@@ -77,7 +77,7 @@ class CreateTermPage extends Component<Props, State> {
     try {
       await this.props.caseStore.createTerm(name, otName);
       this.props.routing.goBack();
-    } catch(e) {
+    } catch(e: any) {
       this.setState({ formError: e?.errorMessage ?? 'An error occurred creating the term'});
     } finally {
       this.setState({ submitting: false });

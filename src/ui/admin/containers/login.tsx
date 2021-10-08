@@ -51,7 +51,7 @@ class Login extends Component<Props, State> {
       if (!user) {
         this.setState({ error: 'Invalid Username or Password'});
       }
-    } catch (e) {
+    } catch (e: any) {
       this.setState({ error: e.message?.toString() || 'Invalid Username or Password'});
     }
   }

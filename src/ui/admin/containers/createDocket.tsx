@@ -103,7 +103,7 @@ class CreateDocketPage extends Component<Props, State> {
     try {
       await this.props.docketStore.createDocket(title, docketNumber, lowerCourtId!, lowerCourtRuling, status);
       this.props.routing.goBack();
-    } catch (e) {
+    } catch (e: any) {
       this.setState({ formError: e?.message ?? 'An error occurred creating this docket'});
     } finally {
       this.setState({ submitting: false });

@@ -82,7 +82,7 @@ class EditTermPage extends Component<Props, State> {
     try {
       const term = await this.props.caseStore.editTerm(this.state.term.id, termEdit);
       this.setState({ term });
-    } catch (e) {
+    } catch (e: any) {
       this.setState({ formError: e?.errorMessage ?? 'Failed to update term'});
     } finally {
       this.setState({ submitting: false});

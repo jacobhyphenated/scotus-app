@@ -80,7 +80,7 @@ class EditCasePage extends Component<Props, State> {
       }
       document.title = `SCOTUS App | Admin | Edit Case ${fullCase.case}`;
       this.setState({ case: fullCase });
-    } catch (e) {
+    } catch (e: any) {
       console.warn(e);
       this.props.routing.push('/admin/case');
     }
@@ -94,7 +94,7 @@ class EditCasePage extends Component<Props, State> {
     try {
       const fullCase = await this.props.caseStore.editCase(this.state.case!.id, caseEdit);
       this.setState({ case: fullCase });
-    } catch (e) {
+    } catch (e: any) {
       this.setState({ formError: e?.message ?? 'Failed to update case'});
     } finally {
       this.setState({ submitting: false});
@@ -109,7 +109,7 @@ class EditCasePage extends Component<Props, State> {
     try {
       const fullCase = await this.props.caseStore.removeArgumentDate(this.state.case.id);
       this.setState({ case: fullCase });
-    } catch (e) {
+    } catch (e: any) {
       this.setState({ formError: e?.message ?? 'Failed to update case'});
     } finally {
       this.setState({ submitting: false});
@@ -198,7 +198,7 @@ class EditCasePage extends Component<Props, State> {
           dockets: this.state.case!.dockets.filter(d => d.docketId !== docket.docketId),
         };
         this.setState({case: updatedCase, formError: undefined});
-      } catch (e) {
+      } catch (e: any) {
         this.setState({formError: e?.message ?? 'Something went wrong removing the docket'});
       }
     };
@@ -217,7 +217,7 @@ class EditCasePage extends Component<Props, State> {
     try {
       const result = await this.props.caseStore.assignDocket(this.state.case!.id, value.id);
       this.setState({case: result, formError: undefined});
-    } catch (e) {
+    } catch (e: any) {
       this.setState({formError: e?.message ?? 'Something went wrong assigning the docket'});
     }
   }
@@ -230,7 +230,7 @@ class EditCasePage extends Component<Props, State> {
         ...this.state.case!,
         opinions: this.state.case!.opinions.filter(o => o.id !== opinion.id),
       }});
-    } catch (e) {
+    } catch (e: any) {
       this.setState({formError: e?.message ?? 'An error occurred deleting the opinion'});
     }
   };
@@ -243,7 +243,7 @@ class EditCasePage extends Component<Props, State> {
         ...this.state.case!,
         opinions: this.state.case!.opinions.map(o => o.id !== opinion.id ? o : opinion),
       }});
-    } catch (e) {
+    } catch (e: any) {
       this.setState({formError: e?.message ?? 'An error occurred editing the opinion summary'});
     }
   }

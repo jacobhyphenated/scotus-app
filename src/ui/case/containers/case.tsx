@@ -185,14 +185,14 @@ class CasePage extends Component<Props, State> {
             {this.courtStatusText(fullCase)}
             <Grid item>
               <Typography className={classes.paragraph} paragraph color="textPrimary">
-                <span className={classes.bold}>At Issue:</span>
+                <span className={classes.bold}>At Issue: </span>
                 <LinkableText text={fullCase.shortSummary} />
               </Typography>
             </Grid>
             {fullCase.decisionSummary ?
               <Grid item>
                 <Typography className={classes.paragraph} paragraph color="textPrimary">
-                  <span className={classes.bold}>Ruling ({fullCase.result || 'opinion of the court'}):</span>
+                  <span className={classes.bold}>Ruling ({fullCase.result || 'opinion of the court'}): </span>
                   <LinkableText text={fullCase.decisionSummary} />
                 </Typography>
               </Grid>

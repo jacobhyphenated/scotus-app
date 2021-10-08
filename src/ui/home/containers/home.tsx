@@ -104,7 +104,7 @@ class Home extends Component<Props, State> {
       const results = await this.props.caseStore.getCaseByTerm(termId);
       this.setState({ termCases: results, loading: false });
     }
-    catch (e) {
+    catch (e: any) {
       console.error(e?.message ?? 'Error occurred getting cases by term', e);
     }
   };

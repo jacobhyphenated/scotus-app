@@ -59,7 +59,7 @@ class EditDocketPage extends Component<Props, State> {
       }
       document.title = `SCOTUS App | Admin | Edit Docket ${docket.docketNumber}`;
       this.setState({ docket });
-    } catch (e) {
+    } catch (e: any) {
       console.warn(e);
       this.props.routing.push('/admin/docket');
     }
@@ -73,7 +73,7 @@ class EditDocketPage extends Component<Props, State> {
     try {
       const docket = await this.props.docketStore.editDocket(this.state.docket!.id, docketEdit);
       this.setState({ docket });
-    } catch (e) {
+    } catch (e: any) {
       this.setState({ formError: e?.errorMessage ?? 'Failed to update docket'});
     } finally {
       this.setState({ submitting: false});

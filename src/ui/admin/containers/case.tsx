@@ -63,7 +63,7 @@ class CasePage extends Component<Props, State> {
       this.setState({searching: true, selectedTermId: termId});
       const results = await this.props.caseStore.getCaseByTerm(termId);
       this.setState({termResults: results, searching: false});
-    } catch (e) {
+    } catch (e: any) {
       console.error(e?.errorMessage ?? 'Error occurred getting cases by term', e);
     }
   }

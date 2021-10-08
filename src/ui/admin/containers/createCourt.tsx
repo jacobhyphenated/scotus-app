@@ -79,7 +79,7 @@ class CreateCourtPage extends Component<Props, State> {
     try {
       await this.props.courtStore.createCourt(name, shortName);
       this.props.routing.goBack();
-    } catch (e) {
+    } catch (e: any) {
       this.setState({ formError: e?.message ?? 'An error occurred creating this court'});
     } finally {
       this.setState({ submitting: false });

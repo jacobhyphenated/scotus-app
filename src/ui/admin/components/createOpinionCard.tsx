@@ -110,7 +110,7 @@ const CreateOpinionCard = (props: Props) => {
       const opinion = await props.createOpinion(props.caseId, opinionType, summary, justices);
       reset();
       props.onCreateOpinion(opinion);
-    } catch (e) {
+    } catch (e: any) {
       setCreateError(e?.message ?? 'Error creating opinion');
     } finally {
       setSubmitting(false);
