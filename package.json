@@ -6,23 +6,22 @@
     "@date-io/core": "^1.3.13",
     "@js-joda/core": "^1.11.0",
     "@js-joda/locale_en-us": "^3.1.1",
-    "@js-joda/timezone": "^2.6.0",
+    "@js-joda/timezone": "^2.10.0",
     "@material-ui/core": "4.12.3",
     "@material-ui/icons": "4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.60",
     "@material-ui/pickers": "^3.3.10",
     "@material-ui/styles": "4.11.4",
     "@prinzdezibel/date-io-js-joda": "^0.9.8",
-    "@types/react-router-dom": "^5.3.0",
-    "mobx": "6.3.3",
-    "mobx-react": "7.2.0",
+    "mobx": "6.3.5",
+    "mobx-react": "7.2.1",
     "mobx-react-router": "4.1.0",
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "react-router": "5.2.1",
     "react-router-dom": "5.3.0",
     "react-scripts": "4.0.3",
-    "rxjs": "7.3.1"
+    "rxjs": "7.4.0"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "5.14.1",
@@ -30,10 +29,11 @@
     "@types/history": "4.7.9",
     "@types/jest": "27.0.2",
     "@types/node": "14.14.41",
-    "@types/react": "17.0.27",
-    "@types/react-dom": "17.0.9",
-    "@types/react-router": "5.1.16",
-    "typescript": "4.4.3"
+    "@types/react": "17.0.33",
+    "@types/react-dom": "17.0.10",
+    "@types/react-router": "5.1.17",
+    "@types/react-router-dom": "5.3.2",
+    "typescript": "4.4.4"
   },
   "scripts": {
     "start": "react-scripts start",

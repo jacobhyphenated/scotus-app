@@ -5,7 +5,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import AddIcon from '@material-ui/icons/Add';
 import { inject, observer } from 'mobx-react';
 import { History } from 'history';
-import { DocketStore, BareDocket } from '../../../stores/docketStore';
+import { DocketStore, BareDocket, DocketStatus } from '../../../stores/docketStore';
 import { match } from 'react-router';
 import ViewEditInputText from '../components/viewEditInputText';
 import ViewEditDatePicker from '../components/viewEditDatePicker';
@@ -19,6 +19,7 @@ import { OpinionStore, Opinion, OpinionType, CreateOpinionJustice, opinionSort }
 import { JusticeStore } from '../../../stores/justiceStore';
 import AlternateTitleEditCard from '../components/alternateTitleEditCard';
 import { whenDefined } from '../../../util/functional';
+import CaseResultForm from '../components/caseResultForm';
 
 const styleDecorator = withStyles((theme: Theme) => ({
   formContainer: {
@@ -273,6 +274,23 @@ class EditCasePage extends Component<Props, State> {
     return this.props.justiceStore.getAllJustices();
   }
 
+  closeCaseResultForm = (c: FullCase) => {
+    this.setState({case: c});
+  }
+
+  createEditDocketOverrruled = (docketId: number) => {
+    return (lowerCourtOverruled: boolean | undefined) => {
+      return this.props.docketStore.editDocket(docketId, {
+        lowerCourtOverruled,
+        status: DocketStatus.DONE,
+      });
+    };
+  }
+
+  caseResultEdit = (id: number, edit: EditCase) => {
+    return this.props.caseStore.editCase(id, edit);
+  }
+
   render() {
     const allTerms = this.props.caseStore.allTerms;
     const unassignedDockets = this.props.docketStore.unassignedDockets.slice();
@@ -370,72 +388,83 @@ class EditCasePage extends Component<Props, State> {
                     onSave={this.saveArgumentDate}
                   />
                 </Grid>
-                <Grid item xs={12}>
-                  <ViewEditInputText
-                    id="case-edit-status"
-                    fullWidth
-                    required
-                    disabled={this.state.submitting}
-                    name="status"
-                    label="Result Status"
-                    select
-                    value={this.state.case.resultStatus ?? ''}
-                    onSave={this.saveStatus}
-                  >
-                    <MenuItem value="">Select a result</MenuItem>
-                    {Object.values(CaseStatus)
-                    .filter(status => ![CaseStatus.ARGUED, CaseStatus.ARGUMENT_SCHEDULED, CaseStatus.GRANTED].includes(status))
-                    .map((status, index) => (
-                      <MenuItem key={index} value={status}>{status}</MenuItem>
-                    ))}
-                  </ViewEditInputText>
-                </Grid>
-                <Grid item xs={12}>
-                  <ViewEditDatePicker
-                    fullWidth
-                    required
-                    disabled={this.state.submitting}
-                    label="Decision Date"
-                    value={this.state.case.decisionDate ?? null}
-                    onSave={this.saveDecisionDate}
+                { (!!this.state.case.resultStatus || !!this.state.case.decisionDate) ?
+                  <>
+                  <Grid item xs={12}>
+                    <ViewEditInputText
+                      id="case-edit-status"
+                      fullWidth
+                      required
+                      disabled={this.state.submitting}
+                      name="status"
+                      label="Result Status"
+                      select
+                      value={this.state.case.resultStatus ?? ''}
+                      onSave={this.saveStatus}
+                    >
+                      <MenuItem value="">Select a result</MenuItem>
+                      {Object.values(CaseStatus)
+                      .filter(status => ![CaseStatus.ARGUED, CaseStatus.ARGUMENT_SCHEDULED, CaseStatus.GRANTED].includes(status))
+                      .map((status, index) => (
+                        <MenuItem key={index} value={status}>{status}</MenuItem>
+                      ))}
+                    </ViewEditInputText>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <ViewEditDatePicker
+                      fullWidth
+                      required
+                      disabled={this.state.submitting}
+                      label="Decision Date"
+                      value={this.state.case.decisionDate ?? null}
+                      onSave={this.saveDecisionDate}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <ViewEditInputText
+                      id="case-edit-result"
+                      fullWidth
+                      disabled={this.state.submitting}
+                      name="result"
+                      label="Result"
+                      value={this.state.case.result ?? ''}
+                      onSave={this.saveResult}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <ViewEditInputText
+                      id="case-edit-decision-link"
+                      fullWidth
+                      disabled={this.state.submitting}
+                      name="decisionLink"
+                      label="Decision Link"
+                      value={this.state.case.decisionLink ?? ''}
+                      onSave={this.saveDecisionLink}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <ViewEditInputText
+                      id="case-edit-decision-summary"
+                      fullWidth
+                      required
+                      disabled={this.state.submitting}
+                      name="decisionSummary"
+                      label="Decision Summary"
+                      multiline
+                      rows={3}
+                      value={this.state.case.decisionSummary ?? ''}
+                      onSave={this.saveDecisionSummary}
+                    />
+                  </Grid>
+                  </>
+                  : 
+                  <CaseResultForm 
+                    fullCase={this.state.case}
+                    editCase={this.caseResultEdit}
+                    onClose={this.closeCaseResultForm}
+                    createEditDocketOverruled={this.createEditDocketOverrruled}
                   />
-                </Grid>
-                <Grid item xs={12}>
-                  <ViewEditInputText
-                    id="case-edit-result"
-                    fullWidth
-                    disabled={this.state.submitting}
-                    name="result"
-                    label="Result"
-                    value={this.state.case.result ?? ''}
-                    onSave={this.saveResult}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <ViewEditInputText
-                    id="case-edit-decision-link"
-                    fullWidth
-                    disabled={this.state.submitting}
-                    name="decisionLink"
-                    label="Decision Link"
-                    value={this.state.case.decisionLink ?? ''}
-                    onSave={this.saveDecisionLink}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <ViewEditInputText
-                    id="case-edit-decision-summary"
-                    fullWidth
-                    required
-                    disabled={this.state.submitting}
-                    name="decisionSummary"
-                    label="Decision Summary"
-                    multiline
-                    rows={3}
-                    value={this.state.case.decisionSummary ?? ''}
-                    onSave={this.saveDecisionSummary}
-                  />
-                </Grid>
+                }
               </Grid>
             </Grid>
             <Grid item xs={12} md={6}>
