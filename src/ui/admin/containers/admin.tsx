@@ -27,15 +27,15 @@ interface Props extends WithStyles<typeof styles> {
 
 const styles = (theme: Theme) => createStyles({
   root: {
-    marginTop: `${theme.spacing(1)}px`,
-    overflow: 'none',
+    marginTop: theme.spacing(1),
   },
   leftNav: {
     height: '90vh',
-    padding: `${theme.spacing(1)}px`,
+    padding: theme.spacing(1),
+    marginRight: theme.spacing(1),
   },
   collapsedNav: {
-    padding: `${theme.spacing(1)}px`,
+    padding: theme.spacing(1),
   },
   leftButton: {
     justifyContent: 'start',
@@ -43,7 +43,7 @@ const styles = (theme: Theme) => createStyles({
   main: {
     height: '90vh',
     overflowY: 'scroll',
-    padding: `${theme.spacing(2)}px`,
+    padding: theme.spacing(2),
   },
 });
 
@@ -91,7 +91,7 @@ class Admin extends Component<Props> {
       { !isAdmin ?
         <Login />
         :
-        <Grid className={classes.root} container direction="row" spacing={1}>
+        <Grid className={classes.root} container direction="row">
           <Grid item xs={12} sm={3} md={2}>
             <Hidden xsDown>
               <Paper className={classes.leftNav} elevation={1}>

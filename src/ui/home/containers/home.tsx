@@ -41,6 +41,9 @@ const styles = (theme: Theme) => createStyles({
   searchGrid: {
     marginTop: theme.spacing(1),
   },
+  searchSpacing: {
+    marginRight: theme.spacing(1),
+  },
 });
 
 interface Props extends WithStyles<typeof styles> {
@@ -170,8 +173,8 @@ class Home extends Component<Props, State> {
           </Grid>
         </Grid>
         { searchResults.length === 0 && !(searchText.length >= 3) &&
-          <Grid container direction="row" justifyContent="center" spacing={1} alignItems="center">
-            <Grid item>
+          <Grid container direction="row" justifyContent="center" alignItems="center">
+            <Grid item className={this.props.classes.searchSpacing}>
               <Typography>Term: </Typography>
             </Grid>
             <Grid item>
