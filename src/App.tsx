@@ -1,6 +1,7 @@
 import { Component } from 'react';
 import './App.css';
 import { Route, Switch, Redirect } from 'react-router';
+import { Link } from 'react-router-dom';
 import Home from './ui/home/containers/home';
 import Admin from './ui/admin/containers/admin';
 import CasePage from './ui/case/containers/case';
@@ -17,14 +18,6 @@ interface Props {
 @inject('routing')
 export default class App extends Component<Props> {
 
-  navHome = () => {
-    this.props.routing!.push('/');
-  };
-
-  navAdmin = () => {
-    this.props.routing!.push('/admin');
-  };
-
   render() {
     return (
       <div>
@@ -35,12 +28,13 @@ export default class App extends Component<Props> {
             justifyContent="space-between"
             alignItems="center"
           >
-            <IconButton onClick={this.navHome}>
-              <HomeIcon color="action" />
-            </IconButton>
-            
+            <Link to="/">
+              <IconButton>
+                <HomeIcon color="action" />
+              </IconButton>
+            </Link>
             SCOTUS App
-            <Button onClick={this.navAdmin} color="primary" variant="text">admin</Button>
+            <Button component={Link} to="/admin" color="primary" variant="text">admin</Button>
           </Grid>
         </Paper>
         <Switch>

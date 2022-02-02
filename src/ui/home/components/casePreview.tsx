@@ -6,8 +6,8 @@ import { stripLinks } from '../../../util/linkParse';
 
 const useStyles = makeStyles( (theme: Theme) => ({
   paper: {
-    margin: `${theme.spacing(1)}px`,
-    padding: `${theme.spacing(1)}px`,
+    margin: theme.spacing(1),
+    padding: theme.spacing(1),
     cursor: 'pointer',
   },
 }));
