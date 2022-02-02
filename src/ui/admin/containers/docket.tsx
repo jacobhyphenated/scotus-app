@@ -37,7 +37,7 @@ class DocketPage extends Component<Props, State> {
   state = {
     searchResults: [],
     searchText: '',
-  }
+  };
 
   componentDidMount() {
     document.title = 'SCOTUS App | Admin | Docket';
@@ -64,7 +64,7 @@ class DocketPage extends Component<Props, State> {
     if (ev.key === 'Enter') {
       this.search();
     }
-  }
+  };
 
   createDocket = () => {
     this.props.routing.push('/admin/docket/create');
@@ -72,15 +72,15 @@ class DocketPage extends Component<Props, State> {
 
   editDocket = (docket: BareDocket) => {
     this.props.routing.push(`/admin/docket/edit/${docket.id}`);
-  }
+  };
 
   casePage = (caseId: number) => {
     this.props.routing.push(`/admin/case/edit/${caseId}`);
-  }
+  };
 
   getFullDocketFun = (docketId: number): () => Promise<FullDocket> => {
     return () => this.props.docketStore.getDocketById(docketId);
-  }
+  };
 
   render() {
     const { searchResults, searchText } = this.state;

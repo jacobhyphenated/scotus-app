@@ -87,7 +87,7 @@ class EditTermPage extends Component<Props, State> {
     } finally {
       this.setState({ submitting: false});
     } 
-  }
+  };
 
   saveName = (name: string) => {
     if (!name) {
@@ -95,7 +95,7 @@ class EditTermPage extends Component<Props, State> {
       return;
     }
     this.edit({ name });
-  }
+  };
 
   saveOtName = (otName: string) => {
     if (!otName) {
@@ -103,12 +103,12 @@ class EditTermPage extends Component<Props, State> {
       return;
     }
     this.edit({ otName });
-  }
+  };
 
   changeLowerCourtOverruled = (event: React.ChangeEvent<HTMLInputElement>) => {
     const inactive = event.target.value === 'true' ? true : false;
     this.edit({inactive});
-  }
+  };
 
   render() {
     return (

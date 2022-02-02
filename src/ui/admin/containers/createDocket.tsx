@@ -51,7 +51,7 @@ class CreateDocketPage extends Component<Props, State> {
     lowerCourtRuling: '',
     status: DocketStatus.CERT_GRANTED,
     submitting: false,
-  }
+  };
 
   componentDidMount() {
     document.title = 'SCOTUS App | Admin | Create Docket';
@@ -79,7 +79,7 @@ class CreateDocketPage extends Component<Props, State> {
 
   changeStatus = (event: React.ChangeEvent<{value: unknown}>) => {
     this.setState({ status: event.target.value as DocketStatus });
-  }
+  };
 
   submit = async () => {
     const { title, docketNumber, lowerCourtId, lowerCourtRuling, status } = this.state;
@@ -109,7 +109,7 @@ class CreateDocketPage extends Component<Props, State> {
       this.setState({ submitting: false });
     }
     
-  }
+  };
 
   render() {
     const courts = this.props.courtStore.allCourts;

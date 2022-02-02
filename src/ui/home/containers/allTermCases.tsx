@@ -78,7 +78,7 @@ class AllTermCasesPage extends Component<Props, State> {
     }
     const statusOrder = [CaseStatus.GRANTED, CaseStatus.GVR,  CaseStatus.DIG, CaseStatus.DISMISSED];
     return statusOrder.indexOf(c1.status) - statusOrder.indexOf(c2.status);
-  }
+  };
 
   async componentDidMount() {
     this.searchText$.pipe(
@@ -129,7 +129,7 @@ class AllTermCasesPage extends Component<Props, State> {
 
   onCaseClick = (c: Case) => {
     this.props.routing.push(`/case/${c.id}`);
-  }
+  };
 
   back = () => {
     this.props.routing.goBack();

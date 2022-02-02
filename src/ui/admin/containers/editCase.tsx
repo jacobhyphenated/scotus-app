@@ -65,7 +65,7 @@ class EditCasePage extends Component<Props, State> {
 
   state: State = {
     submitting: false,
-  }
+  };
 
   async componentDidMount() {
     const caseId = this.props.match.params.id;
@@ -100,7 +100,7 @@ class EditCasePage extends Component<Props, State> {
     } finally {
       this.setState({ submitting: false});
     } 
-  }
+  };
 
   removeArgumentDate = async () => {
     if (!this.state.case) {
@@ -115,7 +115,7 @@ class EditCasePage extends Component<Props, State> {
     } finally {
       this.setState({ submitting: false});
     } 
-  }
+  };
 
   saveTitle = async (title: string) => {
     if (!title) {
@@ -123,7 +123,7 @@ class EditCasePage extends Component<Props, State> {
       return;
     }
     this.edit({case: title});
-  }
+  };
 
   saveShortSummary = async (shortSummary: string) => {
     if (!shortSummary) {
@@ -131,7 +131,7 @@ class EditCasePage extends Component<Props, State> {
       return;
     }
     this.edit({shortSummary});
-  }
+  };
 
   saveStatus = async (status: string) => {
     if (!status) {
@@ -142,7 +142,7 @@ class EditCasePage extends Component<Props, State> {
       return;
     }
     this.edit({resultStatus: status as CaseStatus});
-  }
+  };
 
   saveTerm = async (termId: string) => {
     this.edit({termId: Number(termId)});
@@ -170,25 +170,25 @@ class EditCasePage extends Component<Props, State> {
     whenDefined(r, (result) => {
       this.edit({result});
     });
-  }
+  };
 
   saveDecisionLink = (decisionLink: string) => {
     whenDefined(decisionLink, (decisionLink) => {
       this.edit({decisionLink});
     });
-  }
+  };
 
   saveDecisionSummary = (summary: string) => {
     whenDefined(summary, (decisionSummary) => {
       this.edit({decisionSummary});
     });
-  }
+  };
 
   saveAlternateTitles = (altTitles: string[]) => {
     whenDefined(altTitles, (alternateTitles => {
       this.edit({ alternateTitles });
     }));
-  }
+  };
 
   onDeleteDocket = (docket: CaseDocket): () => void => {
     return async () => {
@@ -221,7 +221,7 @@ class EditCasePage extends Component<Props, State> {
     } catch (e: any) {
       this.setState({formError: e?.message ?? 'Something went wrong assigning the docket'});
     }
-  }
+  };
 
   deleteOpinion = async (opinion: Opinion) => {
     try {
@@ -247,7 +247,7 @@ class EditCasePage extends Component<Props, State> {
     } catch (e: any) {
       this.setState({formError: e?.message ?? 'An error occurred editing the opinion summary'});
     }
-  }
+  };
 
   onCreateOpinion = (opinion: Opinion) => {
     this.props.caseStore.revokeCaseCache(opinion.caseId);
@@ -255,11 +255,11 @@ class EditCasePage extends Component<Props, State> {
       ...this.state.case!,
       opinions: [...this.state.case!.opinions, opinion],
     }});
-  }
+  };
 
   createOpinion = (caseId: number, opinionType: OpinionType, summary: string, justices: CreateOpinionJustice[]): Promise<Opinion> => {
     return this.props.opinionStore.createOpinion(caseId, opinionType, summary, justices);
-  }
+  };
   
 
   back = () => {
@@ -268,15 +268,15 @@ class EditCasePage extends Component<Props, State> {
 
   newDocket = () => {
     this.props.routing.push('/admin/docket/create');
-  }
+  };
 
   getAllJustices = () => {
     return this.props.justiceStore.getAllJustices();
-  }
+  };
 
   closeCaseResultForm = (c: FullCase) => {
     this.setState({case: c});
-  }
+  };
 
   createEditDocketOverrruled = (docketId: number) => {
     return (lowerCourtOverruled: boolean | undefined) => {
@@ -285,11 +285,11 @@ class EditCasePage extends Component<Props, State> {
         status: DocketStatus.DONE,
       });
     };
-  }
+  };
 
   caseResultEdit = (id: number, edit: EditCase) => {
     return this.props.caseStore.editCase(id, edit);
-  }
+  };
 
   render() {
     const allTerms = this.props.caseStore.allTerms;

@@ -19,11 +19,11 @@ export default class App extends Component<Props> {
 
   navHome = () => {
     this.props.routing!.push('/');
-  }
+  };
 
   navAdmin = () => {
     this.props.routing!.push('/admin');
-  }
+  };
 
   render() {
     return (

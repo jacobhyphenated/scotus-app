@@ -54,21 +54,21 @@ class Login extends Component<Props, State> {
     } catch (e: any) {
       this.setState({ error: e.message?.toString() || 'Invalid Username or Password'});
     }
-  }
+  };
 
   changeUsername = (event: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({ username: event.target.value });
-  }
+  };
 
   changePassword = (event: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({ password: event.target.value });
-  }
+  };
 
   keyPress = (ev: React.KeyboardEvent<HTMLDivElement>) => {
     if (ev.key === 'Enter') {
       this.submit();
     }
-  }
+  };
 
   render() {
     const { classes } = this.props;

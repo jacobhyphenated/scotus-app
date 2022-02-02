@@ -12,7 +12,7 @@ describe('Functional Utilitites', () => {
 
     it('should not execute code block when undefined', () => {
       expect.assertions(0);
-      const value: string = undefined;
+      const value: string | undefined = undefined;
       whenDefined(value, (_) => {
         expect(true).toBeFalsy();
       });

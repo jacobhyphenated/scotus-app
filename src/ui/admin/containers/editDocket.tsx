@@ -43,7 +43,7 @@ class EditDocketPage extends Component<Props, State> {
 
   state: State = {
     submitting: false,
-  }
+  };
 
   async componentDidMount() {
     const docketId = this.props.match.params.id;
@@ -78,7 +78,7 @@ class EditDocketPage extends Component<Props, State> {
     } finally {
       this.setState({ submitting: false});
     } 
-  }
+  };
 
   saveTitle = async (title: string) => {
     if (!title) {
@@ -86,7 +86,7 @@ class EditDocketPage extends Component<Props, State> {
       return;
     }
     this.edit({title});
-  }
+  };
 
   saveDocketNumber = async (docketNumber: string) => {
     if (!docketNumber) {
@@ -94,11 +94,11 @@ class EditDocketPage extends Component<Props, State> {
       return;
     }
     this.edit({docketNumber});
-  }
+  };
 
   saveCourtRuling = async (lowerCourtRuling: string) => {
     this.edit({lowerCourtRuling});
-  }
+  };
 
   saveStatus = async (status: string) => {
     if (!Object.keys(DocketStatus).some(key => key === status)) {
@@ -106,12 +106,12 @@ class EditDocketPage extends Component<Props, State> {
       return;
     }
     this.edit({status: status as DocketStatus});
-  }
+  };
 
   changeLowerCourtOverruled = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const lowerCourtOverruled = event.target.value === 'true' ? true : event.target.value === 'false' ? false : undefined;
     this.edit({lowerCourtOverruled});
-  }
+  };
 
   back = () => {
     this.props.routing.goBack();

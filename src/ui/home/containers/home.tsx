@@ -68,7 +68,7 @@ class Home extends Component<Props, State> {
     searchResults: [],
     termCases: [],
     loading: true,
-  }
+  };
 
   searchText$ = new Subject<string>();
 
@@ -137,7 +137,7 @@ class Home extends Component<Props, State> {
   onTermJusticeClick = (termId: number, justiceId: number) => {
     this.props.routing.replace(`/term/${termId}`);
     this.props.routing.push(`/term/${termId}/justice/${justiceId}`);
-  }
+  };
 
   allCasesClick = () => {
     this.props.routing.replace(`/term/${this.state.selectedTermId}`);

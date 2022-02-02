@@ -45,7 +45,7 @@ class CasePage extends Component<Props, State> {
     selectedTermId: null,
     searching: true,
     caseStatus: 'all',
-  }
+  };
 
   componentDidMount() {
     document.title = 'SCOTUS App | Admin | Case';
@@ -74,15 +74,15 @@ class CasePage extends Component<Props, State> {
 
   changeSearchText = (event: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({searchText: event.target.value});
-  }
+  };
 
   createCase = () => {
     this.props.routing.push('/admin/case/create');
-  }
+  };
 
   editCase = (c: Case) => {
     this.props.routing.push(`/admin/case/edit/${c.id}`);
-  }
+  };
 
   changeCaseStatus = (event: React.ChangeEvent<{value: unknown}>) => {
     this.setState({ caseStatus: event.target.value as CaseStatus | 'all' });

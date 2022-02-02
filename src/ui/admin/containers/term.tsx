@@ -39,7 +39,7 @@ class TermAdminPage extends Component<Props, State> {
 
   state: State = {
     terms: [],
-  }
+  };
   
   componentDidMount() {
     document.title = 'SCOTUS App | Admin | Term';
@@ -54,11 +54,11 @@ class TermAdminPage extends Component<Props, State> {
 
   selectTerm = (term: Term) => {
     this.props.routing.push(`/admin/term/edit/${term.id}`);
-  }
+  };
 
   createTerm = () => {
     this.props.routing.push(`/admin/term/create`);
-  }
+  };
 
   render() {
     return (

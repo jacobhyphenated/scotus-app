@@ -40,7 +40,7 @@ class CreateTermPage extends Component<Props, State> {
     name: '',
     otName: '',
     submitting: false,
-  }
+  };
 
   componentDidMount() {
     document.title = 'SCOTUS App | Admin | Create Term';

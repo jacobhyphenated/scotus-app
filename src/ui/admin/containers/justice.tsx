@@ -41,7 +41,7 @@ class JusticePage extends Component<Props, State> {
   state: State = {
     showAll: false,
     allJustices: [],
-  }
+  };
 
   componentDidMount() {
     document.title = 'SCOTUS App | Admin | Justice';
@@ -49,7 +49,7 @@ class JusticePage extends Component<Props, State> {
 
   attemptRetire = (justice: Justice) => {
     this.setState({retireModal: justice, retireDate: LocalDate.now()});
-  }
+  };
 
   confirmRetire = async () => {
     if (!this.state?.retireModal || !this.state?.retireDate){
@@ -58,11 +58,11 @@ class JusticePage extends Component<Props, State> {
     await this.props.justiceStore!.retireJustice(this.state.retireModal.id, this.state.retireDate);
     this.setState({retireModal: undefined, retireDate: undefined});
     this.props.justiceStore!.refreshActiveJustices();
-  }
+  };
 
   closeRetireModal = () => {
     this.setState({ retireModal: undefined});
-  }
+  };
 
   handleRetireDateChange = (date: LocalDate | null) => {
     this.setState({retireDate: date ?? undefined });
@@ -70,7 +70,7 @@ class JusticePage extends Component<Props, State> {
 
   createJustice = () => {
     this.props.routing!.push('/admin/justice/create');
-  }
+  };
 
   toggleShowAll = async () => {
     const showAllCurrent = this.state.showAll;
@@ -83,7 +83,7 @@ class JusticePage extends Component<Props, State> {
         console.error(e);
       }
     }
-  }
+  };
 
   render() {
     const active = this.props.justiceStore.activeJustices;

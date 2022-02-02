@@ -52,7 +52,7 @@ class CreateCasePage extends Component<Props, State> {
     dockets: [],
     important: false,
     submitting: false,
-  }
+  };
 
   async componentDidMount() {
     document.title = 'SCOTUS App | Admin | Create Case';
@@ -83,11 +83,11 @@ class CreateCasePage extends Component<Props, State> {
 
   changeDockets = (_: React.ChangeEvent<{}>, value: BareDocket[]) => {
     this.setState({ dockets: value});
-  }
+  };
 
   changeImportant = (event: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({important: event.target.checked});
-  }
+  };
 
   submit = async (): Promise<FullCase | null> => {
     const { title, shortSummary, termId, dockets, important } = this.state;
@@ -120,14 +120,14 @@ class CreateCasePage extends Component<Props, State> {
     if (newCase) {
       this.props.routing.push('/admin/case');
     }
-  }
+  };
 
   saveAndEdit = async () => {
     const newCase = await this.submit();
     if (newCase) {
       this.props.routing.push(`/admin/case/edit/${newCase.id}`);
     }
-  }
+  };
 
   render() {
     const unassignedDockets = this.props.docketStore.unassignedDockets;

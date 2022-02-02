@@ -105,16 +105,16 @@ class TermJusticeSummary extends Component<Props, State> {
     console.warn(error);
     this.fetchAllSubscription?.unsubscribe();
     this.props.routing.replace('/');
-  }
+  };
 
   back = () => {
     this.fetchAllSubscription?.unsubscribe();
     this.props.routing.goBack();
-  }
+  };
 
   onCaseClick = (c: Case) => {
     this.props.routing.push(`/case/${c.id}`);
-  }
+  };
 
   caseGroupRow = (cases: FullCase[], header: string) => {
     if (cases.length === 0) {
@@ -132,7 +132,7 @@ class TermJusticeSummary extends Component<Props, State> {
         </div>
       </Grid>
     );
-  }
+  };
 
   render() {
     const { termCases, justice } = this.state;
