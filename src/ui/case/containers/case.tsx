@@ -20,7 +20,7 @@ const styles = (theme: Theme) => createStyles({
     marginRight: theme.spacing(1),
     padding: theme.spacing(2),
     height: `calc(100vh - ${theme.spacing(8)}px)`,
-    overflow: 'scroll',
+    overflowY: 'scroll',
   },
   bold: {
     fontWeight: 'bold',

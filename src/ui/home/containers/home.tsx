@@ -17,7 +17,7 @@ const styles = (theme: Theme) => createStyles({
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
     height: `calc(100vh - ${theme.spacing(8)}px)`,
-    overflow: 'scroll',
+    overflowY: 'scroll',
   },
   search: {
     marginBottom: theme.spacing(3),
