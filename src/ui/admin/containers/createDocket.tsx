@@ -194,7 +194,7 @@ class CreateDocketPage extends Component<Props, State> {
                   variant="outlined"
                   fullWidth
                   multiline
-                  rows={4}
+                  minRows={4}
                   value={lowerCourtRuling}
                   onChange={this.changeRuling}
                 />

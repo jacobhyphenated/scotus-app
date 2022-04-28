@@ -19,13 +19,15 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 * **React** - I've used this project to play around with class based and functional components, sort of a learning playground for me.
 * **Material UI** - Not much customization to the basic material styles and components
 * **TypeScript** - In `strict` mode
-* **Mobx** - I wanted to try to use mobx in a non-trivial application.
+* **Mobx** - Used for global state management and injection. I wanted to try to use mobx in a non-trivial application.
 
 ## Running Locally
 Create a local environment property file `.env.local`. You must add a single variable called `REACT_APP_API_SERVER=` and set it to the running url of your [backend environment](https://github.com/jacobhyphenated/scotus-server)
 
+Then run `yarn && yarn start`
+
 ## License
-Copyright 2021 Jacob Kanipe-Illig
+Copyright 2022 Jacob Kanipe-Illig
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 

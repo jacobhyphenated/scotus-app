@@ -177,7 +177,7 @@ const CreateOpinionCard = (props: Props) => {
               fullWidth
               required
               multiline
-              rows={4}
+              minRows={4}
               value={summary}
               error={!!summaryError}
               helperText={summaryError}

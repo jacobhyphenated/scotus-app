@@ -2,7 +2,7 @@ import { makeStyles, Theme } from "@material-ui/core";
 import { createLinks } from "../../../util/linkParse";
 
 
-const useStyles = makeStyles( (theme: Theme) => ({
+const useStyles = makeStyles( (_: Theme) => ({
   inlineLink: {
     padding: 0,
   },

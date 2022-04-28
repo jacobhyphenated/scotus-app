@@ -25,7 +25,7 @@ interface Props {
   required?: boolean;
   select?: boolean;
   multiline?: boolean;
-  rows?: number;
+  minRows?: number;
 }
 
 const ViewEditInputText = (props: Props) => {

@@ -1,4 +1,3 @@
-import React from 'react';
 import { LocalDate } from '@js-joda/core';
 import { Locale as JsJodaLocale } from "@js-joda/locale_en-us";
 import createJsJodaUtils from '@prinzdezibel/date-io-js-joda';

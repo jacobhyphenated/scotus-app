@@ -20,7 +20,7 @@ interface Props {
 }
 
 const CaseResultForm = (props: Props) => {
-  const { fullCase, onClose, editCase } = props;
+  const { fullCase, onClose, editCase, createEditDocketOverruled } = props;
   const [formError, setFormError] = useState<string>();
   const [resultStatus, setResultStatus] = useState<CaseStatus | ''>('');
   const [decisionDate, setDecisionDate] = useState<LocalDate | null>(null);
@@ -53,16 +53,20 @@ const CaseResultForm = (props: Props) => {
   }, []);
 
   const enableSave = useMemo(() => {
-    return Boolean(resultStatus) && Boolean(decisionDate) && Boolean(result) && Boolean(decisionSummary);
-  }, [decisionDate, decisionSummary, result, resultStatus]);
+    return Boolean(resultStatus) && Boolean(decisionDate) && Boolean(decisionSummary);
+  }, [decisionDate, decisionSummary, resultStatus]);
 
   const save = useCallback(async () => {
     setFormError(undefined);
     try {
+      fullCase.dockets.forEach(docket => {
+        // ensure all docket statuses are set to DONE
+        createEditDocketOverruled(docket.docketId)(undefined);
+      });
       const resultCase = await editCase(fullCase.id, {
         resultStatus: resultStatus || undefined,
         decisionDate: decisionDate ?? undefined,
-        result,
+        result: result || undefined,
         decisionLink,
         decisionSummary,
       });
@@ -70,7 +74,7 @@ const CaseResultForm = (props: Props) => {
     } catch (e: any) {
       setFormError(e?.message ?? 'Failed to update case');
     }
-  }, [editCase, fullCase.id, resultStatus, decisionDate, result, decisionLink, decisionSummary, onClose]);
+  }, [editCase, fullCase, resultStatus, decisionDate, result, decisionLink, decisionSummary, onClose, createEditDocketOverruled]);
 
   const classes = useStyles();
 
@@ -123,7 +127,6 @@ const CaseResultForm = (props: Props) => {
             variant="outlined"
             color="secondary"
             fullWidth
-            required
             name="result"
             label="Result"
             size="small"
@@ -151,7 +154,7 @@ const CaseResultForm = (props: Props) => {
             color="secondary"
             fullWidth
             required
-            rows={3}
+            minRows={3}
             multiline
             name="decisionSummary"
             label="Decision Summary"
@@ -163,7 +166,7 @@ const CaseResultForm = (props: Props) => {
           <Grid item key={docket.docketId}>
             <DocketResultForm
               docket={docket}
-              onSave={props.createEditDocketOverruled(docket.docketId)}
+              onSave={createEditDocketOverruled(docket.docketId)}
             />
           </Grid>
         ))}

@@ -171,7 +171,7 @@ class EditDocketPage extends Component<Props, State> {
                   name="lowerCourt"
                   label="Lower Court Ruling"
                   multiline
-                  rows={4}
+                  minRows={4}
                   value={this.state.docket!.lowerCourtRuling}
                   onSave={this.saveCourtRuling}
                 />

@@ -95,7 +95,7 @@ const OpinionEditCard = (props: Props) => {
                   label="Summary"
                   fullWidth
                   multiline
-                  rows={4}
+                  minRows={4}
                   value={summaryText}
                   variant="outlined"
                   color="secondary"

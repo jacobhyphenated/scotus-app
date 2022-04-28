@@ -179,7 +179,7 @@ class CreateCasePage extends Component<Props, State> {
                   fullWidth
                   required
                   multiline
-                  rows={2}
+                  minRows={2}
                   label="Short Summary"
                   onChange={this.changeShortSummary}
                   value={shortSummary}

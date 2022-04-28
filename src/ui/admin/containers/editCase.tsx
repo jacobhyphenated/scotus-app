@@ -23,19 +23,19 @@ import CaseResultForm from '../components/caseResultForm';
 
 const styleDecorator = withStyles((theme: Theme) => ({
   formContainer: {
-    marginTop: `${theme.spacing(2)}px`,
+    marginTop: theme.spacing(2),
   },
   docketCard: {
-    marginTop: `${theme.spacing(1)}px`,
-    marginBottom: `${theme.spacing(1)}px`,
-    paddingLeft: `${theme.spacing(1)}px`,
-    paddingRight: `${theme.spacing(1)}px`,
+    marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(1),
+    paddingLeft: theme.spacing(1),
+    paddingRight: theme.spacing(1),
   },
   border: {
     border: '1px solid rgba(0,0,0,0.12)',
     borderRadius: 4,
-    marginRight: `${theme.spacing(1)}px`,
-    marginLeft: `${theme.spacing(1)}px`,
+    marginRight: theme.spacing(1),
+    marginLeft: theme.spacing(1),
   },
 }));
 
@@ -343,7 +343,7 @@ class EditCasePage extends Component<Props, State> {
                     name="shortSummary"
                     label="Short Summary"
                     multiline
-                    rows={2}
+                    minRows={2}
                     value={this.state.case.shortSummary}
                     onSave={this.saveShortSummary}
                   />
@@ -451,7 +451,7 @@ class EditCasePage extends Component<Props, State> {
                       name="decisionSummary"
                       label="Decision Summary"
                       multiline
-                      rows={3}
+                      minRows={3}
                       value={this.state.case.decisionSummary ?? ''}
                       onSave={this.saveDecisionSummary}
                     />
