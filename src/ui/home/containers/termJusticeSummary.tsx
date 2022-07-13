@@ -71,7 +71,7 @@ class TermJusticeSummary extends Component<Props, State> {
 
     if (termId && !isNaN(Number(termId))) {
       const cases = await this.props.caseStore.getCaseByTerm(Number(termId));
-      this.fetchAllSubscription = forkJoin(cases.map(c => this.props.caseStore.getCaseById(c.id)))
+      this.fetchAllSubscription = forkJoin(cases.filter(c => c.argumentDate).map(c => this.props.caseStore.getCaseById(c.id)))
         .subscribe({
           next: fullCases => {
             this.setState({ termCases: fullCases});
@@ -171,7 +171,7 @@ class TermJusticeSummary extends Component<Props, State> {
               </Grid>
               <Grid item>
                 <Typography variant="h5">
-                  Cases for {this.state.justice?.name} for the {this.state.term?.name} term 
+                  Argued Cases for {this.state.justice?.name} for the {this.state.term?.name} term 
                 </Typography>
               </Grid>
             </Grid>
