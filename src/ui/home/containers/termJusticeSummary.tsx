@@ -96,9 +96,9 @@ class TermJusticeSummary extends Component<Props, State> {
       this.dataLoadingError(`${justiceId} is not a valid justice id`);
     }
 
-    setImmediate(() => {
+    setTimeout(() => {
       document.title = `SCOTUS App | Term ${this.state.term?.name ?? termId} | ${this.state.justice?.name}`;
-    });
+    }, 0);
   }
 
   dataLoadingError = (error: any) => {
