@@ -83,7 +83,7 @@ const TermSummaryComplete = (props: Props) => {
       <Typography variant="h5" color="textSecondary">The Justices</Typography>
       <Grid container direction="row" className={classes.termSummaryGrid} spacing={1}>
         {summary && summary.justiceSummary.sort(sortJusticeSummary).map(item => (
-          <Grid item key={item.justice.id} xs={12} sm={6} md={3} lg={2} xl={1}>
+          <Grid item key={item.justice.id} xs={12} sm={6} md={3} lg={2} xl={2}>
             <TermJusticeSummaryBox onJusticeClick={onJusticeClick} item={item} />
           </Grid>
         ))}
