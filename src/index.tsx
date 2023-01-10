@@ -5,7 +5,7 @@ import { Provider } from 'mobx-react';
 import { RouterStore, syncHistoryWithStore } from 'mobx-react-router';
 import { Router } from 'react-router';
 import './index.css';
-import App from './App';
+import { App } from './App';
 import * as serviceWorker from './serviceWorker';
 import { ThemeProvider, createTheme, CssBaseline } from '@material-ui/core';
 import { UserStore } from './stores/userStore';

@@ -12,7 +12,7 @@ export class NetworkService {
     });
     const userResponse = await response.json();
     if (response.status >= 300) {
-      throw new Error(userResponse.errorMessage);
+      throw new Error(userResponse?.errorMessage ?? 'Invalid username or password');
     }
     return userResponse ? Object.assign(userResponse, { password }) : null;
   }

@@ -170,7 +170,7 @@ class CasePage extends Component<Props, State> {
               
             </Grid>
             <Grid item>
-              <Typography variant="h4">{fullCase.case}</Typography>
+              <Typography variant="h5">{fullCase.case}</Typography>
             </Grid>
             {combinedWith.length > 0 &&
               <Grid item>
@@ -182,6 +182,9 @@ class CasePage extends Component<Props, State> {
                 ))}
               </Grid>
             }
+            <Grid item>
+              <Link href={`/case/${fullCase.id}/lowerCourt`}><Typography>lower court rulings</Typography></Link>
+            </Grid>
             {this.courtStatusText(fullCase)}
             <Grid item>
               <Typography className={classes.paragraph} paragraph color="textPrimary">
