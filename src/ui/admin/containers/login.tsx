@@ -1,20 +1,14 @@
-import React, { Component } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { inject } from 'mobx-react';
 import { UserStore } from '../../../stores/userStore';
-import { Grid, TextField, Button, withStyles, Theme, createStyles, WithStyles } from '@material-ui/core';
+import { Grid, TextField, Button, Theme, makeStyles } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 
-interface Props extends WithStyles<typeof styles>  {
+interface Props  {
   userStore?: UserStore;
 }
 
-interface State {
-  username: string;
-  password: string;
-  error?: string;
-}
-
-const styles = (theme: Theme) => createStyles({
+const useStyles = makeStyles((theme: Theme) => ({
   paper: {
     [theme.breakpoints.down('sm')]: {
       maxWidth: 600,
@@ -28,97 +22,91 @@ const styles = (theme: Theme) => createStyles({
     margin: `${theme.spacing(1)}px auto`,
     padding: '16px',
   },
-});
+}));
 
-@inject('userStore')
-class Login extends Component<Props, State> {
+const Login = (props: Props) => {
 
-  constructor(props: Props) {
-    super(props);
-    this.state = {
-      username: '',
-      password: '',
-    };
-  }
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState<string>();
 
-  componentDidMount() {
+  useEffect(() => {
     document.title = 'SCOTUS App | Login';
-  }
+  }, []);
 
-  submit = async () => {
+  const submit = useCallback(async () => {
     try {
-      const user = await this.props.userStore?.authenticate(this.state.username, this.state.password);
+      const user = await props.userStore?.authenticate(username, password);
       if (!user) {
-        this.setState({ error: 'Invalid Username or Password'});
+        setError('Invalid Username or Password');
       }
     } catch (e: any) {
       console.log(e);
-      this.setState({ error: e.message });
+      setError(e.message);
     }
-  };
+  }, [password, props.userStore, username]);
 
-  changeUsername = (event: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({ username: event.target.value });
-  };
+  const changeUsername = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    setUsername(event.target.value);
+  }, []);
 
-  changePassword = (event: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({ password: event.target.value });
-  };
+  const changePassword = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(event.target.value);
+  }, []);
 
-  keyPress = (ev: React.KeyboardEvent<HTMLDivElement>) => {
+  const keyPress = useCallback((ev: React.KeyboardEvent<HTMLDivElement>) => {
     if (ev.key === 'Enter') {
-      this.submit();
+      submit();
     }
-  };
+  }, [submit]);
 
-  render() {
-    const { classes } = this.props;
-    return (
-      <Grid className={classes?.paper} container direction="column" justifyContent="center" alignItems="stretch" spacing={2}>
-        <Grid item>
-          <h2>Log In</h2>
-        </Grid>
-        {this.state.error ? (<Alert severity="error">{this.state.error}</Alert>) : '' }
-        <Grid item>
-          <TextField
-            size="small"
-            fullWidth
-            color="secondary"
-            variant="filled"
-            name="username"
-            required
-            label="Username"
-            onChange={this.changeUsername}
-            value={this.state.username}
-          />
-        </Grid>
-        <Grid item>
-          <TextField
-            size="small"
-            color="secondary"
-            variant="filled"
-            fullWidth
-            name="password"
-            type="password"
-            required
-            label="Password"
-            onChange={this.changePassword}
-            onKeyPress={this.keyPress}
-            value={this.state.password}
-          />  
-        </Grid>
-        
-        <Grid item>
-          <Button 
-            color="primary"
-            variant="contained"
-            fullWidth
-            onClick={this.submit}
-          >Log In</Button>
-        </Grid>
+
+  const classes = useStyles();
+  return (
+    <Grid className={classes?.paper} container direction="column" justifyContent="center" alignItems="stretch" spacing={2}>
+      <Grid item>
+        <h2>Log In</h2>
       </Grid>
-    );
-  }
-}
+      {error ? (<Alert severity="error">{error}</Alert>) : '' }
+      <Grid item>
+        <TextField
+          size="small"
+          fullWidth
+          color="secondary"
+          variant="filled"
+          name="username"
+          required
+          label="Username"
+          onChange={changeUsername}
+          value={username}
+        />
+      </Grid>
+      <Grid item>
+        <TextField
+          size="small"
+          color="secondary"
+          variant="filled"
+          fullWidth
+          name="password"
+          type="password"
+          required
+          label="Password"
+          onChange={changePassword}
+          onKeyPress={keyPress}
+          value={password}
+        />  
+      </Grid>
+      
+      <Grid item>
+        <Button 
+          color="primary"
+          variant="contained"
+          fullWidth
+          onClick={submit}
+        >Log In</Button>
+      </Grid>
+    </Grid>
+  );
+};
 
-export default withStyles(styles)(Login);
+export default inject('userStore')(Login);

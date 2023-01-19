@@ -1,17 +1,17 @@
-import React, { Component } from 'react';
-import { withStyles, WithStyles, createStyles } from '@material-ui/styles';
-import { Theme, TextField, InputAdornment, Paper, Grid, Typography, MenuItem, Button } from '@material-ui/core';
+import React, { useCallback, useMemo } from 'react';
+import { Theme, TextField, InputAdornment, Paper, Grid, Typography, MenuItem, Button, makeStyles } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 import { Case, CaseStore, dismissedCases } from '../../../stores/caseStore';
 import { Subject } from 'rxjs';
 import { debounceTime, filter, mergeMap } from 'rxjs/operators';
 import { inject, observer } from 'mobx-react';
-import { autorun } from 'mobx';
 import { History } from 'history';
 import { CasePreviewCard, TermSummaryInProgress, TermSummaryNearEnd, TermSummaryComplete } from '../components';
-import { match } from 'react-router';
+import { useParams } from 'react-router';
+import { useState } from 'react';
+import { useEffect } from 'react';
 
-const styles = (theme: Theme) => createStyles({
+const useStyles = makeStyles((theme: Theme) => ({
   paper: {
     marginTop: theme.spacing(1),
     marginLeft: theme.spacing(1),
@@ -44,194 +44,184 @@ const styles = (theme: Theme) => createStyles({
   searchSpacing: {
     marginRight: theme.spacing(1),
   },
-});
+}));
 
-interface Props extends WithStyles<typeof styles> {
+interface Props {
   caseStore: CaseStore;
   routing: History;
-  match: match<{ id: string }>;
 }
 
-interface State {
-  searchText: string;
-  searchResults: Case[];
-  selectedTermId?: number;
-  termCases: Case[];
-  loading: boolean;
-}
+const Home = (props: Props) => {
 
-@inject('caseStore', 'routing')
-@observer
-class Home extends Component<Props, State> {
-  state: State = {
-    searchText: '',
-    searchResults: [],
-    termCases: [],
-    loading: true,
-  };
+  const [searchText, setSearchText] = useState('');
+  const [searchResults, setSearchResults] = useState<Case[]>([]);
+  const [termCases, setTermCases] = useState<Case[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedTermId, setSelectedTermId] = useState<number>();
+  const [searchText$] = useState(() => new Subject<string>());
 
-  searchText$ = new Subject<string>();
+  const { id } = useParams<{ id: string }>();
 
-  componentDidMount() {
+  useEffect(() => {
     document.title = 'SCOTUS App';
-    this.searchText$.pipe(
+  }, []);
+
+  useEffect(() => {
+    const subscription = searchText$.pipe(
       debounceTime(400),
-      filter(searchText => searchText.length >= 3),
-      mergeMap((searchText) => this.props.caseStore.searchCase(searchText)),
+      filter(text => text.length >= 3),
+      mergeMap((searchText) => props.caseStore.searchCase(searchText)),
     ).subscribe({
-      next: cases => {
-        this.setState({ searchResults: cases });
-      },
+      next: setSearchResults,
       error: err => {
         console.error(err?.message ?? 'Error searching for cases', err);
       },
     });
+    return () => subscription.unsubscribe();
+  }, [searchText$, props.caseStore]);
 
-    autorun((reaction) => {
-      const allTerms = this.props.caseStore.allTerms.filter(t => !t.inactive);
-      if (allTerms.length > 0 && !this.state.selectedTermId) {
-        const termId = this.props.match.params.id;
-        if (termId && !isNaN(Number(termId))) {
-          this.setSelectedTerm(Number(termId));
-        } else {
-          this.setSelectedTerm(allTerms[0].id);
-        }
-        reaction.dispose();
-      }
-    });
-  }
+  const allTerms = props.caseStore.allTerms;
+  const activeTerms = useMemo(() => allTerms.filter(t => !t.inactive), [allTerms]);
 
-  setSelectedTerm = async (termId: number) => {
-    this.setState({ selectedTermId: termId });
+  const setSelectedTerm = useCallback(async (termId: number) => {
+    setSelectedTermId(termId);
     try {
-      const results = await this.props.caseStore.getCaseByTerm(termId);
-      this.setState({ termCases: results, loading: false });
+      const results = await props.caseStore.getCaseByTerm(termId);
+      setTermCases(results);
+      setLoading(false);
     }
     catch (e: any) {
       console.error(e?.message ?? 'Error occurred getting cases by term', e);
+      props.routing.replace('/');
     }
-  };
+  }, [props.caseStore, props.routing]);
 
-  handleInvalidTerm = () => {
-    this.setSelectedTerm(this.props.caseStore.allTerms[0].id);
-    this.props.routing.push('/');
-  };
+  useEffect(() => {
+    if (activeTerms.length > 0 && !selectedTermId) {
+      const termId = id;
+      if (termId && !isNaN(Number(termId))) {
+        setSelectedTerm(Number(termId));
+      } else {
+        setSelectedTerm(activeTerms[0].id);
+      }
+    }
+  }, [activeTerms, id, selectedTermId, setSelectedTerm]);
+
+  const handleInvalidTerm = useCallback(() => {
+    setSelectedTerm(activeTerms[0].id);
+  }, [activeTerms, setSelectedTerm]);
   
-  updateSearchText: React.ChangeEventHandler<HTMLInputElement> = event => {
-    const searchText = event.target.value;
-    if (searchText.length < 3) {
-      this.setState({ searchResults: [] });
+  const updateSearchText: React.ChangeEventHandler<HTMLInputElement> = useCallback(event => {
+    const newSearchText = event.target.value;
+    if (newSearchText.length < 3) {
+      setSearchResults([]);
     }
-    this.setState({ searchText });
-    this.searchText$.next(searchText);
-  };
+    setSearchText(newSearchText);
+    searchText$.next(newSearchText);
+  }, [searchText$]);
 
-  changeSelectedTerm: React.ChangeEventHandler<HTMLInputElement> = event => {
-    this.setSelectedTerm(Number(event.target.value));
-  };
+  const changeSelectedTerm: React.ChangeEventHandler<HTMLInputElement> = useCallback(event => {
+    setSelectedTerm(Number(event.target.value));
+  }, [setSelectedTerm]);
 
-  onCaseClick: (scotusCase: Case) => void = scotusCase => {
-    this.props.routing.push(`/case/${scotusCase.id}`);
-  };
+  const onCaseClick: (scotusCase: Case) => void = useCallback(scotusCase => {
+    props.routing.push(`/case/${scotusCase.id}`);
+  }, [props.routing]);
 
-  onTermJusticeClick = (termId: number, justiceId: number) => {
-    this.props.routing.replace(`/term/${termId}`);
-    this.props.routing.push(`/term/${termId}/justice/${justiceId}`);
-  };
+  const onTermJusticeClick = useCallback((termId: number, justiceId: number) => {
+    props.routing.replace(`/term/${termId}`);
+    props.routing.push(`/term/${termId}/justice/${justiceId}`);
+  }, [props.routing]);
 
-  allCasesClick = () => {
-    this.props.routing.replace(`/term/${this.state.selectedTermId}`);
-    this.props.routing.push(`/term/${this.state.selectedTermId}/all`);
-  };
+  const allCasesClick = useCallback(() => {
+    props.routing.replace(`/term/${selectedTermId}`);
+    props.routing.push(`/term/${selectedTermId}/all`);
+  }, [props.routing, selectedTermId]);
 
-  render() {
-    const { searchText, selectedTermId, searchResults, termCases } = this.state;
-    const activeTerms = this.props.caseStore.allTerms.filter(t => !t.inactive);
+  const undecidedThisTerm = useMemo(() => termCases.filter(c => !c.decisionDate && !dismissedCases(c)), [termCases]); 
+  const classes = useStyles();
 
-    const undecidedThisTerm = termCases.filter(c => !c.decisionDate && !dismissedCases(c)); 
-
-    return (
-      <Paper className={this.props.classes.paper}>
-        <Grid container direction="row" justifyContent="center">
+  return (
+    <Paper className={classes.paper}>
+      <Grid container direction="row" justifyContent="center">
+        <Grid item>
+          <TextField
+            className={classes.search}
+            label="Search Cases"
+            variant="outlined"
+            size="medium"
+            helperText={searchText.length >0 && searchText.length < 3 && 'Enter at least 3 characters'}
+            onChange={updateSearchText}
+            value={searchText}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon color="action" />
+                </InputAdornment>
+              ),
+            }}
+          />
+        </Grid>
+      </Grid>
+      { searchResults.length === 0 && !(searchText.length >= 3) &&
+        <Grid container direction="row" justifyContent="center" alignItems="center">
+          <Grid item className={classes.searchSpacing}>
+            <Typography>Term: </Typography>
+          </Grid>
           <Grid item>
-            <TextField
-              className={this.props.classes.search}
-              label="Search Cases"
-              variant="outlined"
-              size="medium"
-              helperText={searchText.length >0 && searchText.length < 3 && 'Enter at least 3 characters'}
-              onChange={this.updateSearchText}
-              value={searchText}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon color="action" />
-                  </InputAdornment>
-                ),
-              }}
-            />
+            {selectedTermId && 
+              <TextField
+                id="admin-case-term-filter"
+                size="small"
+                color="primary"
+                variant="outlined"
+                select
+                value={selectedTermId}
+                onChange={changeSelectedTerm}
+              >
+                {activeTerms.map(term => (
+                  <MenuItem key={term.id} value={term.id}>{term.name}</MenuItem>
+                ))}
+              </TextField>
+            }
           </Grid>
         </Grid>
-        { searchResults.length === 0 && !(searchText.length >= 3) &&
-          <Grid container direction="row" justifyContent="center" alignItems="center">
-            <Grid item className={this.props.classes.searchSpacing}>
-              <Typography>Term: </Typography>
-            </Grid>
-            <Grid item>
-              {selectedTermId && 
-                <TextField
-                  id="admin-case-term-filter"
-                  size="small"
-                  color="primary"
-                  variant="outlined"
-                  select
-                  value={selectedTermId}
-                  onChange={this.changeSelectedTerm}
-                >
-                  {activeTerms.map(term => (
-                    <MenuItem key={term.id} value={term.id}>{term.name}</MenuItem>
-                  ))}
-                </TextField>
-              }
-            </Grid>
-          </Grid>
-        }
-        {!this.state.loading &&
-          <div className={this.props.classes.body}>
-            {searchResults.length > 0 ? 
-              <>
-                <Typography variant="h5" color="textSecondary">Search results</Typography>
-                <Grid container direction="row" justifyContent="flex-start" spacing={2} className={this.props.classes.searchGrid}>
-                {searchResults.map(r => (
-                  <Grid item xs={12} sm={6} md={4} lg={3} key={r.id}>
-                    <CasePreviewCard case={r} onClick={this.onCaseClick} />
-                  </Grid>
-                ))}
+      }
+      {!loading &&
+        <div className={classes.body}>
+          {searchResults.length > 0 ? 
+            <>
+              <Typography variant="h5" color="textSecondary">Search results</Typography>
+              <Grid container direction="row" justifyContent="flex-start" spacing={2} className={classes.searchGrid}>
+              {searchResults.map(r => (
+                <Grid item xs={12} sm={6} md={4} lg={3} key={r.id}>
+                  <CasePreviewCard case={r} onClick={onCaseClick} />
                 </Grid>
-              </>
-            : searchText.length >= 3 ?
-              <Typography variant="h5" color="textSecondary">No Results</Typography>
-            : undecidedThisTerm.length === 0 ? 
-              <TermSummaryComplete
-                cases={termCases}
-                termId={this.state.selectedTermId!}
-                caseStore={this.props.caseStore}
-                invalidTerm={this.handleInvalidTerm}
-                onCaseClick={this.onCaseClick} 
-                navigateToJustice={this.onTermJusticeClick}
-              />
-            : (undecidedThisTerm.length / termCases.length < .25) ?
-              <TermSummaryNearEnd cases={termCases} onCaseClick={this.onCaseClick} />
-            : <TermSummaryInProgress cases={termCases} onCaseClick={this.onCaseClick} />
-            }
-            {searchResults.length === 0 && !(searchText.length >= 3) &&
-              <Button variant="text" color="secondary" onClick={this.allCasesClick}>All Term Cases</Button>
-            }
-          </div>
-        }
-      </Paper>
-    );
-  }
-}
+              ))}
+              </Grid>
+            </>
+          : searchText.length >= 3 ?
+            <Typography variant="h5" color="textSecondary">No Results</Typography>
+          : undecidedThisTerm.length === 0 ? 
+            <TermSummaryComplete
+              cases={termCases}
+              termId={selectedTermId!}
+              caseStore={props.caseStore}
+              invalidTerm={handleInvalidTerm}
+              onCaseClick={onCaseClick} 
+              navigateToJustice={onTermJusticeClick}
+            />
+          : (undecidedThisTerm.length / termCases.length < .25) ?
+            <TermSummaryNearEnd cases={termCases} onCaseClick={onCaseClick} />
+          : <TermSummaryInProgress cases={termCases} onCaseClick={onCaseClick} />
+          }
+          {searchResults.length === 0 && !(searchText.length >= 3) &&
+            <Button variant="text" color="secondary" onClick={allCasesClick}>All Term Cases</Button>
+          }
+        </div>
+      }
+    </Paper>
+  );
+};
 
-export default withStyles(styles)(Home);
+export default inject('caseStore', 'routing')(observer(Home));

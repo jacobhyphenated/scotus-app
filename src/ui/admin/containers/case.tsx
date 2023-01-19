@@ -1,13 +1,13 @@
-import React, { Component } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { inject, observer } from 'mobx-react';
-import { Typography, withStyles, Theme, Grid, Fab, TextField, MenuItem, WithStyles, createStyles } from '@material-ui/core';
+import { Typography, Theme, Grid, Fab, TextField, MenuItem, makeStyles } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import { History } from 'history';
 import { CaseStore, Case, CaseStatus } from '../../../stores/caseStore';
 import { autorun } from 'mobx';
 import CaseCard from '../components/caseCard';
 
-const styles = (theme: Theme) => createStyles(({
+const useStyles = makeStyles((theme: Theme) =>({
   fab: {
     position: 'fixed',
     right: '25%',
@@ -22,153 +22,147 @@ const styles = (theme: Theme) => createStyles(({
   },
 }));
 
-interface Props extends WithStyles<typeof styles> {
+interface Props {
   routing: History;
   caseStore: CaseStore;
 }
 
-interface State {
-  termResults: Case[];
-  searchText: string;
-  selectedTermId: number | null;
-  searching: boolean;
-  caseStatus: CaseStatus | 'all';
-}
+const CasePage = (props: Props) => {
 
-@inject('routing', 'caseStore')
-@observer
-class CasePage extends Component<Props, State> {
+  const [termResults, setTermResults] = useState<Case[]>([]);
+  const [searchText, setSearchText] = useState('');
+  const [selectedTermId, setSelectedTermId] = useState<number | null>(null);
+  const [searching, setSearching] = useState(true);
+  const [caseStatus, setCaseStatus] = useState<CaseStatus | 'all'>('all');
 
-  state: State = {
-    termResults: [],
-    searchText: '',
-    selectedTermId: null,
-    searching: true,
-    caseStatus: 'all',
-  };
-
-  componentDidMount() {
+  useEffect(() => {
     document.title = 'SCOTUS App | Admin | Case';
+  }, []);
+
+  const setSelectedTerm = useCallback(async (termId: number) => {
+    try {
+      setSearching(true);
+      setSelectedTermId(termId);
+      const results = await props.caseStore.getCaseByTerm(termId);
+      setTermResults(results);
+      setSearching(false);
+    } catch (e: any) {
+      setSearching(false);
+      console.error(e?.errorMessage ?? 'Error occurred getting cases by term', e);
+    }
+  }, [props.caseStore]);
+
+
+  useEffect(() =>{
     autorun((reaction) => {
-      const allTerms = this.props.caseStore.allTerms;
-      if (allTerms.length > 0 && !this.state.selectedTermId) {
-        this.setSelectedTerm(allTerms[0].id);
+      const allTerms = props.caseStore.allTerms;
+      if (allTerms.length > 0 && !selectedTermId) {
+        setSelectedTerm(allTerms[0].id);
         reaction.dispose();
       }
     });
-  }
+  },[props.caseStore.allTerms, selectedTermId, setSelectedTerm]);
 
-  async setSelectedTerm(termId: number) {
-    try {
-      this.setState({searching: true, selectedTermId: termId});
-      const results = await this.props.caseStore.getCaseByTerm(termId);
-      this.setState({termResults: results, searching: false});
-    } catch (e: any) {
-      console.error(e?.errorMessage ?? 'Error occurred getting cases by term', e);
-    }
-  }
+  const changeSelectedTerm = useCallback((event: React.ChangeEvent<{value: unknown}>) => {
+    setSelectedTerm(event.target.value as number);
+  }, [setSelectedTerm]);
 
-  changeSelectedTerm = (event: React.ChangeEvent<{value: unknown}>) => {
-    this.setSelectedTerm(event.target.value as number);
-  };
+  const changeSearchText = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchText(event.target.value);
+  },[]);
 
-  changeSearchText = (event: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({searchText: event.target.value});
-  };
+  const createCase = useCallback(() => {
+    props.routing.push('/admin/case/create');
+  },[props.routing]);
 
-  createCase = () => {
-    this.props.routing.push('/admin/case/create');
-  };
+  const editCase = useCallback((c: Case) => {
+    props.routing.push(`/admin/case/edit/${c.id}`);
+  },[props.routing]);
 
-  editCase = (c: Case) => {
-    this.props.routing.push(`/admin/case/edit/${c.id}`);
-  };
+  const changeCaseStatus = useCallback((event: React.ChangeEvent<{value: unknown}>) => {
+    setCaseStatus(event.target.value as CaseStatus | 'all');
+  },[]);
 
-  changeCaseStatus = (event: React.ChangeEvent<{value: unknown}>) => {
-    this.setState({ caseStatus: event.target.value as CaseStatus | 'all' });
-  };
+  const classes = useStyles();
 
-  render() {
-    const { termResults, searchText, selectedTermId, searching, caseStatus } = this.state;
-    const allTerms = this.props.caseStore.allTerms;
-    const filteredCases = (!searchText ? 
-      termResults : 
-      termResults.filter(c => c.case.toLocaleLowerCase().indexOf(searchText.toLocaleLowerCase()) !== -1))
-      .filter(c => caseStatus === 'all' || c.status === caseStatus);
-    return (
-      <>
-        <Grid container direction="row" spacing={3} alignItems="center">
-          <Grid item><Typography variant="h4">Cases</Typography></Grid>
-          {!!selectedTermId &&
+  const allTerms = props.caseStore.allTerms;
+  const filteredCases = useMemo(() => (
+    (!searchText ? termResults : 
+      termResults.filter(c => c.case.toLocaleLowerCase().indexOf(searchText.toLocaleLowerCase()) !== -1)
+    ).filter(c => caseStatus === 'all' || c.status === caseStatus)
+  ), [caseStatus, searchText, termResults]);
+  return (
+    <>
+      <Grid container direction="row" spacing={3} alignItems="center">
+        <Grid item><Typography variant="h4">Cases</Typography></Grid>
+        {!!selectedTermId &&
+          <Grid item>
+            <TextField
+              id="admin-case-term-filter"
+              label="Term"
+              size="small"
+              color="primary"
+              variant="outlined"
+              select
+              value={selectedTermId}
+              onChange={changeSelectedTerm}
+            >
+              {allTerms.map(term => (
+                <MenuItem key={term.id} value={term.id}>{term.name}</MenuItem>
+              ))}
+            </TextField>
+          </Grid>
+        }
+      </Grid>
+      {searching ?
+        <Typography variant="h6" color="textSecondary">Searching...</Typography>  
+        :
+        <>
+          <Grid container direction="row" alignItems="baseline" spacing={2} className={classes.filters}>
             <Grid item>
               <TextField
-                id="admin-case-term-filter"
-                label="Term"
+                id="admin-case-search"
+                label="Filter"
                 size="small"
                 color="primary"
                 variant="outlined"
+                value={searchText}
+                onChange={changeSearchText}
+              />
+            </Grid>
+            <Grid item>
+              <TextField
+                id="create-case-status-select"
+                label="Status"
+                size="small"
+                color="primary"
+                variant="outlined"
+                className={classes.searchBox}
                 select
-                value={selectedTermId}
-                onChange={this.changeSelectedTerm}
+                value={caseStatus}
+                onChange={changeCaseStatus}
               >
-                {allTerms.map(term => (
-                  <MenuItem key={term.id} value={term.id}>{term.name}</MenuItem>
+                <MenuItem value="all">All</MenuItem>
+                {Object.keys(CaseStatus).map(status => (
+                  <MenuItem key={status} value={status}>{status}</MenuItem>
                 ))}
               </TextField>
             </Grid>
-          }
-        </Grid>
-        {searching ?
-          <Typography variant="h6" color="textSecondary">Searching...</Typography>  
-          :
-          <>
-            <Grid container direction="row" alignItems="baseline" spacing={2} className={this.props.classes.filters}>
-              <Grid item>
-                <TextField
-                  id="admin-case-search"
-                  label="Filter"
-                  size="small"
-                  color="primary"
-                  variant="outlined"
-                  value={searchText}
-                  onChange={this.changeSearchText}
-                />
+          </Grid>
+          <Grid container>
+            {filteredCases.map(filteredCase => (
+              <Grid item key={filteredCase.id} xs={12} md={6} lg={4}>
+                <CaseCard key={filteredCase.id} case={filteredCase} onEditCase={editCase} />
               </Grid>
-              <Grid item>
-                <TextField
-                  id="create-case-status-select"
-                  label="Status"
-                  size="small"
-                  color="primary"
-                  variant="outlined"
-                  className={this.props.classes.searchBox}
-                  select
-                  value={caseStatus}
-                  onChange={this.changeCaseStatus}
-                >
-                  <MenuItem value="all">All</MenuItem>
-                  {Object.keys(CaseStatus).map(status => (
-                    <MenuItem key={status} value={status}>{status}</MenuItem>
-                  ))}
-                </TextField>
-              </Grid>
-            </Grid>
-            <Grid container>
-              {filteredCases.map(filteredCase => (
-                <Grid item key={filteredCase.id} xs={12} md={6} lg={4}>
-                  <CaseCard key={filteredCase.id} case={filteredCase} onEditCase={this.editCase} />
-                </Grid>
-              ))}
-            </Grid>
-          </>
-        }
-        <Fab className={this.props.classes.fab} onClick={this.createCase} color="primary" aria-label="add">
-          <AddIcon />
-        </Fab>
-      </>
-    );
-  }
+            ))}
+          </Grid>
+        </>
+      }
+      <Fab className={classes.fab} onClick={createCase} color="primary" aria-label="add">
+        <AddIcon />
+      </Fab>
+    </>
+  );
+};
 
-}
-
-export default withStyles(styles)(CasePage);
+export default inject('routing', 'caseStore')(observer(CasePage));

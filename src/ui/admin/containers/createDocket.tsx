@@ -1,14 +1,14 @@
-import React, { Component } from 'react';
-import { Grid, Typography, IconButton, TextField, Theme, Button, withStyles, MenuItem } from '@material-ui/core';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Grid, Typography, IconButton, TextField, Theme, Button, MenuItem, makeStyles } from '@material-ui/core';
 import BackIcon from '@material-ui/icons/ArrowBack';
 import { inject, observer } from 'mobx-react';
 import { History } from 'history';
 import { DocketStore, DocketStatus } from '../../../stores/docketStore';
 import { CourtStore } from '../../../stores/courtStore';
 
-const styleDecorator = withStyles((theme: Theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   formContainer: {
-    'margin-top': `${theme.spacing(2)}px`,
+    marginTop: theme.spacing(2),
     [theme.breakpoints.down('sm')]: {
       maxWidth: 320,
     },
@@ -18,220 +18,204 @@ const styleDecorator = withStyles((theme: Theme) => ({
   },
 }));
 
-interface State {
-  title: string;
-  docketNumber: string;
-  lowerCourtId: number | null;
-  lowerCourtRuling: string;
-  status: DocketStatus;
-
-  formError?: string;
-  titleError?: string;
-  docketNumberError?: string;
-  lowerCourtError?: string;
-
-  submitting: boolean;
-}
-
 interface Props {
   routing: History;
   docketStore: DocketStore;
   courtStore: CourtStore;
-  classes: {[id: string]: string};
 }
 
-@inject('routing', 'courtStore', 'docketStore')
-@observer
-class CreateDocketPage extends Component<Props, State> {
+const CreateDocketPage = (props: Props) => {
 
-  state: State = {
-    title: '',
-    docketNumber: '',
-    lowerCourtId: 0,
-    lowerCourtRuling: '',
-    status: DocketStatus.CERT_GRANTED,
-    submitting: false,
-  };
+  const [title, setTitle] =  useState('');
+  const [docketNumber, setDocketNumber] = useState('');
+  const [lowerCourtId, setLowerCourtId] = useState(0);
+  const [lowerCourtRuling, setLowerCourtRuling] = useState('');
+  const [status, setStatus] = useState(DocketStatus.CERT_GRANTED);
+  const [submitting, setSubmitting] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
+  const [titleError, setTitleError] = useState<string | null>(null);
+  const [docketNumberError, setDocketNumberError] = useState<string | null>(null);
+  const [lowerCourtError, setLowerCourtError] = useState<string | null>(null);
 
-  componentDidMount() {
+  useEffect(() => {
     document.title = 'SCOTUS App | Admin | Create Docket';
-  }
+  }, []);
 
-  back = () => {
-    this.props.routing.goBack();
-  };
+  const back = useCallback(() => {
+    props.routing.goBack();
+  }, [props.routing]);
 
-  changeTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({ title: event.target.value, titleError: undefined });
-  };
+  const changeTitle = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    setTitle(event.target.value);
+    setTitleError(null);
+  }, []);
 
-  changeDocketNumber = (event: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({ docketNumber: event.target.value, docketNumberError: undefined });
-  };
+  const changeDocketNumber = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    setDocketNumber(event.target.value);
+    setDocketNumberError(null);
+  }, []);
 
-  changeLowerCourt = (event: React.ChangeEvent<{value: unknown}>) => {
-    this.setState({ lowerCourtId: event.target.value as number, lowerCourtError: undefined});
-  };
+  const changeLowerCourt = useCallback((event: React.ChangeEvent<{value: unknown}>) => {
+    setLowerCourtId(event.target.value as number);
+    setLowerCourtError(null);
+  }, []);
 
-  changeRuling = (event: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({ lowerCourtRuling: event.target.value });
-  };
+  const changeRuling = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    setLowerCourtRuling(event.target.value);
+  }, []);
 
-  changeStatus = (event: React.ChangeEvent<{value: unknown}>) => {
-    this.setState({ status: event.target.value as DocketStatus });
-  };
+  const changeStatus = useCallback((event: React.ChangeEvent<{value: unknown}>) => {
+    setStatus(event.target.value as DocketStatus);
+  }, []);
 
-  submit = async () => {
-    const { title, docketNumber, lowerCourtId, lowerCourtRuling, status } = this.state;
+  const submit = useCallback(async () => {
     let valid = true;
     if (!title) {
-      this.setState({ titleError: 'Title is required' });
+      setTitleError('Title is required');
       valid = false;
     }
     if (!docketNumber) {
-      this.setState({ docketNumberError: 'Docket number is required' });
+      setDocketNumberError('Docket number is required');
       valid = false;
     }
     if (!lowerCourtId) {
-      this.setState({ lowerCourtError: 'Select a lower court' });
+      setLowerCourtError('Select a lower court');
       valid = false;
     }
     if (!valid) {
       return;
     }
-    this.setState({ submitting: true });
+    setSubmitting(true);
     try {
-      await this.props.docketStore.createDocket(title, docketNumber, lowerCourtId!, lowerCourtRuling, status);
-      this.props.routing.goBack();
+      await props.docketStore.createDocket(title, docketNumber, lowerCourtId, lowerCourtRuling, status);
+      props.routing.goBack();
     } catch (e: any) {
-      this.setState({ formError: e?.message ?? 'An error occurred creating this docket'});
+      setFormError(e?.message ?? 'An error occurred creating this docket');
     } finally {
-      this.setState({ submitting: false });
+      setSubmitting(false);
     }
     
-  };
+  }, [docketNumber, lowerCourtId, lowerCourtRuling, props.docketStore, props.routing, status, title]);
 
-  render() {
-    const courts = this.props.courtStore.allCourts;
-    const { title, docketNumber, lowerCourtId, lowerCourtRuling, status, formError, titleError, docketNumberError, lowerCourtError, submitting } = this.state;
-    return (
-      <Grid container direction="column">
-        <Grid item>
-          <IconButton onClick={this.back}>
-            <BackIcon color="action" />
-          </IconButton>
-        </Grid>
-        <Grid item>
-          <Typography variant="h4" component="h2">Create Docket</Typography>
-        </Grid>
-        <Grid item>
-          <form className={this.props.classes.formContainer} onSubmit={this.submit}>
-            <Grid container direction="column" spacing={2}>
-              {!!formError ? (
-                <Grid item>
-                  <Typography color="error">{formError}</Typography>
-                </Grid>) 
-                : ''
-              }
-              <Grid item>
-                <TextField
-                  id="create-docket-title"
-                  name="title"
-                  size="small"
-                  color="primary"
-                  variant="outlined"
-                  fullWidth
-                  required
-                  label="Title"
-                  onChange={this.changeTitle}
-                  value={title ?? ''}
-                  error={!!titleError}
-                  helperText={titleError}
-                />
-              </Grid>
-              <Grid item>
-                <TextField
-                  id="create-docket-number"
-                  name="docketNumber"
-                  size="small"
-                  color="primary"
-                  variant="outlined"
-                  fullWidth
-                  required
-                  label="Docket Number"
-                  onChange={this.changeDocketNumber}
-                  value={docketNumber ?? ''}
-                  error={!!docketNumberError}
-                  helperText={docketNumberError}
-                />
-              </Grid>
-              <Grid item>
-                <TextField
-                  id="create-docket-court-select"
-                  label="Lower Court"
-                  size="small"
-                  color="primary"
-                  variant="outlined"
-                  required
-                  fullWidth
-                  select
-                  error={!!lowerCourtError}
-                  helperText={lowerCourtError}
-                  value={lowerCourtId}
-                  onChange={this.changeLowerCourt}
-                >
-                  <MenuItem value={0} disabled>Choose a lower court</MenuItem>
-                  {courts.map(court => (
-                    <MenuItem key={court.id} value={court.id}>{court.name}</MenuItem>
-                  ))}
-                </TextField>
-              </Grid>
-              <Grid item>
-                <TextField 
-                  id="create-docket-lower-court-ruling"
-                  label="Lower Court Ruling"
-                  color="primary"
-                  variant="outlined"
-                  fullWidth
-                  multiline
-                  minRows={4}
-                  value={lowerCourtRuling}
-                  onChange={this.changeRuling}
-                />
-              </Grid>
-              <Grid item>
-                <TextField
-                  id="create-docket-status"
-                  label="Status"
-                  size="small"
-                  color="primary"
-                  variant="outlined"
-                  required
-                  fullWidth
-                  select
-                  value={status}
-                  onChange={this.changeStatus}
-                >
-                  {Object.values(DocketStatus).map((status, index) => (
-                    <MenuItem key={index} value={status}>{status}</MenuItem>
-                  ))}
-                </TextField>
-              </Grid>
-              <Grid item>
-                <Button 
-                  disabled={ submitting || !!titleError || !!docketNumberError || !!lowerCourtError }
-                  color="primary"
-                  variant="contained"
-                  fullWidth
-                  onClick={this.submit}
-                >Create</Button>
-              </Grid>
-            </Grid>
-          </form>
-        </Grid>
+  const courts = props.courtStore.allCourts;
+  const classes = useStyles();
+  return (
+    <Grid container direction="column">
+      <Grid item>
+        <IconButton onClick={back}>
+          <BackIcon color="action" />
+        </IconButton>
       </Grid>
-    );
-  }
-}
+      <Grid item>
+        <Typography variant="h4" component="h2">Create Docket</Typography>
+      </Grid>
+      <Grid item>
+        <form className={classes.formContainer} onSubmit={submit}>
+          <Grid container direction="column" spacing={2}>
+            {!!formError ? (
+              <Grid item>
+                <Typography color="error">{formError}</Typography>
+              </Grid>) 
+              : ''
+            }
+            <Grid item>
+              <TextField
+                id="create-docket-title"
+                name="title"
+                size="small"
+                color="primary"
+                variant="outlined"
+                fullWidth
+                required
+                label="Title"
+                onChange={changeTitle}
+                value={title ?? ''}
+                error={!!titleError}
+                helperText={titleError}
+              />
+            </Grid>
+            <Grid item>
+              <TextField
+                id="create-docket-number"
+                name="docketNumber"
+                size="small"
+                color="primary"
+                variant="outlined"
+                fullWidth
+                required
+                label="Docket Number"
+                onChange={changeDocketNumber}
+                value={docketNumber ?? ''}
+                error={!!docketNumberError}
+                helperText={docketNumberError}
+              />
+            </Grid>
+            <Grid item>
+              <TextField
+                id="create-docket-court-select"
+                label="Lower Court"
+                size="small"
+                color="primary"
+                variant="outlined"
+                required
+                fullWidth
+                select
+                error={!!lowerCourtError}
+                helperText={lowerCourtError}
+                value={lowerCourtId}
+                onChange={changeLowerCourt}
+              >
+                <MenuItem value={0} disabled>Choose a lower court</MenuItem>
+                {courts.map(court => (
+                  <MenuItem key={court.id} value={court.id}>{court.name}</MenuItem>
+                ))}
+              </TextField>
+            </Grid>
+            <Grid item>
+              <TextField 
+                id="create-docket-lower-court-ruling"
+                label="Lower Court Ruling"
+                color="primary"
+                variant="outlined"
+                fullWidth
+                multiline
+                minRows={4}
+                value={lowerCourtRuling}
+                onChange={changeRuling}
+              />
+            </Grid>
+            <Grid item>
+              <TextField
+                id="create-docket-status"
+                label="Status"
+                size="small"
+                color="primary"
+                variant="outlined"
+                required
+                fullWidth
+                select
+                value={status}
+                onChange={changeStatus}
+              >
+                {Object.values(DocketStatus).map((status, index) => (
+                  <MenuItem key={index} value={status}>{status}</MenuItem>
+                ))}
+              </TextField>
+            </Grid>
+            <Grid item>
+              <Button 
+                disabled={ submitting || !!titleError || !!docketNumberError || !!lowerCourtError }
+                color="primary"
+                variant="contained"
+                fullWidth
+                onClick={submit}
+              >Create</Button>
+            </Grid>
+          </Grid>
+        </form>
+      </Grid>
+    </Grid>
+  );
+};
 
-export default styleDecorator(CreateDocketPage);
+export default inject('routing', 'courtStore', 'docketStore')(observer(CreateDocketPage));

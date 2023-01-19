@@ -1,15 +1,15 @@
-import React, { Component } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { inject, observer } from 'mobx-react';
-import { Typography, withStyles, Theme, Grid, createStyles, WithStyles, Fab } from '@material-ui/core';
+import { Typography, Theme, Grid, Fab, makeStyles } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import { History } from 'history';
 import { CaseStore, Term } from '../../../stores/caseStore';
 import { autorun } from 'mobx';
 import TermCard from '../components/termCard';
 
-const styles = (theme: Theme) => createStyles({
+const useStyles = makeStyles((theme: Theme) => ({
   formContainer: {
-    'margin-top': `${theme.spacing(2)}px`,
+    marginTop: theme.spacing(2),
     [theme.breakpoints.down('sm')]: {
       maxWidth: 280,
     },
@@ -22,62 +22,53 @@ const styles = (theme: Theme) => createStyles({
     right: '25%',
     bottom: '10vh',
   },
-});
+}));
 
-interface Props extends WithStyles<typeof styles> {
+interface Props {
   routing: History;
   caseStore: CaseStore;
 }
 
-interface State {
-  terms: Term[];
-}
+const TermAdminPage = (props: Props) => {
 
-@inject('routing', 'caseStore')
-@observer
-class TermAdminPage extends Component<Props, State> {
-
-  state: State = {
-    terms: [],
-  };
+  const [terms, setTerms] = useState<Term[]>([]);
   
-  componentDidMount() {
+  useEffect(() => {
     document.title = 'SCOTUS App | Admin | Term';
     autorun((reaction) => {
-      const allTerms = this.props.caseStore.allTerms;
+      const allTerms = props.caseStore.allTerms;
       if (allTerms.length > 0) {
-        this.setState({ terms: allTerms });
+        setTerms(allTerms);
         reaction.dispose();
       }
     });
-  }
+  }, [props.caseStore.allTerms]);
 
-  selectTerm = (term: Term) => {
-    this.props.routing.push(`/admin/term/edit/${term.id}`);
-  };
+  const selectTerm = useCallback((term: Term) => {
+    props.routing.push(`/admin/term/edit/${term.id}`);
+  }, [props.routing]);
 
-  createTerm = () => {
-    this.props.routing.push(`/admin/term/create`);
-  };
+  const createTerm = useCallback(() => {
+    props.routing.push(`/admin/term/create`);
+  }, [props.routing]);
 
-  render() {
-    return (
-      <>
-        <Typography variant='h4'>Terms</Typography>
-        <Grid container direction='column'>
-          {this.state.terms.map(term => (
-            <Grid item key={term.id}>
-              <TermCard term={term} onClick={this.selectTerm} />
-            </Grid>
-          ))}
-        </Grid>
-        <Fab className={this.props.classes.fab} onClick={this.createTerm} color="primary" aria-label="add">
-          <AddIcon />
-        </Fab>
-      </>
-    );
-  }
-}
+  const classes = useStyles();
 
-export default withStyles(styles)(TermAdminPage);
+  return (
+    <>
+      <Typography variant='h4'>Terms</Typography>
+      <Grid container direction='column'>
+        {terms.map(term => (
+          <Grid item key={term.id}>
+            <TermCard term={term} onClick={selectTerm} />
+          </Grid>
+        ))}
+      </Grid>
+      <Fab className={classes.fab} onClick={createTerm} color="primary" aria-label="add">
+        <AddIcon />
+      </Fab>
+    </>
+  );
+};
 
+export default inject('routing', 'caseStore')(observer(TermAdminPage));

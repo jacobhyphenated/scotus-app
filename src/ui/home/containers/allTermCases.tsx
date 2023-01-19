@@ -1,6 +1,5 @@
-import React, { Component } from 'react';
-import { withStyles, WithStyles, createStyles } from '@material-ui/styles';
-import { Theme, TextField, InputAdornment, Paper, Grid, Typography, IconButton } from '@material-ui/core';
+import React, { useMemo, useState } from 'react';
+import { Theme, TextField, InputAdornment, Paper, Grid, Typography, IconButton, makeStyles } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 import BackIcon from '@material-ui/icons/ArrowBack';
 import { Case, CaseSitting, CaseStatus, CaseStore, Term } from '../../../stores/caseStore';
@@ -10,9 +9,11 @@ import { inject, observer } from 'mobx-react';
 import { autorun } from 'mobx';
 import { History } from 'history';
 import { CaseListItem } from '../components';
-import { match } from 'react-router';
+import { useParams } from 'react-router';
+import { useCallback } from 'react';
+import { useEffect } from 'react';
 
-const styles = (theme: Theme) => createStyles({
+const useStyles = makeStyles((theme: Theme) => ({
   paper: {
     marginTop: theme.spacing(1),
     marginLeft: theme.spacing(1),
@@ -36,34 +37,23 @@ const styles = (theme: Theme) => createStyles({
   sitting: {
     padding: theme.spacing(1),
   },
-});
+}));
 
-interface Props extends WithStyles<typeof styles> {
+interface Props {
   caseStore: CaseStore;
   routing: History;
-  match: match<{ id: string }>;
 }
 
-interface State {
-  termCases: Case[];
-  filteredCases: Case[];
-  term?: Term;
-  searchText: string;
-}
+const AllTermCasesPage = (props: Props) => {
 
-@inject('caseStore', 'routing')
-@observer
-class AllTermCasesPage extends Component<Props, State> {
+  const [termCases, setTermCases] = useState<Case[]>([]);
+  const [filteredCases, setFilteredCases] = useState<Case[]>([]);
+  const [searchText, setSearchText] = useState('');
+  const [term, setTerm] = useState<Term>();
+  const [searchText$] = useState(() => new Subject<string>());
 
-  state: State = {
-    termCases: [],
-    filteredCases: [],
-    searchText: '',
-  };
 
-  searchText$ = new Subject<string>();
-
-  caseSorter = (c1: Case, c2: Case) => {
+  const caseSorter = useCallback((c1: Case, c2: Case) => {
     if (!c1.argumentDate && !!c2.argumentDate) {
       return 1;
     }
@@ -78,119 +68,126 @@ class AllTermCasesPage extends Component<Props, State> {
     }
     const statusOrder = [CaseStatus.GRANTED, CaseStatus.GVR,  CaseStatus.DIG, CaseStatus.DISMISSED];
     return statusOrder.indexOf(c1.status) - statusOrder.indexOf(c2.status);
-  };
+  }, []);
 
-  async componentDidMount() {
-    this.searchText$.pipe(
+  useEffect(() => {
+    const subscription = searchText$.pipe(
       debounceTime(200),
-      map(searchText => searchText.length >= 3 
-        ? this.state.termCases.filter(c => c.case.toLocaleLowerCase().includes(searchText.toLocaleLowerCase()))
-        : this.state.termCases),
+      map(search => search.length >= 3 
+        ? termCases.filter(c => c.case.toLocaleLowerCase().includes(search.toLocaleLowerCase()))
+        : termCases),
     ).subscribe({
       next: cases => {
-        this.setState({ filteredCases: cases });
+        setFilteredCases(cases);
       },
     });
+    return () => subscription.unsubscribe();
+  }, [searchText$, termCases]);
 
-    const termId = this.props.match.params.id;
+  const { id } = useParams<{ id: string }>();
+  const allTerms = props.caseStore.allTerms;
 
+  useEffect(() => {
+    const termId = id;
     autorun((reaction) => {
-      if (this.props.caseStore.allTerms.length > 0 && !this.state.term) {
-        const term = this.props.caseStore.allTerms.find(t => t.id === Number(termId));
-        if (!term) {
+      if (allTerms.length > 0 && !term) {
+        const selectedTerm = allTerms.find(t => t.id === Number(termId));
+        if (!selectedTerm) {
           console.warn(`${termId} is not a valid term id`);
-          this.props.routing.replace('/');
+          props.routing.replace('/');
           return;
         }
-        this.setState({ term });
-        document.title = `SCOTUS App | Term ${term.name}`;
+        setTerm(selectedTerm);
+        document.title = `SCOTUS App | Term ${selectedTerm.name}`;
         reaction.dispose();
       }
     });
+  }, [allTerms, id, props.routing, term]);
 
-    if (termId && !isNaN(Number(termId))) {
-      const cases = await this.props.caseStore.getCaseByTerm(Number(termId));
-      this.setState({ termCases: cases });
-      this.searchText$.next(this.state.searchText);
-    } else {
-      console.error(`${termId} is not a valid term`);
-      this.props.routing.goBack();
+  useEffect(() => {
+    if(!!term) {
+      const loadCases = async () => {
+        const cases = await props.caseStore.getCaseByTerm(term.id);
+        setTermCases(cases);
+        setFilteredCases(cases);
+      };
+      loadCases();
     }
-  }
+  }, [term, props.caseStore]);
 
-  updateSearchText: React.ChangeEventHandler<HTMLInputElement> = event => {
-    const searchText = event.target.value;
-    if (searchText.length < 3) {
-      this.setState({ filteredCases: this.state.termCases });
+  const updateSearchText: React.ChangeEventHandler<HTMLInputElement> = useCallback(event => {
+    const newSearchText = event.target.value;
+    if (newSearchText.length < 3) {
+      setFilteredCases(termCases);
     }
-    this.setState({ searchText });
-    this.searchText$.next(searchText);
-  };
+    setSearchText(newSearchText);
+    searchText$.next(newSearchText);
+  }, [searchText$, termCases]);
 
-  onCaseClick = (c: Case) => {
-    this.props.routing.push(`/case/${c.id}`);
-  };
+  const onCaseClick = useCallback((c: Case) => {
+    props.routing.push(`/case/${c.id}`);
+  }, [props.routing]);
 
-  back = () => {
-    this.props.routing.goBack();
-  };
+  const back = useCallback(() => {
+    props.routing.goBack();
+  }, [props.routing]);
 
-  render() {
-    const { searchText, filteredCases } = this.state;
-    const mappedCases = filteredCases.reduce((acc, value) => {
+  const mappedCases = useMemo(() => {
+    return filteredCases.reduce((acc, value) => {
       const key = value.sitting ?? 'None';
       acc.set(key, [...(acc.get(key) ?? []), value]);
       return acc;
     }, new Map<string, Case[]>());
+  }, [filteredCases]);
 
+  const classes = useStyles();
 
-    return (
-      <Paper className={this.props.classes.paper}>
-        <Grid container direction="row" justifyContent="flex-start" alignItems="center" spacing={1}>
-          <Grid item>
-            <IconButton onClick={this.back}>
-              <BackIcon color="action" />
-            </IconButton>
-          </Grid>
-          <Grid item>
-            <Typography variant="h4">
-              Cases for the {this.state.term?.name} term 
-            </Typography>
-          </Grid>
+  return (
+    <Paper className={classes.paper}>
+      <Grid container direction="row" justifyContent="flex-start" alignItems="center" spacing={1}>
+        <Grid item>
+          <IconButton onClick={back}>
+            <BackIcon color="action" />
+          </IconButton>
         </Grid>
-
-        <TextField
-          className={this.props.classes.search}
-          label="Filter"
-          variant="outlined"
-          size="small"
-          helperText={searchText.length >0 && searchText.length < 3 && 'Enter at least 3 characters'}
-          onChange={this.updateSearchText}
-          value={searchText}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon color="action" />
-              </InputAdornment>
-            ),
-          }}
-        />
-
-        <Grid container direction="column" spacing={2}>
-          {[...Object.values(CaseSitting), 'None'].filter(sitting => mappedCases.has(sitting)).map((sitting) => (
-            <Grid item key={sitting}>
-              <Paper className={this.props.classes.sitting}>
-                {sitting !== 'None' && <Typography variant="h4">{sitting}</Typography> }
-                {mappedCases.get(sitting)?.sort(this.caseSorter).map(termCase => (
-                  <CaseListItem key={termCase.id} onCaseClick={this.onCaseClick} scotusCase={termCase} caseStore={this.props.caseStore} />
-                ))}
-              </Paper>
-            </Grid>
-          ))}
+        <Grid item>
+          <Typography variant="h4">
+            Cases for the {term?.name} term 
+          </Typography>
         </Grid>
-      </Paper>
-    );
-  }
-}
+      </Grid>
 
-export default withStyles(styles)(AllTermCasesPage);
+      <TextField
+        className={classes.search}
+        label="Filter"
+        variant="outlined"
+        size="small"
+        helperText={searchText.length >0 && searchText.length < 3 && 'Enter at least 3 characters'}
+        onChange={updateSearchText}
+        value={searchText}
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <SearchIcon color="action" />
+            </InputAdornment>
+          ),
+        }}
+      />
+
+      <Grid container direction="column" spacing={2}>
+        {[...Object.values(CaseSitting), 'None'].filter(sitting => mappedCases.has(sitting)).map((sitting) => (
+          <Grid item key={sitting}>
+            <Paper className={classes.sitting}>
+              {sitting !== 'None' && <Typography variant="h4">{sitting}</Typography> }
+              {mappedCases.get(sitting)?.sort(caseSorter).map(termCase => (
+                <CaseListItem key={termCase.id} onCaseClick={onCaseClick} scotusCase={termCase} caseStore={props.caseStore} />
+              ))}
+            </Paper>
+          </Grid>
+        ))}
+      </Grid>
+    </Paper>
+  );
+};
+
+export default inject('caseStore', 'routing')(observer(AllTermCasesPage));

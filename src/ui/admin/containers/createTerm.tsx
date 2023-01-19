@@ -1,13 +1,13 @@
-import React, { Component } from 'react';
-import { inject, observer } from 'mobx-react';
-import { Typography, withStyles, Theme, Grid, TextField, Button, IconButton, createStyles, WithStyles } from '@material-ui/core';
+import React, { useCallback, useEffect, useState } from 'react';
+import { inject } from 'mobx-react';
+import { Typography, Theme, Grid, TextField, Button, IconButton, makeStyles } from '@material-ui/core';
 import BackIcon from '@material-ui/icons/ArrowBack';
 import { History } from 'history';
 import { CaseStore } from '../../../stores/caseStore';
 
-const styles = (theme: Theme) => createStyles({
+const useStyles = makeStyles((theme: Theme) => ({
   formContainer: {
-    'margin-top': `${theme.spacing(2)}px`,
+    marginTop: theme.spacing(2),
     [theme.breakpoints.down('sm')]: {
       maxWidth: 280,
     },
@@ -15,146 +15,132 @@ const styles = (theme: Theme) => createStyles({
       maxWidth: 400,
     },
   },
-});
+}));
 
-interface Props extends WithStyles<typeof styles> {
+interface Props {
   routing: History;
   caseStore: CaseStore;
 }
 
-interface State {
-  name: string;
-  otName: string;
+const CreateTermPage = (props: Props) => {
 
-  nameError?: string;
-  otNameError?: string;
-  formError?: string;
-  submitting: boolean;
-}
+  const [name, setName] = useState('');
+  const [otName, setOtName] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [nameError, setNameError] = useState<string | null>(null);
+  const [otNameError, setOtNameError] = useState<string | null>(null);
+  const [formError, setFormError] = useState<string | null>(null);
 
-@inject('routing', 'caseStore')
-@observer
-class CreateTermPage extends Component<Props, State> {
-
-  state: State = {
-    name: '',
-    otName: '',
-    submitting: false,
-  };
-
-  componentDidMount() {
+  useEffect(() => {
     document.title = 'SCOTUS App | Admin | Create Term';
-  }
+  }, []);
 
-  back = () => {
-    this.props.routing.goBack();
-  };
+  const back = useCallback(() => {
+    props.routing.goBack();
+  }, [props.routing]);
 
-  changeName = (event: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({ name: event.target.value, nameError: undefined });
-  };
+  const changeName = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    setName(event.target.value);
+    setNameError(null);
+  }, []);
 
-  changeOtName = (event: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({ otName: event.target.value, otNameError: undefined });
-  };
+  const changeOtName = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    setOtName(event.target.value);
+    setOtNameError(null);
+  }, []);
 
-  submit = async () => {
-    const {name, otName} = this.state;
+  const submit = useCallback(async () => {
     let valid = true;
     if (!name) {
-      this.setState({nameError: 'Name is required'});
+      setNameError('Name is required');
       valid = false;
     }
     if (!otName) {
-      this.setState({ otNameError: 'OT Name is required'});
+      setOtName('OT Name is required');
       valid = false;
     }
     if (!valid) {
       return;
     }
 
-    this.setState({ submitting: true });
+    setSubmitting(true);
     try {
-      await this.props.caseStore.createTerm(name, otName);
-      this.props.routing.goBack();
+      await props.caseStore.createTerm(name, otName);
+      props.routing.goBack();
     } catch(e: any) {
-      this.setState({ formError: e?.errorMessage ?? 'An error occurred creating the term'});
+      setFormError(e?.errorMessage ?? 'An error occurred creating the term');
     } finally {
-      this.setState({ submitting: false });
+      setSubmitting(false);
     }
-  };
+  }, [name, otName, props.caseStore, props.routing]);
 
-  render() {
-    const classes = this.props.classes;
-    const {name, otName, formError, nameError, otNameError, submitting} = this.state;
+  const classes = useStyles();
 
-    return (
-      <Grid container direction="column">
-        <Grid item>
-          <IconButton onClick={this.back}>
-            <BackIcon color="action" />
-          </IconButton>
-        </Grid>
-        <Grid item>
-          <Typography variant="h4" component="h2">Create Term</Typography>
-        </Grid>
-        <Grid item>
-          <form className={classes.formContainer} onSubmit={this.submit}>
-            <Grid container direction="column" spacing={2}>
-              {!!formError ? (
-                <Grid item>
-                  <Typography color="error">{formError}</Typography>
-                </Grid>) 
-                : ''
-              }
-              <Grid item>
-                <TextField
-                  id="create-term-name"
-                  name="name"
-                  size="small"
-                  color="primary"
-                  variant="outlined"
-                  fullWidth
-                  required
-                  label="Name"
-                  onChange={this.changeName}
-                  value={name}
-                  error={!!nameError}
-                  helperText={nameError}
-                />
-              </Grid>
-              <Grid item>
-                <TextField
-                  id="create-term-otname"
-                  name="otname"
-                  size="small"
-                  color="primary"
-                  variant="outlined"
-                  fullWidth
-                  required
-                  label="OT Name"
-                  onChange={this.changeOtName}
-                  value={otName}
-                  error={!!otNameError}
-                  helperText={otNameError || 'October Term name notation'}
-                />
-              </Grid>
-              <Grid item>
-                <Button 
-                  disabled={submitting || !!nameError || !!otNameError}
-                  color="primary"
-                  variant="contained"
-                  fullWidth
-                  onClick={this.submit}
-                >Create</Button>
-              </Grid>
-            </Grid>
-          </form>
-        </Grid>
+  return (
+    <Grid container direction="column">
+      <Grid item>
+        <IconButton onClick={back}>
+          <BackIcon color="action" />
+        </IconButton>
       </Grid>
-    );
-  }
+      <Grid item>
+        <Typography variant="h4" component="h2">Create Term</Typography>
+      </Grid>
+      <Grid item>
+        <form className={classes.formContainer} onSubmit={submit}>
+          <Grid container direction="column" spacing={2}>
+            {!!formError ? (
+              <Grid item>
+                <Typography color="error">{formError}</Typography>
+              </Grid>) 
+              : ''
+            }
+            <Grid item>
+              <TextField
+                id="create-term-name"
+                name="name"
+                size="small"
+                color="primary"
+                variant="outlined"
+                fullWidth
+                required
+                label="Name"
+                onChange={changeName}
+                value={name}
+                error={!!nameError}
+                helperText={nameError}
+              />
+            </Grid>
+            <Grid item>
+              <TextField
+                id="create-term-otname"
+                name="otname"
+                size="small"
+                color="primary"
+                variant="outlined"
+                fullWidth
+                required
+                label="OT Name"
+                onChange={changeOtName}
+                value={otName}
+                error={!!otNameError}
+                helperText={otNameError || 'October Term name notation'}
+              />
+            </Grid>
+            <Grid item>
+              <Button 
+                disabled={submitting || !!nameError || !!otNameError}
+                color="primary"
+                variant="contained"
+                fullWidth
+                onClick={submit}
+              >Create</Button>
+            </Grid>
+          </Grid>
+        </form>
+      </Grid>
+    </Grid>
+  );
+};
 
-}
-
-export default withStyles(styles)(CreateTermPage);
+export default inject('routing', 'caseStore')(CreateTermPage);

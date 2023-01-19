@@ -144,7 +144,7 @@ const CaseResultForm = (props: Props) => {
             label="Decision Link"
             size="small"
             onChange={onDecisionLinkChange}
-            value={decisionLink}
+            value={decisionLink ?? ''}
           />
         </Grid>
         <Grid item>

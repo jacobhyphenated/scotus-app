@@ -1,17 +1,17 @@
-import React, { Component } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Grid, Typography, IconButton, TextField, Theme, Button } from '@material-ui/core';
 import BackIcon from '@material-ui/icons/ArrowBack';
 import { inject } from 'mobx-react';
 import { History } from 'history';
 import { JusticeStore } from '../../../stores/justiceStore';
 import { LocalDate } from '@js-joda/core';
-import { withStyles } from '@material-ui/styles';
+import { makeStyles } from '@material-ui/styles';
 import DatePicker from '../components/datePicker';
 
 
-const styleDecorator = withStyles((theme: Theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   formContainer: {
-    'margin-top': `${theme.spacing(2)}px`,
+    marginTop: theme.spacing(2),
     [theme.breakpoints.down('sm')]: {
       maxWidth: 280,
     },
@@ -24,172 +24,156 @@ const styleDecorator = withStyles((theme: Theme) => ({
 interface Props {
   routing: History;
   justiceStore: JusticeStore;
-  classes: {[id: string]: string};
 }
 
-interface State {
-  name?: string;
-  dateConfirmed: LocalDate | null;
-  birthday: LocalDate | null;
+const CreateJusticePage = (props: Props) => {
 
-  formError?: string;
-  nameError?: string;
-  confirmDateError?: string;
-  birthdayError?: string;
+  const [name, setName] = useState('');
+  const [dateConfirmed, setDateConfirmed] = useState<LocalDate | null>(LocalDate.now());
+  const [birthday, setBirthday] = useState<LocalDate | null>(LocalDate.now().minusYears(50));
+  const [submitting, setSubmitting] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
+  const [nameError, setNameError] = useState<string | null>(null);
+  const [confirmDateError, setConfirmDateError] = useState<string | null>(null);
+  const [birthdayError, setBirthdayError] = useState<string | null>(null);
 
-  submitting: boolean;
-}
 
-@inject('routing', 'justiceStore')
-class CreateJusticePage extends Component<Props, State> {
-
-  constructor(props: Props) {
-    super(props);
-    this.state = {
-      name: undefined,
-      dateConfirmed: LocalDate.now(),
-      birthday: LocalDate.now().minusYears(50),
-      submitting: false,
-    };
-  }
-
-  componentDidMount() {
+  useEffect(() => {
     document.title = 'SCOTUS App | Admin | Create Justice';
-  }
+  }, []);
 
-  back = () => {
-    this.props.routing.goBack();
-  };
+  const back = useCallback(() => {
+    props.routing.goBack();
+  }, [props.routing]);
 
-  changeName = (event: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({ name: event.target.value, nameError: undefined });
-  };
+  const changeName = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    setName(event.target.value);
+    setNameError(null);
+  }, []);
 
-  changeBirthday = (date: LocalDate | null | Error) => {
+  const changeBirthday = useCallback((date: LocalDate | null | Error) => {
     if (date instanceof Error) {
-      this.setState({ birthdayError: 'Invalid Date' });
+      setBirthdayError('Invalid Date');
       return;
     }
-    this.setState({ birthday: date, birthdayError: undefined });
-  };
+    setBirthday(date);
+    setBirthdayError(null);
+  }, []);
 
-  changeConfirmDate = (date: LocalDate | null | Error) => {
+  const changeConfirmDate = useCallback((date: LocalDate | null | Error) => {
     if (date instanceof Error) {
-      this.setState({ confirmDateError: 'Invalid Date' });
+      setConfirmDateError('Invalid Date');
       return;
     }
-    this.setState({ dateConfirmed: date, confirmDateError: undefined });
-  };
+    setDateConfirmed(date);
+    setConfirmDateError(null);
+  }, []);
 
-  submit = async () => {
-    const {name, dateConfirmed, birthday} = this.state;
+  const submit = useCallback(async () => {
     let valid = true;
     if (!name) {
-      this.setState({ nameError: 'Name is required' });
+      setNameError('Name is required');
       valid = false;
     }
     if (!dateConfirmed) {
-      this.setState({ confirmDateError: 'Confirmation Date is required' });
+      setConfirmDateError('Confirmation Date is required');
       valid = false;
     }
     if (!birthday) {
-      this.setState({ birthdayError: 'Birthday is required' });
+      setBirthdayError('Birthday is required');
       valid = false;
     }
-    if (!valid || this.state.nameError || this.state.confirmDateError || this.state.birthdayError) {
+    if (!valid || nameError || confirmDateError || birthdayError) {
       return;
     }
-    this.setState({ submitting: true });
+    setSubmitting(true);
     try{ 
-      await this.props.justiceStore.createJustice(name!, birthday!, dateConfirmed!);
-      this.props.justiceStore.refreshActiveJustices();
-      this.props.routing.goBack();
+      await props.justiceStore.createJustice(name, birthday!, dateConfirmed!);
+      props.justiceStore.refreshActiveJustices();
+      props.routing.goBack();
     } catch (e: any) {
-      this.setState({ formError: e?.message ?? 'An error occurred creating this justice'});
+      setFormError(e?.message ?? 'An error occurred creating this justice');
     } finally {
-      this.setState({ submitting: false });
+      setSubmitting(false);
     }
 
-  };
+  }, [birthday, birthdayError, confirmDateError, dateConfirmed, name, nameError, props.justiceStore, props.routing]);
 
-  render() {
-    const { classes } = this.props;
-    const { nameError, birthdayError, confirmDateError, formError, submitting } = this.state;
+  const classes = useStyles();
 
-    return(
-      <Grid container direction="column">
-        <Grid item>
-          <IconButton onClick={this.back}>
-            <BackIcon color="action" />
-          </IconButton>
-        </Grid>
-        <Grid item>
-          <Typography variant="h4" component="h2">Create Justice</Typography>
-        </Grid>
-        <Grid item>
-          <form className={classes.formContainer} onSubmit={this.submit}>
-            <Grid container direction="column" spacing={2}>
-              {!!formError ? (
-                <Grid item>
-                  <Typography color="error">{formError}</Typography>
-                </Grid>) 
-                : ''
-              }
-              <Grid item>
-                <TextField
-                  id="create-justice-name"
-                  name="name"
-                  size="small"
-                  color="primary"
-                  variant="outlined"
-                  fullWidth
-                  required
-                  label="Name"
-                  onChange={this.changeName}
-                  value={this.state.name ?? ''}
-                  error={!!nameError}
-                  helperText={nameError}
-                />
-              </Grid>
-              <Grid item>
-                <DatePicker
-                  required
-                  fullWidth
-                  onChange={this.changeBirthday}
-                  value={this.state.birthday}
-                  label="Birthday"
-                  inputVariant="outlined"
-                  error={!!birthdayError}
-                  helperText={birthdayError}
-                />
-              </Grid>
-              <Grid item>
-                <DatePicker
-                  required
-                  fullWidth
-                  onChange={this.changeConfirmDate}
-                  value={this.state.dateConfirmed}
-                  label="Confirmation Date"
-                  inputVariant="outlined"
-                  error={!!confirmDateError}
-                  helperText={confirmDateError}
-                />
-              </Grid>
-              <Grid item>
-                <Button 
-                  disabled={submitting || !!nameError || !!birthdayError || !!confirmDateError}
-                  color="primary"
-                  variant="contained"
-                  fullWidth
-                  onClick={this.submit}
-                >Create</Button>
-              </Grid>
-            </Grid>
-          </form>
-        </Grid>
+  return(
+    <Grid container direction="column">
+      <Grid item>
+        <IconButton onClick={back}>
+          <BackIcon color="action" />
+        </IconButton>
       </Grid>
-    );
-  }
-}
+      <Grid item>
+        <Typography variant="h4" component="h2">Create Justice</Typography>
+      </Grid>
+      <Grid item>
+        <form className={classes.formContainer} onSubmit={submit}>
+          <Grid container direction="column" spacing={2}>
+            {!!formError ? (
+              <Grid item>
+                <Typography color="error">{formError}</Typography>
+              </Grid>) 
+              : ''
+            }
+            <Grid item>
+              <TextField
+                id="create-justice-name"
+                name="name"
+                size="small"
+                color="primary"
+                variant="outlined"
+                fullWidth
+                required
+                label="Name"
+                onChange={changeName}
+                value={name}
+                error={!!nameError}
+                helperText={nameError}
+              />
+            </Grid>
+            <Grid item>
+              <DatePicker
+                required
+                fullWidth
+                onChange={changeBirthday}
+                value={birthday}
+                label="Birthday"
+                inputVariant="outlined"
+                error={!!birthdayError}
+                helperText={birthdayError}
+              />
+            </Grid>
+            <Grid item>
+              <DatePicker
+                required
+                fullWidth
+                onChange={changeConfirmDate}
+                value={dateConfirmed}
+                label="Confirmation Date"
+                inputVariant="outlined"
+                error={!!confirmDateError}
+                helperText={confirmDateError}
+              />
+            </Grid>
+            <Grid item>
+              <Button 
+                disabled={submitting || !!nameError || !!birthdayError || !!confirmDateError}
+                color="primary"
+                variant="contained"
+                fullWidth
+                onClick={submit}
+              >Create</Button>
+            </Grid>
+          </Grid>
+        </form>
+      </Grid>
+    </Grid>
+  );
+};
 
-export default styleDecorator(CreateJusticePage);
+export default inject('routing', 'justiceStore')(CreateJusticePage);

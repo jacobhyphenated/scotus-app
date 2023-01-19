@@ -1,14 +1,14 @@
-import { Component } from 'react';
-import { Grid, Typography, IconButton, Theme, withStyles, FormControlLabel, FormControl, FormLabel, RadioGroup, Radio, WithStyles, createStyles } from '@material-ui/core';
+import { useCallback, useEffect, useState } from 'react';
+import { Grid, Typography, IconButton, Theme, FormControlLabel, FormControl, FormLabel, RadioGroup, Radio, makeStyles } from '@material-ui/core';
 import BackIcon from '@material-ui/icons/ArrowBack';
 import { inject, observer } from 'mobx-react';
 import { History } from 'history';
-import { match } from 'react-router';
+import { useParams } from 'react-router';
 import ViewEditInputText from '../components/viewEditInputText';
 import { CaseStore, EditTermProps, Term } from '../../../stores/caseStore';
 import { autorun } from 'mobx';
 
-const styles = (theme: Theme) => createStyles(({
+const useStyles = makeStyles((theme: Theme) => ({
   formContainer: {
     marginTop: theme.spacing(2),
     [theme.breakpoints.down('sm')]: {
@@ -24,161 +24,155 @@ const styles = (theme: Theme) => createStyles(({
   },
 }));
 
-interface State {
-  term?: Term;
-  formError?: string;
-  submitting: boolean;
-}
-
 interface RouteParams {
   id: string;
 }
 
-interface Props extends WithStyles<typeof styles> {
+interface Props {
   routing: History;
   caseStore: CaseStore;
-  match: match<RouteParams>;
 }
 
-@inject('routing', 'caseStore')
-@observer
-class EditTermPage extends Component<Props, State> {
-  state: State = {
-    submitting: false,
-  };
+const EditTermPage = (props: Props) => {
+  const [submitting, setSubmitting] = useState(false);
+  const [term, setTerm] = useState<Term | null>(null);
+  const [formError, setFormError] = useState<string | null>(null);
 
-  componentDidMount() {
-    const termId = this.props.match.params.id;
+  const { id } = useParams<RouteParams>();
+
+  useEffect(() => {
+    const termId = id;
     if (!termId || isNaN(Number(termId))) {
       console.warn('No term id in url params');
-      this.props.routing.replace('/admin/term');
+      props.routing.replace('/admin/term');
       return;
     }
     autorun((reaction) => {
-      const allTerms = this.props.caseStore.allTerms;
+      const allTerms = props.caseStore.allTerms;
       if (allTerms.length > 0) {
         reaction.dispose();
-        const term = allTerms.find(t => t.id === Number(termId));
-        if (!term) {
+        const selectedTerm = allTerms.find(t => t.id === Number(termId));
+        if (!selectedTerm) {
           console.warn(`No term found with id of ${termId}`);
-          this.props.routing.push('/admin/term');
+          props.routing.push('/admin/term');
         } else {
-          document.title = `SCOTUS App | Admin | Edit Term ${term.name}`;
-          this.setState({ term });
+          document.title = `SCOTUS App | Admin | Edit Term ${selectedTerm.name}`;
+          setTerm(selectedTerm);
         }
       }
     });
-  }
+  }, [props.caseStore.allTerms, props.routing, id]);
 
-  back = () => {
-    this.props.routing.goBack();
-  };
+  const back = useCallback(() => {
+    props.routing.goBack();
+  }, [props.routing]);
 
-  edit = async (termEdit: EditTermProps) => {
-    if (!this.state.term) {
+  const edit = useCallback(async (termEdit: EditTermProps) => {
+    if (!term) {
       return;
     }
-    this.setState({ submitting: true, formError: undefined });
+    setSubmitting(true);
+    setFormError(null);
     try {
-      const term = await this.props.caseStore.editTerm(this.state.term.id, termEdit);
-      this.setState({ term });
+      const updatedTerm = await props.caseStore.editTerm(term.id, termEdit);
+      setTerm(updatedTerm);
     } catch (e: any) {
-      this.setState({ formError: e?.errorMessage ?? 'Failed to update term'});
+      setFormError(e?.errorMessage ?? 'Failed to update term');
     } finally {
-      this.setState({ submitting: false});
+      setSubmitting(false);
     } 
-  };
+  }, [props.caseStore, term]);
 
-  saveName = (name: string) => {
+  const saveName = useCallback((name: string) => {
     if (!name) {
-      this.setState({ formError: 'Name is required' });
+      setFormError('Name is required');
       return;
     }
-    this.edit({ name });
-  };
+    edit({ name });
+  }, [edit]);
 
-  saveOtName = (otName: string) => {
+  const saveOtName = useCallback((otName: string) => {
     if (!otName) {
-      this.setState({ formError: 'OT Name is required' });
+      setFormError('OT Name is required');
       return;
     }
-    this.edit({ otName });
-  };
+    edit({ otName });
+  }, [edit]);
 
-  changeLowerCourtOverruled = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const changeInactive = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const inactive = event.target.value === 'true' ? true : false;
-    this.edit({inactive});
-  };
+    edit({inactive});
+  }, [edit]);
 
-  render() {
-    return (
-      <>
-        <Grid container direction="column">
-          <Grid item>
-            <IconButton onClick={this.back}>
-              <BackIcon color="action" />
-            </IconButton>
-          </Grid>
-          <Grid item>
-            <Typography variant="h4" component="h2">Edit Docket</Typography>
-          </Grid>
-          <Grid item>
-            {this.state.term &&
-              <Grid className={this.props.classes.formContainer} container direction="row" spacing={2}>
-                {!!this.state.formError && (
-                  <Grid item>
-                    <Typography color="error">{this.state.formError}</Typography>
-                  </Grid>)
-                }
-                <Grid item xs={12}>
-                  <ViewEditInputText
-                    id="term-edit-name"
-                    fullWidth
-                    required
-                    disabled={this.state.submitting}
-                    name="name"
-                    label="Name"
-                    value={this.state.term.name}
-                    onSave={this.saveName}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <ViewEditInputText
-                    id="term-edit-otname"
-                    fullWidth
-                    required
-                    disabled={this.state.submitting}
-                    name="otName"
-                    label="OT Name"
-                    value={this.state.term.otName}
-                    onSave={this.saveOtName}
-                  />
-                  <Typography className={this.props.classes.helperText} variant="subtitle1" color="textSecondary">
-                    October term notation
-                  </Typography>
-                </Grid>
-                <Grid item xs={12}>
-                  <FormControl component="fieldset">
-                    <FormLabel component="legend">Inactive</FormLabel>
-                    <RadioGroup row aria-label="inactive" name="inactive"
-                      value={this.state.term.inactive}
-                      onChange={this.changeLowerCourtOverruled}
-                    >
-                      <FormControlLabel value={true} control={<Radio />} label="Inactive" />
-                      <FormControlLabel value={false} control={<Radio />} label="Active" />
-                    </RadioGroup>
-                  </FormControl>
-                  <Typography className={this.props.classes.helperText} variant="subtitle1" color="textSecondary">
-                    Inactive terms do not appear in the home screen drop down menu
-                  </Typography>
-                </Grid>
-              </Grid>
-            }
-          </Grid>
+  const classes = useStyles();
+
+  return (
+    <>
+      <Grid container direction="column">
+        <Grid item>
+          <IconButton onClick={back}>
+            <BackIcon color="action" />
+          </IconButton>
         </Grid>
-      </>
-    );
-  }
-}
+        <Grid item>
+          <Typography variant="h4" component="h2">Edit Docket</Typography>
+        </Grid>
+        <Grid item>
+          {term &&
+            <Grid className={classes.formContainer} container direction="row" spacing={2}>
+              {!!formError && (
+                <Grid item>
+                  <Typography color="error">{formError}</Typography>
+                </Grid>)
+              }
+              <Grid item xs={12}>
+                <ViewEditInputText
+                  id="term-edit-name"
+                  fullWidth
+                  required
+                  disabled={submitting}
+                  name="name"
+                  label="Name"
+                  value={term.name}
+                  onSave={saveName}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <ViewEditInputText
+                  id="term-edit-otname"
+                  fullWidth
+                  required
+                  disabled={submitting}
+                  name="otName"
+                  label="OT Name"
+                  value={term.otName}
+                  onSave={saveOtName}
+                />
+                <Typography className={classes.helperText} variant="subtitle1" color="textSecondary">
+                  October term notation
+                </Typography>
+              </Grid>
+              <Grid item xs={12}>
+                <FormControl component="fieldset">
+                  <FormLabel component="legend">Inactive</FormLabel>
+                  <RadioGroup row aria-label="inactive" name="inactive"
+                    value={term.inactive}
+                    onChange={changeInactive}
+                  >
+                    <FormControlLabel value={true} control={<Radio />} label="Inactive" />
+                    <FormControlLabel value={false} control={<Radio />} label="Active" />
+                  </RadioGroup>
+                </FormControl>
+                <Typography className={classes.helperText} variant="subtitle1" color="textSecondary">
+                  Inactive terms do not appear in the home screen drop down menu
+                </Typography>
+              </Grid>
+            </Grid>
+          }
+        </Grid>
+      </Grid>
+    </>
+  );
+};
 
-export default withStyles(styles)(EditTermPage);
+export default inject('routing', 'caseStore')(observer(EditTermPage));

@@ -87,6 +87,7 @@ const LowerCourtPage = (props: Props) => {
     if (!fullCase) {
       return;
     }
+    document.title = `SCOTUS App | ${fullCase.case} | Lower Court`;
     const subscription = forkJoin(fullCase.dockets.map(d => props.docketStore.getDocketById(d.docketId)))
       .subscribe({
         next: dockets => {

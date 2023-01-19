@@ -1,12 +1,12 @@
-import React, { Component } from 'react';
-import { Grid, Typography, IconButton, Theme, withStyles, MenuItem, Paper, TextField, FormControlLabel, Checkbox, Button } from '@material-ui/core';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Grid, Typography, IconButton, Theme, MenuItem, Paper, TextField, FormControlLabel, Checkbox, Button, makeStyles } from '@material-ui/core';
 import BackIcon from '@material-ui/icons/ArrowBack';
 import CloseIcon from '@material-ui/icons/Close';
 import AddIcon from '@material-ui/icons/Add';
 import { inject, observer } from 'mobx-react';
 import { History } from 'history';
 import { DocketStore, BareDocket, DocketStatus } from '../../../stores/docketStore';
-import { match } from 'react-router';
+import { useParams } from 'react-router';
 import ViewEditInputText from '../components/viewEditInputText';
 import ViewEditDatePicker from '../components/viewEditDatePicker';
 import ArgumentDateEditField from '../components/argumentDateEditField';
@@ -21,7 +21,7 @@ import AlternateTitleEditCard from '../components/alternateTitleEditCard';
 import { whenDefined } from '../../../util/functional';
 import CaseResultForm from '../components/caseResultForm';
 
-const styleDecorator = withStyles((theme: Theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   formContainer: {
     marginTop: theme.spacing(2),
   },
@@ -39,508 +39,506 @@ const styleDecorator = withStyles((theme: Theme) => ({
   },
 }));
 
-interface State {
-  case?: FullCase;
-  formError?: string;
-  submitting: boolean;
-}
-
-interface RouteParams {
-  id: string;
-}
-
 interface Props {
   routing: History;
   docketStore: DocketStore;
   caseStore: CaseStore;
   opinionStore: OpinionStore;
   justiceStore: JusticeStore;
-  classes: {[id: string]: string};
-  match: match<RouteParams>;
 }
 
-@inject('routing', 'caseStore', 'docketStore', 'opinionStore', 'justiceStore')
-@observer
-class EditCasePage extends Component<Props, State> {
+const EditCasePage = (props: Props) => {
 
-  state: State = {
-    submitting: false,
-  };
+  const [submitting, setSubmitting] = useState(false);
+  const [fullCase, setFullCase] = useState<FullCase | null>(null);
+  const [formError, setFormError] = useState<string | null>(null);
+  
+  const { id } = useParams<{ id: string }>();
 
-  async componentDidMount() {
-    const caseId = this.props.match.params.id;
-    if (!caseId || isNaN(Number(caseId))) {
+  useEffect(() => {
+    if (!id || isNaN(Number(id))) {
       console.warn('No case id in url params');
-      this.props.routing.push('/admin/case');
+      props.routing.push('/admin/case');
       return;
     }
-    try {
-      const fullCase = await this.props.caseStore.getCaseById(Number(caseId));
-      if (!fullCase) {
-        throw new Error(`No case found with id ${caseId}`);
+    const loadCase = async () => {
+      try {
+        const fullCase = await props.caseStore.getCaseById(Number(id));
+        if (!fullCase) {
+          throw new Error(`No case found with id ${id}`);
+        }
+        document.title = `SCOTUS App | Admin | Edit Case ${fullCase.case}`;
+        setFullCase(fullCase);
+      } catch (e: any) {
+        console.warn(e);
+        props.routing.push('/admin/case');
       }
-      document.title = `SCOTUS App | Admin | Edit Case ${fullCase.case}`;
-      this.setState({ case: fullCase });
-    } catch (e: any) {
-      console.warn(e);
-      this.props.routing.push('/admin/case');
-    }
-  }
+    };
+    loadCase();
+  }, [id, props.caseStore, props.routing]);
 
-  edit = async (caseEdit: EditCase) => {
-    if (!this.state.case) {
+  const edit = useCallback(async (caseEdit: EditCase) => {
+    if (!fullCase) {
       return;
     }
-    this.setState({ submitting: true, formError: undefined });
+    setSubmitting(true);
+    setFormError(null);
     try {
-      const fullCase = await this.props.caseStore.editCase(this.state.case!.id, caseEdit);
-      this.setState({ case: fullCase });
+      const updatedCase = await props.caseStore.editCase(fullCase.id, caseEdit);
+      setFullCase(updatedCase);
     } catch (e: any) {
-      this.setState({ formError: e?.message ?? 'Failed to update case'});
+      setFormError(e?.message ?? 'Failed to update case');
     } finally {
-      this.setState({ submitting: false});
+      setSubmitting(false);
     } 
-  };
+  }, [fullCase, props.caseStore]);
 
-  removeArgumentDate = async () => {
-    if (!this.state.case) {
+  const removeArgumentDate = useCallback(async () => {
+    if (!fullCase) {
       return;
     }
-    this.setState({ submitting: true, formError: undefined });
+    setSubmitting(true);
+    setFormError(null);
     try {
-      const fullCase = await this.props.caseStore.removeArgumentDate(this.state.case.id);
-      this.setState({ case: fullCase });
+      const updatedCase = await props.caseStore.removeArgumentDate(fullCase.id);
+      setFullCase(updatedCase);
     } catch (e: any) {
-      this.setState({ formError: e?.message ?? 'Failed to update case'});
+      setFormError(e?.message ?? 'Failed to update case');
     } finally {
-      this.setState({ submitting: false});
+      setSubmitting(false);
     } 
-  };
+  }, [fullCase, props.caseStore]);
 
-  saveTitle = async (title: string) => {
+  const saveTitle = useCallback(async (title: string) => {
     if (!title) {
-      this.setState({formError: 'Cannot have an empty case title'});
+      setFormError('Cannot have an empty case title');
       return;
     }
-    this.edit({case: title});
-  };
+    edit({case: title});
+  }, [edit]);
 
-  saveShortSummary = async (shortSummary: string) => {
+  const saveShortSummary = useCallback(async (shortSummary: string) => {
     if (!shortSummary) {
-      this.setState({formError: 'Cannot have an empty short summary'});
+      setFormError('Cannot have an empty short summary');
       return;
     }
-    this.edit({shortSummary});
-  };
+    edit({shortSummary});
+  }, [edit]);
 
-  saveStatus = async (status: string) => {
+  const saveStatus = useCallback(async (status: string) => {
     if (!status) {
       return;
     }
     if (!Object.keys(CaseStatus).some(key => key === status)) {
-      this.setState({formError: 'Invalid Status'});
+      setFormError('Invalid Status');
       return;
     }
-    this.edit({resultStatus: status as CaseStatus});
-  };
+    edit({resultStatus: status as CaseStatus});
+  }, [edit]);
 
-  saveTerm = async (termId: string) => {
-    this.edit({termId: Number(termId)});
-  };
+  const saveTerm = useCallback(async (termId: string) => {
+    edit({termId: Number(termId)});
+  }, [edit]);
 
-  saveImportant = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    this.edit({important: event.target.checked});
-  };
+  const saveImportant = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
+    edit({important: event.target.checked});
+  }, [edit]);
 
-  saveArgumentDate = async (argumentDate: LocalDate | null, sitting: CaseSitting | undefined) => {
+  const saveArgumentDate = useCallback(async (argumentDate: LocalDate | null, sitting: CaseSitting | undefined) => {
     if (!argumentDate) {
-      this.removeArgumentDate();
+      removeArgumentDate();
     } else {
-      this.edit({argumentDate, sitting});
+      edit({argumentDate, sitting});
     }
-  };
+  }, [edit, removeArgumentDate]);
 
-  saveDecisionDate = async (date: LocalDate | null) => {
+  const saveDecisionDate = useCallback(async (date: LocalDate | null) => {
     whenDefined(date, (decisionDate) => {
-      this.edit({decisionDate});
+      edit({decisionDate});
     });
-  };
+  }, [edit]);
 
-  saveResult = async (r: string) => {
+  const saveResult = useCallback(async (r: string) => {
     whenDefined(r, (result) => {
-      this.edit({result});
+      edit({result});
     });
-  };
+  }, [edit]);
 
-  saveDecisionLink = (decisionLink: string) => {
+  const saveDecisionLink = useCallback((decisionLink: string) => {
     whenDefined(decisionLink, (decisionLink) => {
-      this.edit({decisionLink});
+      edit({decisionLink});
     });
-  };
+  }, [edit]);
 
-  saveDecisionSummary = (summary: string) => {
+  const saveDecisionSummary = useCallback((summary: string) => {
     whenDefined(summary, (decisionSummary) => {
-      this.edit({decisionSummary});
+      edit({decisionSummary});
     });
-  };
+  }, [edit]);
 
-  saveAlternateTitles = (altTitles: string[]) => {
+  const saveAlternateTitles = useCallback((altTitles: string[]) => {
     whenDefined(altTitles, (alternateTitles => {
-      this.edit({ alternateTitles });
+      edit({ alternateTitles });
     }));
-  };
+  }, [edit]);
 
-  onDeleteDocket = (docket: CaseDocket): () => void => {
+  const onDeleteDocket = useCallback((docket: CaseDocket): () => void => {
     return async () => {
       try {
-        await this.props.caseStore.removeDocket(this.state.case!.id, docket.docketId);
+        await props.caseStore.removeDocket(fullCase!.id, docket.docketId);
         const updatedCase =  {
-          ...this.state.case!,
-          dockets: this.state.case!.dockets.filter(d => d.docketId !== docket.docketId),
+          ...fullCase!,
+          dockets: fullCase!.dockets.filter(d => d.docketId !== docket.docketId),
         };
-        this.setState({case: updatedCase, formError: undefined});
+        setFullCase(updatedCase);
+        setFormError(null);
       } catch (e: any) {
-        this.setState({formError: e?.message ?? 'Something went wrong removing the docket'});
+        setFormError(e?.message ?? 'Something went wrong removing the docket');
       }
     };
-  };
+  }, [fullCase, props.caseStore]);
 
-  onClickDocket = (docket: CaseDocket): () => void => {
+  const onClickDocket = useCallback((docket: CaseDocket): () => void => {
     return () => {
-      this.props.routing.push(`/admin/docket/edit/${docket.docketId}`);
+      props.routing.push(`/admin/docket/edit/${docket.docketId}`);
     };
-  };
+  }, [props.routing]);
 
-  assignDocket = async (_: React.ChangeEvent<{}>, value: BareDocket | null) => {
+  const assignDocket = useCallback(async (_: React.ChangeEvent<{}>, value: BareDocket | null) => {
     if (!value) {
       return;
     }
     try {
-      const result = await this.props.caseStore.assignDocket(this.state.case!.id, value.id);
-      this.setState({case: result, formError: undefined});
+      const result = await props.caseStore.assignDocket(fullCase!.id, value.id);
+      setFullCase(result);
+      setFormError(null);
     } catch (e: any) {
-      this.setState({formError: e?.message ?? 'Something went wrong assigning the docket'});
+      setFormError(e?.message ?? 'Something went wrong assigning the docket');
     }
-  };
+  }, [fullCase, props.caseStore]);
 
-  deleteOpinion = async (opinion: Opinion) => {
+  const deleteOpinion = useCallback(async (opinion: Opinion) => {
     try {
-      await this.props.opinionStore.deleteOpinion(opinion.id);
-      this.props.caseStore.revokeCaseCache(opinion.caseId);
-      this.setState({formError: undefined, case: {
-        ...this.state.case!,
-        opinions: this.state.case!.opinions.filter(o => o.id !== opinion.id),
-      }});
+      await props.opinionStore.deleteOpinion(opinion.id);
+      props.caseStore.revokeCaseCache(opinion.caseId);
+      setFormError(null);
+      const updatedCase = {
+        ...fullCase!,
+        opinions: fullCase!.opinions.filter(o => o.id !== opinion.id),
+      };
+      setFullCase(updatedCase);
     } catch (e: any) {
-      this.setState({formError: e?.message ?? 'An error occurred deleting the opinion'});
+      setFormError(e?.message ?? 'An error occurred deleting the opinion');
     }
-  };
+  }, [fullCase, props.caseStore, props.opinionStore]);
 
-  editOpinionSummary = async (opinionId: number, summary: string) => {
+  const editOpinionSummary = useCallback(async (opinionId: number, summary: string) => {
     try {
-      const opinion = await this.props.opinionStore.editOpinionSummary(opinionId, summary);
-      this.props.caseStore.revokeCaseCache(opinion.caseId);
-      this.setState({formError: undefined, case: {
-        ...this.state.case!,
-        opinions: this.state.case!.opinions.map(o => o.id !== opinion.id ? o : opinion),
-      }});
+      const opinion = await props.opinionStore.editOpinionSummary(opinionId, summary);
+      props.caseStore.revokeCaseCache(opinion.caseId);
+      setFormError(null);
+      const updatedCase = {
+        ...fullCase!,
+        opinions: fullCase!.opinions.map(o => o.id !== opinion.id ? o : opinion),
+      };
+      setFullCase(updatedCase);
     } catch (e: any) {
-      this.setState({formError: e?.message ?? 'An error occurred editing the opinion summary'});
+      setFormError(e?.message ?? 'An error occurred editing the opinion summary');
     }
-  };
+  }, [fullCase, props.caseStore, props.opinionStore]);
 
-  onCreateOpinion = (opinion: Opinion) => {
-    this.props.caseStore.revokeCaseCache(opinion.caseId);
-    this.setState({case: {
-      ...this.state.case!,
-      opinions: [...this.state.case!.opinions, opinion],
-    }});
-  };
+  const onCreateOpinion = useCallback((opinion: Opinion) => {
+    props.caseStore.revokeCaseCache(opinion.caseId);
+    setFullCase({
+      ...fullCase!,
+      opinions: [...fullCase!.opinions, opinion],
+    });
+  }, [fullCase, props.caseStore]);
 
-  createOpinion = (caseId: number, opinionType: OpinionType, summary: string, justices: CreateOpinionJustice[]): Promise<Opinion> => {
-    return this.props.opinionStore.createOpinion(caseId, opinionType, summary, justices);
-  };
+  const createOpinion = useCallback((caseId: number, opinionType: OpinionType, summary: string, justices: CreateOpinionJustice[]): Promise<Opinion> => {
+    return props.opinionStore.createOpinion(caseId, opinionType, summary, justices);
+  }, [props.opinionStore]);
   
 
-  back = () => {
-    this.props.routing.goBack();
-  };
+  const back = useCallback(() => {
+    props.routing.goBack();
+  }, [props.routing]);
 
-  newDocket = () => {
-    this.props.routing.push('/admin/docket/create');
-  };
+  const newDocket = useCallback(() => {
+    props.routing.push('/admin/docket/create');
+  }, [props.routing]);
 
-  getAllJustices = () => {
-    return this.props.justiceStore.getAllJustices();
-  };
+  const getAllJustices = useCallback(() => {
+    return props.justiceStore.getAllJustices();
+  }, [props.justiceStore]);
 
-  closeCaseResultForm = (c: FullCase) => {
-    this.setState({case: c});
-  };
+  const closeCaseResultForm = useCallback((c: FullCase) => {
+    setFullCase(c);
+  }, []);
 
-  createEditDocketOverrruled = (docketId: number) => {
+  const createEditDocketOverrruled = useCallback((docketId: number) => {
     return (lowerCourtOverruled: boolean | undefined) => {
-      return this.props.docketStore.editDocket(docketId, {
+      return props.docketStore.editDocket(docketId, {
         lowerCourtOverruled,
         status: DocketStatus.DONE,
       });
     };
-  };
+  }, [props.docketStore]);
 
-  caseResultEdit = (id: number, edit: EditCase) => {
-    return this.props.caseStore.editCase(id, edit);
-  };
+  const caseResultEdit = useCallback((id: number, edit: EditCase) => {
+    return props.caseStore.editCase(id, edit);
+  }, [props.caseStore]);
 
-  render() {
-    const allTerms = this.props.caseStore.allTerms;
-    const unassignedDockets = this.props.docketStore.unassignedDockets.slice();
-    const activeJustices = this.props.justiceStore.activeJustices;
+  const classes = useStyles();
 
-    const opinions = this.state.case?.opinions.slice().sort(opinionSort);
-    return (
-      <Grid container direction="column">
-        <Grid item>
-          <IconButton onClick={this.back}>
-            <BackIcon color="action" />
-          </IconButton>
-        </Grid>
-        <Grid item>
-          <Typography variant="h4" component="h2">Edit Case</Typography>
-        </Grid>
-        {!!this.state.case && 
-          <Grid container className={this.props.classes.formContainer} direction="row" spacing={4}>
-            <Grid item xs={12} md={6}>
-              <Grid container direction="column" spacing={2}>
-                {!!this.state.formError &&
-                  <Grid item>
-                    <Typography color="error">{this.state.formError}</Typography>
-                  </Grid>
-                }
+  const allTerms = props.caseStore.allTerms;
+  const unassignedDockets = props.docketStore.unassignedDockets.slice();
+  const activeJustices = props.justiceStore.activeJustices;
+
+  const opinions = fullCase?.opinions.slice().sort(opinionSort);
+  return (
+    <Grid container direction="column">
+      <Grid item>
+        <IconButton onClick={back}>
+          <BackIcon color="action" />
+        </IconButton>
+      </Grid>
+      <Grid item>
+        <Typography variant="h4" component="h2">Edit Case</Typography>
+      </Grid>
+      {!!fullCase && 
+        <Grid container className={classes.formContainer} direction="row" spacing={4}>
+          <Grid item xs={12} md={6}>
+            <Grid container direction="column" spacing={2}>
+              {!!formError &&
+                <Grid item>
+                  <Typography color="error">{formError}</Typography>
+                </Grid>
+              }
+              <Grid item xs={12}>
+                <ViewEditInputText
+                  id="case-edit-title"
+                  fullWidth
+                  required
+                  disabled={submitting}
+                  name="title"
+                  label="Case Title"
+                  value={fullCase.case}
+                  onSave={saveTitle}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <AlternateTitleEditCard
+                  existingTitles={fullCase.alternateTitles}
+                  onSave={saveAlternateTitles}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <ViewEditInputText
+                  id="case-edit-short-summary"
+                  fullWidth
+                  required
+                  disabled={submitting}
+                  name="shortSummary"
+                  label="Short Summary"
+                  multiline
+                  minRows={2}
+                  value={fullCase.shortSummary}
+                  onSave={saveShortSummary}
+                />
+              </Grid>
+              <Grid className={classes.border} item xs={12}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={!!fullCase.important}
+                      onChange={saveImportant}
+                      name="caseImportant"
+                      color="primary"
+                    />
+                  }
+                  label="Important?"
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <ViewEditInputText
+                  id="case-edit-term"
+                  fullWidth
+                  required
+                  disabled={submitting}
+                  name="term"
+                  label="Term"
+                  select
+                  value={`${fullCase.term.id}`}
+                  display={fullCase.term.name}
+                  onSave={saveTerm}
+                >
+                  {allTerms.map((term, index) => (
+                    <MenuItem key={index} value={`${term.id}`}>{term.name}</MenuItem>
+                  ))}
+                </ViewEditInputText>
+              </Grid>
+              <Grid item xs={12}>
+                <ArgumentDateEditField
+                  fullWidth
+                  disabled={submitting}
+                  argumentDate={fullCase.argumentDate ?? null}
+                  sitting={fullCase.sitting}
+                  onSave={saveArgumentDate}
+                />
+              </Grid>
+              { (!!fullCase.resultStatus || !!fullCase.decisionDate) ?
+                <>
                 <Grid item xs={12}>
                   <ViewEditInputText
-                    id="case-edit-title"
+                    id="case-edit-status"
                     fullWidth
                     required
-                    disabled={this.state.submitting}
-                    name="title"
-                    label="Case Title"
-                    value={this.state.case.case}
-                    onSave={this.saveTitle}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <AlternateTitleEditCard
-                    existingTitles={this.state.case.alternateTitles}
-                    onSave={this.saveAlternateTitles}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <ViewEditInputText
-                    id="case-edit-short-summary"
-                    fullWidth
-                    required
-                    disabled={this.state.submitting}
-                    name="shortSummary"
-                    label="Short Summary"
-                    multiline
-                    minRows={2}
-                    value={this.state.case.shortSummary}
-                    onSave={this.saveShortSummary}
-                  />
-                </Grid>
-                <Grid className={this.props.classes.border} item xs={12}>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={!!this.state.case.important}
-                        onChange={this.saveImportant}
-                        name="caseImportant"
-                        color="primary"
-                      />
-                    }
-                    label="Important?"
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <ViewEditInputText
-                    id="case-edit-term"
-                    fullWidth
-                    required
-                    disabled={this.state.submitting}
-                    name="term"
-                    label="Term"
+                    disabled={submitting}
+                    name="status"
+                    label="Result Status"
                     select
-                    value={`${this.state.case.term.id}`}
-                    display={this.state.case.term.name}
-                    onSave={this.saveTerm}
+                    value={fullCase.resultStatus ?? ''}
+                    onSave={saveStatus}
                   >
-                    {allTerms.map((term, index) => (
-                      <MenuItem key={index} value={`${term.id}`}>{term.name}</MenuItem>
+                    <MenuItem value="">Select a result</MenuItem>
+                    {Object.values(CaseStatus)
+                    .filter(status => ![CaseStatus.ARGUED, CaseStatus.ARGUMENT_SCHEDULED, CaseStatus.GRANTED].includes(status))
+                    .map((status, index) => (
+                      <MenuItem key={index} value={status}>{status}</MenuItem>
                     ))}
                   </ViewEditInputText>
                 </Grid>
                 <Grid item xs={12}>
-                  <ArgumentDateEditField
+                  <ViewEditDatePicker
                     fullWidth
-                    disabled={this.state.submitting}
-                    argumentDate={this.state.case.argumentDate ?? null}
-                    sitting={this.state.case.sitting}
-                    onSave={this.saveArgumentDate}
+                    required
+                    disabled={submitting}
+                    label="Decision Date"
+                    value={fullCase.decisionDate ?? null}
+                    onSave={saveDecisionDate}
                   />
                 </Grid>
-                { (!!this.state.case.resultStatus || !!this.state.case.decisionDate) ?
-                  <>
-                  <Grid item xs={12}>
-                    <ViewEditInputText
-                      id="case-edit-status"
-                      fullWidth
-                      required
-                      disabled={this.state.submitting}
-                      name="status"
-                      label="Result Status"
-                      select
-                      value={this.state.case.resultStatus ?? ''}
-                      onSave={this.saveStatus}
-                    >
-                      <MenuItem value="">Select a result</MenuItem>
-                      {Object.values(CaseStatus)
-                      .filter(status => ![CaseStatus.ARGUED, CaseStatus.ARGUMENT_SCHEDULED, CaseStatus.GRANTED].includes(status))
-                      .map((status, index) => (
-                        <MenuItem key={index} value={status}>{status}</MenuItem>
-                      ))}
-                    </ViewEditInputText>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <ViewEditDatePicker
-                      fullWidth
-                      required
-                      disabled={this.state.submitting}
-                      label="Decision Date"
-                      value={this.state.case.decisionDate ?? null}
-                      onSave={this.saveDecisionDate}
+                <Grid item xs={12}>
+                  <ViewEditInputText
+                    id="case-edit-result"
+                    fullWidth
+                    disabled={submitting}
+                    name="result"
+                    label="Result"
+                    value={fullCase.result ?? ''}
+                    onSave={saveResult}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <ViewEditInputText
+                    id="case-edit-decision-link"
+                    fullWidth
+                    disabled={submitting}
+                    name="decisionLink"
+                    label="Decision Link"
+                    value={fullCase.decisionLink ?? ''}
+                    onSave={saveDecisionLink}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <ViewEditInputText
+                    id="case-edit-decision-summary"
+                    fullWidth
+                    required
+                    disabled={submitting}
+                    name="decisionSummary"
+                    label="Decision Summary"
+                    multiline
+                    minRows={3}
+                    value={fullCase.decisionSummary ?? ''}
+                    onSave={saveDecisionSummary}
+                  />
+                </Grid>
+                </>
+                : 
+                <CaseResultForm 
+                  fullCase={fullCase}
+                  editCase={caseResultEdit}
+                  onClose={closeCaseResultForm}
+                  createEditDocketOverruled={createEditDocketOverrruled}
+                />
+              }
+            </Grid>
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <Grid container direction="column" spacing={4}>
+              <Grid item>
+                <Typography variant="h5" component="h4">Dockets</Typography>
+                {fullCase.dockets?.map(docket => (
+                  <Paper key={docket.docketId} variant="elevation" className={classes.docketCard}>
+                    <Grid container direction="row" justifyContent="space-between" alignItems="center">
+                      <Grid item>
+                        <Button disableRipple color="primary" onClick={onClickDocket(docket)}>
+                          {docket.docketNumber} {'\u2014'} {docket.lowerCourt.shortName}
+                        </Button>
+                      </Grid>
+                      <Grid item>
+                        <IconButton onClick={onDeleteDocket(docket)}><CloseIcon /></IconButton>
+                      </Grid>
+                    </Grid>
+                  </Paper>
+                ))}
+                <Grid container direction="row" alignItems="center">
+                  <Grid item xs={11}>
+                    <Autocomplete<BareDocket>
+                      id="case-create-docket-autocomplete"
+                      // Tells component to re-render when docket list changes
+                      key={fullCase.dockets.map(d => d.docketId).reduce((l,r)=> l+r, 0)}
+                      options={unassignedDockets}
+                      // eslint-disable-next-line react/jsx-no-bind
+                      getOptionLabel={(docket) => `${docket.docketNumber} \u2014 ${docket.title}`}
+                      onChange={assignDocket}
+                      filterSelectedOptions
+                      selectOnFocus
+                      clearOnEscape
+                      // eslint-disable-next-line react/jsx-no-bind
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          size="small"
+                          variant="outlined"
+                          label="Assign Docket"
+                        />
+                      )}
                     />
                   </Grid>
-                  <Grid item xs={12}>
-                    <ViewEditInputText
-                      id="case-edit-result"
-                      fullWidth
-                      disabled={this.state.submitting}
-                      name="result"
-                      label="Result"
-                      value={this.state.case.result ?? ''}
-                      onSave={this.saveResult}
-                    />
+                  <Grid item xs={1}>
+                    <IconButton onClick={newDocket}><AddIcon /></IconButton>
                   </Grid>
-                  <Grid item xs={12}>
-                    <ViewEditInputText
-                      id="case-edit-decision-link"
-                      fullWidth
-                      disabled={this.state.submitting}
-                      name="decisionLink"
-                      label="Decision Link"
-                      value={this.state.case.decisionLink ?? ''}
-                      onSave={this.saveDecisionLink}
-                    />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <ViewEditInputText
-                      id="case-edit-decision-summary"
-                      fullWidth
-                      required
-                      disabled={this.state.submitting}
-                      name="decisionSummary"
-                      label="Decision Summary"
-                      multiline
-                      minRows={3}
-                      value={this.state.case.decisionSummary ?? ''}
-                      onSave={this.saveDecisionSummary}
-                    />
-                  </Grid>
-                  </>
-                  : 
-                  <CaseResultForm 
-                    fullCase={this.state.case}
-                    editCase={this.caseResultEdit}
-                    onClose={this.closeCaseResultForm}
-                    createEditDocketOverruled={this.createEditDocketOverrruled}
+                </Grid>
+              </Grid>
+              <Grid item>
+                <Typography variant="h5" component="h4">Opinions</Typography>
+                {opinions?.map(opinion => (
+                  <OpinionEditCard
+                    key={opinion.id}
+                    opinion={opinion}
+                    onDeleteOpinion={deleteOpinion}
+                    editOpinionSummary={editOpinionSummary}
+                  />),
+                )}
+                {(fullCase && activeJustices && activeJustices.length > 0 ) && 
+                  <OpinionCreateCard 
+                    caseId={fullCase.id}
+                    createOpinion={createOpinion}
+                    onCreateOpinion={onCreateOpinion}
+                    activeJustices={activeJustices}
+                    getAllJustices={getAllJustices}
                   />
                 }
               </Grid>
             </Grid>
-            <Grid item xs={12} md={6}>
-              <Grid container direction="column" spacing={4}>
-                <Grid item>
-                  <Typography variant="h5" component="h4">Dockets</Typography>
-                  {this.state.case.dockets?.map(docket => (
-                    <Paper key={docket.docketId} variant="elevation" className={this.props.classes.docketCard}>
-                      <Grid container direction="row" justifyContent="space-between" alignItems="center">
-                        <Grid item>
-                          <Button disableRipple color="primary" onClick={this.onClickDocket(docket)}>
-                            {docket.docketNumber} {'\u2014'} {docket.lowerCourt.shortName}
-                          </Button>
-                        </Grid>
-                        <Grid item>
-                          <IconButton onClick={this.onDeleteDocket(docket)}><CloseIcon /></IconButton>
-                        </Grid>
-                      </Grid>
-                    </Paper>
-                  ))}
-                  <Grid container direction="row" alignItems="center">
-                    <Grid item xs={11}>
-                      <Autocomplete<BareDocket>
-                        id="case-create-docket-autocomplete"
-                        // Tells component to re-render when docket list changes
-                        key={this.state.case.dockets.map(d => d.docketId).reduce((l,r)=> l+r, 0)}
-                        options={unassignedDockets}
-                        // eslint-disable-next-line react/jsx-no-bind
-                        getOptionLabel={(docket) => `${docket.docketNumber} \u2014 ${docket.title}`}
-                        onChange={this.assignDocket}
-                        filterSelectedOptions
-                        selectOnFocus
-                        clearOnEscape
-                        // eslint-disable-next-line react/jsx-no-bind
-                        renderInput={(params) => (
-                          <TextField
-                            {...params}
-                            size="small"
-                            variant="outlined"
-                            label="Assign Docket"
-                          />
-                        )}
-                      />
-                    </Grid>
-                    <Grid item xs={1}>
-                      <IconButton onClick={this.newDocket}><AddIcon /></IconButton>
-                    </Grid>
-                  </Grid>
-                </Grid>
-                <Grid item>
-                  <Typography variant="h5" component="h4">Opinions</Typography>
-                  {opinions?.map(opinion => (
-                    <OpinionEditCard
-                      key={opinion.id}
-                      opinion={opinion}
-                      onDeleteOpinion={this.deleteOpinion}
-                      editOpinionSummary={this.editOpinionSummary}
-                    />),
-                  )}
-                  {(this.state.case && activeJustices && activeJustices.length > 0 ) && 
-                    <OpinionCreateCard 
-                      caseId={this.state.case.id}
-                      createOpinion={this.createOpinion}
-                      onCreateOpinion={this.onCreateOpinion}
-                      activeJustices={activeJustices}
-                      getAllJustices={this.getAllJustices}
-                    />
-                  }
-                </Grid>
-              </Grid>
-            </Grid>
           </Grid>
-        }
-      </Grid>
-    );
-  }
-}
+        </Grid>
+      }
+    </Grid>
+  );
+};
 
-export default styleDecorator(EditCasePage);
+export default inject('routing', 'caseStore', 'docketStore', 'opinionStore', 'justiceStore')(observer(EditCasePage));
