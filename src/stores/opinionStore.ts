@@ -1,3 +1,4 @@
+import { createContext } from "react";
 import { NetworkService } from "../services/networkService";
 
 export interface OpinionJustice extends CreateOpinionJustice {
@@ -47,6 +48,8 @@ export const displayType: (type: OpinionType) => string = type => {
       return 'Dissenting in Judgement';
   }
 };
+
+export const OpinionStoreContext = createContext<OpinionStore>(null!);
 
 export class OpinionStore {
 

@@ -1,10 +1,9 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { Grid, Typography, IconButton, Theme, MenuItem, FormControlLabel, FormControl, FormLabel, RadioGroup, Radio, makeStyles } from '@material-ui/core';
 import BackIcon from '@material-ui/icons/ArrowBack';
 import { inject } from 'mobx-react';
 import { History } from 'history';
-import { DocketStore, DocketStatus, FullDocket, DocketEdit } from '../../../stores/docketStore';
-import { CourtStore } from '../../../stores/courtStore';
+import { DocketStatus, FullDocket, DocketEdit, DocketStoreContext } from '../../../stores/docketStore';
 import { useParams } from 'react-router';
 import ViewEditInputText from '../components/viewEditInputText';
 
@@ -22,8 +21,6 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 interface Props {
   routing: History;
-  docketStore: DocketStore;
-  courtStore: CourtStore;
 }
 
 const EditDocketPage = (props: Props) => {
@@ -31,6 +28,8 @@ const EditDocketPage = (props: Props) => {
   const [submitting, setSubmitting] = useState(false);
   const [docket, setDocket] = useState<FullDocket | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
+
+  const docketStore = useContext(DocketStoreContext);
 
   const { id } = useParams<{ id: string }>();
   
@@ -43,7 +42,7 @@ const EditDocketPage = (props: Props) => {
     }
     const loadDocket = async () => {
       try {
-        const docket = await props.docketStore.getDocketById(Number(docketId));
+        const docket = await docketStore.getDocketById(Number(docketId));
         if (!docket) {
           throw new Error(`No docket found with id ${docketId}`);
         }
@@ -55,7 +54,7 @@ const EditDocketPage = (props: Props) => {
       }
     };
     loadDocket();
-  }, [id, props.docketStore, props.routing]);
+  }, [id, docketStore, props.routing]);
 
   const edit = useCallback(async (docketEdit: DocketEdit) => {
     if (!docket) {
@@ -64,14 +63,14 @@ const EditDocketPage = (props: Props) => {
     setSubmitting(true);
     setFormError(null);
     try {
-      const updatedDocket = await props.docketStore.editDocket(docket.id, docketEdit);
+      const updatedDocket = await docketStore.editDocket(docket.id, docketEdit);
       setDocket(updatedDocket);
     } catch (e: any) {
       setFormError(e?.errorMessage ?? 'Failed to update docket');
     } finally {
       setSubmitting(false);
     } 
-  }, [docket, props.docketStore]);
+  }, [docket, docketStore]);
 
   const saveTitle = useCallback((title: string) => {
     if (!title) {
@@ -206,4 +205,4 @@ const EditDocketPage = (props: Props) => {
   );
 };
 
-export default inject('routing', 'courtStore', 'docketStore')(EditDocketPage);
+export default inject('routing')(EditDocketPage);

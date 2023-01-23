@@ -1,9 +1,9 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { inject, observer } from 'mobx-react';
 import { Typography, Theme, Grid, Fab, TextField, MenuItem, makeStyles } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import { History } from 'history';
-import { CaseStore, Case, CaseStatus } from '../../../stores/caseStore';
+import { Case, CaseStatus, CaseStoreContext } from '../../../stores/caseStore';
 import { autorun } from 'mobx';
 import CaseCard from '../components/caseCard';
 
@@ -24,7 +24,6 @@ const useStyles = makeStyles((theme: Theme) =>({
 
 interface Props {
   routing: History;
-  caseStore: CaseStore;
 }
 
 const CasePage = (props: Props) => {
@@ -35,6 +34,8 @@ const CasePage = (props: Props) => {
   const [searching, setSearching] = useState(true);
   const [caseStatus, setCaseStatus] = useState<CaseStatus | 'all'>('all');
 
+  const caseStore = useContext(CaseStoreContext);
+
   useEffect(() => {
     document.title = 'SCOTUS App | Admin | Case';
   }, []);
@@ -43,25 +44,25 @@ const CasePage = (props: Props) => {
     try {
       setSearching(true);
       setSelectedTermId(termId);
-      const results = await props.caseStore.getCaseByTerm(termId);
+      const results = await caseStore.getCaseByTerm(termId);
       setTermResults(results);
       setSearching(false);
     } catch (e: any) {
       setSearching(false);
       console.error(e?.errorMessage ?? 'Error occurred getting cases by term', e);
     }
-  }, [props.caseStore]);
+  }, [caseStore]);
 
 
   useEffect(() =>{
     autorun((reaction) => {
-      const allTerms = props.caseStore.allTerms;
+      const allTerms = caseStore.allTerms;
       if (allTerms.length > 0 && !selectedTermId) {
         setSelectedTerm(allTerms[0].id);
         reaction.dispose();
       }
     });
-  },[props.caseStore.allTerms, selectedTermId, setSelectedTerm]);
+  },[caseStore.allTerms, selectedTermId, setSelectedTerm]);
 
   const changeSelectedTerm = useCallback((event: React.ChangeEvent<{value: unknown}>) => {
     setSelectedTerm(event.target.value as number);
@@ -85,7 +86,7 @@ const CasePage = (props: Props) => {
 
   const classes = useStyles();
 
-  const allTerms = props.caseStore.allTerms;
+  const allTerms = caseStore.allTerms;
   const filteredCases = useMemo(() => (
     (!searchText ? termResults : 
       termResults.filter(c => c.case.toLocaleLowerCase().indexOf(searchText.toLocaleLowerCase()) !== -1)
@@ -165,4 +166,4 @@ const CasePage = (props: Props) => {
   );
 };
 
-export default inject('routing', 'caseStore')(observer(CasePage));
+export default inject('routing')(observer(CasePage));

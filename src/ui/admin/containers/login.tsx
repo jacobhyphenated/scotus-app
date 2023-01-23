@@ -1,12 +1,7 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { inject } from 'mobx-react';
-import { UserStore } from '../../../stores/userStore';
+import React, { useCallback, useEffect, useState, useContext } from 'react';
+import { UserStoreContext } from '../../../stores/userStore';
 import { Grid, TextField, Button, Theme, makeStyles } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
-
-interface Props  {
-  userStore?: UserStore;
-}
 
 const useStyles = makeStyles((theme: Theme) => ({
   paper: {
@@ -24,11 +19,13 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-const Login = (props: Props) => {
+const Login = () => {
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string>();
+
+  const userStore = useContext(UserStoreContext);
 
   useEffect(() => {
     document.title = 'SCOTUS App | Login';
@@ -36,7 +33,7 @@ const Login = (props: Props) => {
 
   const submit = useCallback(async () => {
     try {
-      const user = await props.userStore?.authenticate(username, password);
+      const user = await userStore.authenticate(username, password);
       if (!user) {
         setError('Invalid Username or Password');
       }
@@ -44,7 +41,7 @@ const Login = (props: Props) => {
       console.log(e);
       setError(e.message);
     }
-  }, [password, props.userStore, username]);
+  }, [password, userStore, username]);
 
   const changeUsername = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     setUsername(event.target.value);
@@ -109,4 +106,4 @@ const Login = (props: Props) => {
   );
 };
 
-export default inject('userStore')(Login);
+export default Login;

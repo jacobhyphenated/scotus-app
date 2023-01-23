@@ -6,6 +6,7 @@ import { DocketStore } from './docketStore';
 import { Opinion } from './opinionStore';
 import { Justice } from './justiceStore';
 import { ObjectCache }  from '../util/cache';
+import { createContext } from 'react';
 
 export enum CaseStatus {
   GRANTED = 'GRANTED',
@@ -115,6 +116,8 @@ export interface EditTermProps {
 }
 
 export const dismissedCases: (c: Case) => boolean = c => [CaseStatus.DIG, CaseStatus.DISMISSED, CaseStatus.GVR].includes(c.status);
+
+export const CaseStoreContext = createContext<CaseStore>(null!);
 
 export class CaseStore {
 

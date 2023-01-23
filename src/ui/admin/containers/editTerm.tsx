@@ -1,11 +1,11 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import { Grid, Typography, IconButton, Theme, FormControlLabel, FormControl, FormLabel, RadioGroup, Radio, makeStyles } from '@material-ui/core';
 import BackIcon from '@material-ui/icons/ArrowBack';
 import { inject, observer } from 'mobx-react';
 import { History } from 'history';
 import { useParams } from 'react-router';
 import ViewEditInputText from '../components/viewEditInputText';
-import { CaseStore, EditTermProps, Term } from '../../../stores/caseStore';
+import { CaseStoreContext, EditTermProps, Term } from '../../../stores/caseStore';
 import { autorun } from 'mobx';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -30,13 +30,14 @@ interface RouteParams {
 
 interface Props {
   routing: History;
-  caseStore: CaseStore;
 }
 
 const EditTermPage = (props: Props) => {
   const [submitting, setSubmitting] = useState(false);
   const [term, setTerm] = useState<Term | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
+
+  const caseStore = useContext(CaseStoreContext);
 
   const { id } = useParams<RouteParams>();
 
@@ -48,7 +49,7 @@ const EditTermPage = (props: Props) => {
       return;
     }
     autorun((reaction) => {
-      const allTerms = props.caseStore.allTerms;
+      const allTerms = caseStore.allTerms;
       if (allTerms.length > 0) {
         reaction.dispose();
         const selectedTerm = allTerms.find(t => t.id === Number(termId));
@@ -61,7 +62,7 @@ const EditTermPage = (props: Props) => {
         }
       }
     });
-  }, [props.caseStore.allTerms, props.routing, id]);
+  }, [caseStore.allTerms, props.routing, id]);
 
   const back = useCallback(() => {
     props.routing.goBack();
@@ -74,14 +75,14 @@ const EditTermPage = (props: Props) => {
     setSubmitting(true);
     setFormError(null);
     try {
-      const updatedTerm = await props.caseStore.editTerm(term.id, termEdit);
+      const updatedTerm = await caseStore.editTerm(term.id, termEdit);
       setTerm(updatedTerm);
     } catch (e: any) {
       setFormError(e?.errorMessage ?? 'Failed to update term');
     } finally {
       setSubmitting(false);
     } 
-  }, [props.caseStore, term]);
+  }, [caseStore, term]);
 
   const saveName = useCallback((name: string) => {
     if (!name) {
@@ -175,4 +176,4 @@ const EditTermPage = (props: Props) => {
   );
 };
 
-export default inject('routing', 'caseStore')(observer(EditTermPage));
+export default inject('routing')(observer(EditTermPage));

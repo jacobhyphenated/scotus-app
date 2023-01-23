@@ -1,15 +1,13 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { Theme, TextField, InputAdornment, Paper, Grid, Typography, MenuItem, Button, makeStyles } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
-import { Case, CaseStore, dismissedCases } from '../../../stores/caseStore';
+import { Case, CaseStoreContext, dismissedCases } from '../../../stores/caseStore';
 import { Subject } from 'rxjs';
 import { debounceTime, filter, mergeMap } from 'rxjs/operators';
 import { inject, observer } from 'mobx-react';
 import { History } from 'history';
 import { CasePreviewCard, TermSummaryInProgress, TermSummaryNearEnd, TermSummaryComplete } from '../components';
 import { useParams } from 'react-router';
-import { useState } from 'react';
-import { useEffect } from 'react';
 
 const useStyles = makeStyles((theme: Theme) => ({
   paper: {
@@ -47,7 +45,6 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 interface Props {
-  caseStore: CaseStore;
   routing: History;
 }
 
@@ -60,6 +57,8 @@ const Home = (props: Props) => {
   const [selectedTermId, setSelectedTermId] = useState<number>();
   const [searchText$] = useState(() => new Subject<string>());
 
+  const caseStore = useContext(CaseStoreContext);
+
   const { id } = useParams<{ id: string }>();
 
   useEffect(() => {
@@ -70,7 +69,7 @@ const Home = (props: Props) => {
     const subscription = searchText$.pipe(
       debounceTime(400),
       filter(text => text.length >= 3),
-      mergeMap((searchText) => props.caseStore.searchCase(searchText)),
+      mergeMap((searchText) => caseStore.searchCase(searchText)),
     ).subscribe({
       next: setSearchResults,
       error: err => {
@@ -78,15 +77,15 @@ const Home = (props: Props) => {
       },
     });
     return () => subscription.unsubscribe();
-  }, [searchText$, props.caseStore]);
+  }, [searchText$, caseStore]);
 
-  const allTerms = props.caseStore.allTerms;
+  const allTerms = caseStore.allTerms;
   const activeTerms = useMemo(() => allTerms.filter(t => !t.inactive), [allTerms]);
 
   const setSelectedTerm = useCallback(async (termId: number) => {
     setSelectedTermId(termId);
     try {
-      const results = await props.caseStore.getCaseByTerm(termId);
+      const results = await caseStore.getCaseByTerm(termId);
       setTermCases(results);
       setLoading(false);
     }
@@ -94,7 +93,7 @@ const Home = (props: Props) => {
       console.error(e?.message ?? 'Error occurred getting cases by term', e);
       props.routing.replace('/');
     }
-  }, [props.caseStore, props.routing]);
+  }, [caseStore, props.routing]);
 
   useEffect(() => {
     if (activeTerms.length > 0 && !selectedTermId) {
@@ -206,7 +205,7 @@ const Home = (props: Props) => {
             <TermSummaryComplete
               cases={termCases}
               termId={selectedTermId!}
-              caseStore={props.caseStore}
+              caseStore={caseStore}
               invalidTerm={handleInvalidTerm}
               onCaseClick={onCaseClick} 
               navigateToJustice={onTermJusticeClick}
@@ -224,4 +223,4 @@ const Home = (props: Props) => {
   );
 };
 
-export default inject('caseStore', 'routing')(observer(Home));
+export default inject('routing')(observer(Home));

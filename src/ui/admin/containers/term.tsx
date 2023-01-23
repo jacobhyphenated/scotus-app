@@ -1,10 +1,9 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import { inject, observer } from 'mobx-react';
 import { Typography, Theme, Grid, Fab, makeStyles } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import { History } from 'history';
-import { CaseStore, Term } from '../../../stores/caseStore';
-import { autorun } from 'mobx';
+import { CaseStoreContext, Term } from '../../../stores/caseStore';
 import TermCard from '../components/termCard';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -26,23 +25,21 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 interface Props {
   routing: History;
-  caseStore: CaseStore;
 }
 
 const TermAdminPage = (props: Props) => {
 
   const [terms, setTerms] = useState<Term[]>([]);
+
+  const caseStore = useContext(CaseStoreContext);
   
   useEffect(() => {
     document.title = 'SCOTUS App | Admin | Term';
-    autorun((reaction) => {
-      const allTerms = props.caseStore.allTerms;
-      if (allTerms.length > 0) {
-        setTerms(allTerms);
-        reaction.dispose();
-      }
-    });
-  }, [props.caseStore.allTerms]);
+    const allTerms = caseStore.allTerms;
+    if (allTerms.length > 0) {
+      setTerms(allTerms);
+    }
+  }, [caseStore.allTerms]);
 
   const selectTerm = useCallback((term: Term) => {
     props.routing.push(`/admin/term/edit/${term.id}`);
@@ -71,4 +68,4 @@ const TermAdminPage = (props: Props) => {
   );
 };
 
-export default inject('routing', 'caseStore')(observer(TermAdminPage));
+export default inject('routing')(observer(TermAdminPage));

@@ -1,9 +1,9 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { Grid, Typography, IconButton, TextField, Theme, Button, makeStyles } from '@material-ui/core';
 import BackIcon from '@material-ui/icons/ArrowBack';
 import { inject } from 'mobx-react';
 import { History } from 'history';
-import { CourtStore } from '../../../stores/courtStore';
+import { CourtStoreContext } from '../../../stores/courtStore';
 
 const useStyles = makeStyles((theme: Theme) => ({
   formContainer: {
@@ -19,7 +19,6 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 interface Props {
   routing: History;
-  courtStore: CourtStore;
 }
 
 const CreateCourtPage = (props: Props) => {
@@ -31,6 +30,8 @@ const CreateCourtPage = (props: Props) => {
   const [formError, setFormError] = useState<string | null>(null);
   const [nameError, setNameError] = useState<string | null>(null);
   const [shortNameError, setShortNameError] = useState<string | null>(null);
+
+  const courtStore = useContext(CourtStoreContext);
 
   useEffect(() => {
     document.title = 'SCOTUS App | Admin | Create Court';
@@ -65,14 +66,14 @@ const CreateCourtPage = (props: Props) => {
     }
     setSubmitting(true);
     try {
-      await props.courtStore.createCourt(name, shortName);
+      await courtStore.createCourt(name, shortName);
       props.routing.goBack();
     } catch (e: any) {
       setFormError(e?.message ?? 'An error occurred creating this court');
     } finally {
       setSubmitting(false);
     }
-  }, [name, props.courtStore, props.routing, shortName]);
+  }, [name, courtStore, props.routing, shortName]);
 
   const classes = useStyles();
 
@@ -143,4 +144,4 @@ const CreateCourtPage = (props: Props) => {
   );
 };
 
-export default inject('routing', 'courtStore')(CreateCourtPage);
+export default inject('routing')(CreateCourtPage);

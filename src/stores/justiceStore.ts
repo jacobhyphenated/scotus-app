@@ -1,6 +1,9 @@
 import { NetworkService } from '../services/networkService';
 import { makeObservable, observable, runInAction } from 'mobx';
 import { LocalDate } from '@js-joda/core';
+import { createContext } from 'react';
+
+export const JusticeStoreContext = createContext<JusticeStore>(null!);
 
 export class JusticeStore {
   constructor(private networkService: NetworkService) {

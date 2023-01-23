@@ -1,22 +1,22 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useContext } from 'react';
 import { Grid, Typography, IconButton, Theme, MenuItem, Paper, TextField, FormControlLabel, Checkbox, Button, makeStyles } from '@material-ui/core';
 import BackIcon from '@material-ui/icons/ArrowBack';
 import CloseIcon from '@material-ui/icons/Close';
 import AddIcon from '@material-ui/icons/Add';
 import { inject, observer } from 'mobx-react';
 import { History } from 'history';
-import { DocketStore, BareDocket, DocketStatus } from '../../../stores/docketStore';
+import { BareDocket, DocketStatus, DocketStoreContext } from '../../../stores/docketStore';
 import { useParams } from 'react-router';
 import ViewEditInputText from '../components/viewEditInputText';
 import ViewEditDatePicker from '../components/viewEditDatePicker';
 import ArgumentDateEditField from '../components/argumentDateEditField';
-import { CaseStore, FullCase, EditCase, CaseStatus, CaseDocket, CaseSitting } from '../../../stores/caseStore';
+import { FullCase, EditCase, CaseStatus, CaseDocket, CaseSitting, CaseStoreContext } from '../../../stores/caseStore';
 import { LocalDate } from '@js-joda/core';
 import { Autocomplete } from '@material-ui/lab';
 import OpinionEditCard from '../components/opinionEditCard';
 import OpinionCreateCard from '../components/createOpinionCard';
-import { OpinionStore, Opinion, OpinionType, CreateOpinionJustice, opinionSort } from '../../../stores/opinionStore';
-import { JusticeStore } from '../../../stores/justiceStore';
+import { Opinion, OpinionType, CreateOpinionJustice, opinionSort, OpinionStoreContext } from '../../../stores/opinionStore';
+import { JusticeStoreContext } from '../../../stores/justiceStore';
 import AlternateTitleEditCard from '../components/alternateTitleEditCard';
 import { whenDefined } from '../../../util/functional';
 import CaseResultForm from '../components/caseResultForm';
@@ -41,10 +41,6 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 interface Props {
   routing: History;
-  docketStore: DocketStore;
-  caseStore: CaseStore;
-  opinionStore: OpinionStore;
-  justiceStore: JusticeStore;
 }
 
 const EditCasePage = (props: Props) => {
@@ -52,6 +48,11 @@ const EditCasePage = (props: Props) => {
   const [submitting, setSubmitting] = useState(false);
   const [fullCase, setFullCase] = useState<FullCase | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
+
+  const justiceStore = useContext(JusticeStoreContext);
+  const docketStore = useContext(DocketStoreContext);
+  const opinionStore = useContext(OpinionStoreContext);
+  const caseStore = useContext(CaseStoreContext);
   
   const { id } = useParams<{ id: string }>();
 
@@ -63,7 +64,7 @@ const EditCasePage = (props: Props) => {
     }
     const loadCase = async () => {
       try {
-        const fullCase = await props.caseStore.getCaseById(Number(id));
+        const fullCase = await caseStore.getCaseById(Number(id));
         if (!fullCase) {
           throw new Error(`No case found with id ${id}`);
         }
@@ -75,7 +76,7 @@ const EditCasePage = (props: Props) => {
       }
     };
     loadCase();
-  }, [id, props.caseStore, props.routing]);
+  }, [id, caseStore, props.routing]);
 
   const edit = useCallback(async (caseEdit: EditCase) => {
     if (!fullCase) {
@@ -84,14 +85,14 @@ const EditCasePage = (props: Props) => {
     setSubmitting(true);
     setFormError(null);
     try {
-      const updatedCase = await props.caseStore.editCase(fullCase.id, caseEdit);
+      const updatedCase = await caseStore.editCase(fullCase.id, caseEdit);
       setFullCase(updatedCase);
     } catch (e: any) {
       setFormError(e?.message ?? 'Failed to update case');
     } finally {
       setSubmitting(false);
     } 
-  }, [fullCase, props.caseStore]);
+  }, [fullCase, caseStore]);
 
   const removeArgumentDate = useCallback(async () => {
     if (!fullCase) {
@@ -100,14 +101,14 @@ const EditCasePage = (props: Props) => {
     setSubmitting(true);
     setFormError(null);
     try {
-      const updatedCase = await props.caseStore.removeArgumentDate(fullCase.id);
+      const updatedCase = await caseStore.removeArgumentDate(fullCase.id);
       setFullCase(updatedCase);
     } catch (e: any) {
       setFormError(e?.message ?? 'Failed to update case');
     } finally {
       setSubmitting(false);
     } 
-  }, [fullCase, props.caseStore]);
+  }, [fullCase, caseStore]);
 
   const saveTitle = useCallback(async (title: string) => {
     if (!title) {
@@ -185,7 +186,7 @@ const EditCasePage = (props: Props) => {
   const onDeleteDocket = useCallback((docket: CaseDocket): () => void => {
     return async () => {
       try {
-        await props.caseStore.removeDocket(fullCase!.id, docket.docketId);
+        await caseStore.removeDocket(fullCase!.id, docket.docketId);
         const updatedCase =  {
           ...fullCase!,
           dockets: fullCase!.dockets.filter(d => d.docketId !== docket.docketId),
@@ -196,7 +197,7 @@ const EditCasePage = (props: Props) => {
         setFormError(e?.message ?? 'Something went wrong removing the docket');
       }
     };
-  }, [fullCase, props.caseStore]);
+  }, [fullCase, caseStore]);
 
   const onClickDocket = useCallback((docket: CaseDocket): () => void => {
     return () => {
@@ -209,18 +210,18 @@ const EditCasePage = (props: Props) => {
       return;
     }
     try {
-      const result = await props.caseStore.assignDocket(fullCase!.id, value.id);
+      const result = await caseStore.assignDocket(fullCase!.id, value.id);
       setFullCase(result);
       setFormError(null);
     } catch (e: any) {
       setFormError(e?.message ?? 'Something went wrong assigning the docket');
     }
-  }, [fullCase, props.caseStore]);
+  }, [fullCase, caseStore]);
 
   const deleteOpinion = useCallback(async (opinion: Opinion) => {
     try {
-      await props.opinionStore.deleteOpinion(opinion.id);
-      props.caseStore.revokeCaseCache(opinion.caseId);
+      await opinionStore.deleteOpinion(opinion.id);
+      caseStore.revokeCaseCache(opinion.caseId);
       setFormError(null);
       const updatedCase = {
         ...fullCase!,
@@ -230,12 +231,12 @@ const EditCasePage = (props: Props) => {
     } catch (e: any) {
       setFormError(e?.message ?? 'An error occurred deleting the opinion');
     }
-  }, [fullCase, props.caseStore, props.opinionStore]);
+  }, [fullCase, caseStore, opinionStore]);
 
   const editOpinionSummary = useCallback(async (opinionId: number, summary: string) => {
     try {
-      const opinion = await props.opinionStore.editOpinionSummary(opinionId, summary);
-      props.caseStore.revokeCaseCache(opinion.caseId);
+      const opinion = await opinionStore.editOpinionSummary(opinionId, summary);
+      caseStore.revokeCaseCache(opinion.caseId);
       setFormError(null);
       const updatedCase = {
         ...fullCase!,
@@ -245,19 +246,19 @@ const EditCasePage = (props: Props) => {
     } catch (e: any) {
       setFormError(e?.message ?? 'An error occurred editing the opinion summary');
     }
-  }, [fullCase, props.caseStore, props.opinionStore]);
+  }, [fullCase, caseStore, opinionStore]);
 
   const onCreateOpinion = useCallback((opinion: Opinion) => {
-    props.caseStore.revokeCaseCache(opinion.caseId);
+    caseStore.revokeCaseCache(opinion.caseId);
     setFullCase({
       ...fullCase!,
       opinions: [...fullCase!.opinions, opinion],
     });
-  }, [fullCase, props.caseStore]);
+  }, [fullCase, caseStore]);
 
   const createOpinion = useCallback((caseId: number, opinionType: OpinionType, summary: string, justices: CreateOpinionJustice[]): Promise<Opinion> => {
-    return props.opinionStore.createOpinion(caseId, opinionType, summary, justices);
-  }, [props.opinionStore]);
+    return opinionStore.createOpinion(caseId, opinionType, summary, justices);
+  }, [opinionStore]);
   
 
   const back = useCallback(() => {
@@ -269,8 +270,8 @@ const EditCasePage = (props: Props) => {
   }, [props.routing]);
 
   const getAllJustices = useCallback(() => {
-    return props.justiceStore.getAllJustices();
-  }, [props.justiceStore]);
+    return justiceStore.getAllJustices();
+  }, [justiceStore]);
 
   const closeCaseResultForm = useCallback((c: FullCase) => {
     setFullCase(c);
@@ -278,22 +279,22 @@ const EditCasePage = (props: Props) => {
 
   const createEditDocketOverrruled = useCallback((docketId: number) => {
     return (lowerCourtOverruled: boolean | undefined) => {
-      return props.docketStore.editDocket(docketId, {
+      return docketStore.editDocket(docketId, {
         lowerCourtOverruled,
         status: DocketStatus.DONE,
       });
     };
-  }, [props.docketStore]);
+  }, [docketStore]);
 
   const caseResultEdit = useCallback((id: number, edit: EditCase) => {
-    return props.caseStore.editCase(id, edit);
-  }, [props.caseStore]);
+    return caseStore.editCase(id, edit);
+  }, [caseStore]);
 
   const classes = useStyles();
 
-  const allTerms = props.caseStore.allTerms;
-  const unassignedDockets = props.docketStore.unassignedDockets.slice();
-  const activeJustices = props.justiceStore.activeJustices;
+  const allTerms = caseStore.allTerms;
+  const unassignedDockets = docketStore.unassignedDockets.slice();
+  const activeJustices = justiceStore.activeJustices;
 
   const opinions = fullCase?.opinions.slice().sort(opinionSort);
   return (
@@ -541,4 +542,4 @@ const EditCasePage = (props: Props) => {
   );
 };
 
-export default inject('routing', 'caseStore', 'docketStore', 'opinionStore', 'justiceStore')(observer(EditCasePage));
+export default inject('routing')(observer(EditCasePage));

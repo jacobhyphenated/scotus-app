@@ -9,12 +9,13 @@ import { App } from './App';
 import * as serviceWorker from './serviceWorker';
 import { ThemeProvider, createTheme, CssBaseline } from '@material-ui/core';
 import { UserStore } from './stores/userStore';
-import { JusticeStore } from './stores/justiceStore';
+import { JusticeStore, JusticeStoreContext } from './stores/justiceStore';
 import { NetworkService } from './services/networkService';
-import { CourtStore } from './stores/courtStore';
-import { DocketStore } from './stores/docketStore';
-import { CaseStore } from './stores/caseStore';
-import { OpinionStore } from './stores/opinionStore';
+import { CourtStore, CourtStoreContext } from './stores/courtStore';
+import { DocketStore, DocketStoreContext } from './stores/docketStore';
+import { CaseStore, CaseStoreContext } from './stores/caseStore';
+import { OpinionStore, OpinionStoreContext } from './stores/opinionStore';
+import { UserStoreContext } from './stores/userStore';
 
 mobxConfigure({
   enforceActions: "observed", // don't allow state modifications outside actions
@@ -33,12 +34,6 @@ const opinionStore = new OpinionStore(networkService);
 
 const stores = {
   routing: routingStore,
-  userStore,
-  justiceStore,
-  courtStore,
-  docketStore,
-  caseStore,
-  opinionStore,
 };
 
 const history = syncHistoryWithStore(browserHistory, routingStore);
@@ -56,12 +51,24 @@ const theme = createTheme({
 
 ReactDOM.render(
   <Provider {...stores}>
-    <Router history={history}>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <App />
-      </ThemeProvider>
-    </Router>
+    <UserStoreContext.Provider value={userStore}>
+      <JusticeStoreContext.Provider value={justiceStore}>
+        <CourtStoreContext.Provider value={courtStore}>
+          <DocketStoreContext.Provider value={docketStore}>
+            <OpinionStoreContext.Provider value={opinionStore}>
+              <CaseStoreContext.Provider value={caseStore}>
+                <Router history={history}>
+                  <ThemeProvider theme={theme}>
+                    <CssBaseline />
+                    <App />
+                  </ThemeProvider>
+                </Router>
+              </CaseStoreContext.Provider>
+            </OpinionStoreContext.Provider>
+          </DocketStoreContext.Provider>
+        </CourtStoreContext.Provider>
+      </JusticeStoreContext.Provider>
+    </UserStoreContext.Provider>
   </Provider>,
   document.getElementById('root'),
 );

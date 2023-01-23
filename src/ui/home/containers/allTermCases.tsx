@@ -1,8 +1,8 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { Theme, TextField, InputAdornment, Paper, Grid, Typography, IconButton, makeStyles } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 import BackIcon from '@material-ui/icons/ArrowBack';
-import { Case, CaseSitting, CaseStatus, CaseStore, Term } from '../../../stores/caseStore';
+import { Case, CaseSitting, CaseStatus, CaseStoreContext, Term } from '../../../stores/caseStore';
 import { Subject } from 'rxjs';
 import { debounceTime, map } from 'rxjs/operators';
 import { inject, observer } from 'mobx-react';
@@ -10,8 +10,6 @@ import { autorun } from 'mobx';
 import { History } from 'history';
 import { CaseListItem } from '../components';
 import { useParams } from 'react-router';
-import { useCallback } from 'react';
-import { useEffect } from 'react';
 
 const useStyles = makeStyles((theme: Theme) => ({
   paper: {
@@ -40,7 +38,6 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 interface Props {
-  caseStore: CaseStore;
   routing: History;
 }
 
@@ -52,6 +49,7 @@ const AllTermCasesPage = (props: Props) => {
   const [term, setTerm] = useState<Term>();
   const [searchText$] = useState(() => new Subject<string>());
 
+  const caseStore = useContext(CaseStoreContext);
 
   const caseSorter = useCallback((c1: Case, c2: Case) => {
     if (!c1.argumentDate && !!c2.argumentDate) {
@@ -85,7 +83,7 @@ const AllTermCasesPage = (props: Props) => {
   }, [searchText$, termCases]);
 
   const { id } = useParams<{ id: string }>();
-  const allTerms = props.caseStore.allTerms;
+  const allTerms = caseStore.allTerms;
 
   useEffect(() => {
     const termId = id;
@@ -107,13 +105,13 @@ const AllTermCasesPage = (props: Props) => {
   useEffect(() => {
     if(!!term) {
       const loadCases = async () => {
-        const cases = await props.caseStore.getCaseByTerm(term.id);
+        const cases = await caseStore.getCaseByTerm(term.id);
         setTermCases(cases);
         setFilteredCases(cases);
       };
       loadCases();
     }
-  }, [term, props.caseStore]);
+  }, [term, caseStore]);
 
   const updateSearchText: React.ChangeEventHandler<HTMLInputElement> = useCallback(event => {
     const newSearchText = event.target.value;
@@ -180,7 +178,7 @@ const AllTermCasesPage = (props: Props) => {
             <Paper className={classes.sitting}>
               {sitting !== 'None' && <Typography variant="h4">{sitting}</Typography> }
               {mappedCases.get(sitting)?.sort(caseSorter).map(termCase => (
-                <CaseListItem key={termCase.id} onCaseClick={onCaseClick} scotusCase={termCase} caseStore={props.caseStore} />
+                <CaseListItem key={termCase.id} onCaseClick={onCaseClick} scotusCase={termCase} caseStore={caseStore} />
               ))}
             </Paper>
           </Grid>
@@ -190,4 +188,4 @@ const AllTermCasesPage = (props: Props) => {
   );
 };
 
-export default inject('caseStore', 'routing')(observer(AllTermCasesPage));
+export default inject('routing')(observer(AllTermCasesPage));

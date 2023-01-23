@@ -1,9 +1,9 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useContext, useEffect } from 'react';
 import { inject, observer } from 'mobx-react';
 import { Typography, Paper, Theme, Grid, Fab, makeStyles } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import { History } from 'history';
-import { CourtStore } from '../../../stores/courtStore';
+import { CourtStoreContext } from '../../../stores/courtStore';
 
 const useStyles = makeStyles((theme: Theme) => ({
   courtCard: {
@@ -28,7 +28,6 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 interface Props {
   routing: History;
-  courtStore: CourtStore;
 }
 
 const CourtPage = (props: Props) => {
@@ -41,7 +40,9 @@ const CourtPage = (props: Props) => {
     props.routing.push('/admin/court/create');
   }, [props.routing]);
 
-  const courts = props.courtStore.allCourts;
+  const courtStore = useContext(CourtStoreContext);
+
+  const courts = courtStore.allCourts;
   const classes = useStyles();
   
   return (
@@ -64,4 +65,4 @@ const CourtPage = (props: Props) => {
   );
 };
 
-export default inject('routing', 'courtStore')(observer(CourtPage));
+export default inject('routing')(observer(CourtPage));

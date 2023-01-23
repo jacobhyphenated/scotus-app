@@ -3,6 +3,7 @@ import { makeObservable, observable, runInAction } from 'mobx';
 import { Court } from './courtStore';
 import { Case } from './caseStore';
 import { LocalDate } from '@js-joda/core';
+import { createContext } from 'react';
 
 interface BaseDocket {
   id: number;
@@ -33,6 +34,8 @@ export interface DocketEdit {
   caseId?: number;
   status?: DocketStatus;
 }
+
+export const DocketStoreContext = createContext<DocketStore>(null!);
 
 export class DocketStore {
   constructor(private networkService: NetworkService) {

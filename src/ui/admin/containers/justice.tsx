@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import { inject, observer } from 'mobx-react';
 import { History } from 'history';
-import { JusticeStore, Justice } from '../../../stores/justiceStore';
+import { Justice, JusticeStoreContext } from '../../../stores/justiceStore';
 import { Theme, Typography, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, Fab, Grid, FormControlLabel, makeStyles } from '@material-ui/core';
 import JusticeCard from '../components/justiceCard';
 import DatePicker from '../components/datePicker';
@@ -22,7 +22,6 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 interface Props {
   routing: History;
-  justiceStore: JusticeStore;
 }
 
 const JusticePage = (props: Props) => {
@@ -31,6 +30,8 @@ const JusticePage = (props: Props) => {
   const [allJustices, setAllJustices] = useState<Justice[]>([]);
   const [retireModal, setRetireModal] = useState<Justice>();
   const [retireDate, setRetireDate] = useState<LocalDate>();
+
+  const justiceStore = useContext(JusticeStoreContext);
 
   useEffect(() => {
     document.title = 'SCOTUS App | Admin | Justice';
@@ -45,11 +46,11 @@ const JusticePage = (props: Props) => {
     if (!retireModal || !retireDate){
       return;
     }
-    await props.justiceStore.retireJustice(retireModal.id, retireDate);
+    await justiceStore.retireJustice(retireModal.id, retireDate);
     setRetireModal(undefined);
     setRetireDate(undefined);
-    props.justiceStore.refreshActiveJustices();
-  }, [retireModal, retireDate, props.justiceStore]);
+    justiceStore.refreshActiveJustices();
+  }, [retireModal, retireDate, justiceStore]);
 
   const closeRetireModal = useCallback(() => {
     setRetireModal(undefined);
@@ -68,15 +69,15 @@ const JusticePage = (props: Props) => {
     setShowAll(!showAllCurrent);
     if (!showAllCurrent) {
       try {
-        const justices = await props.justiceStore.getAllJustices();
+        const justices = await justiceStore.getAllJustices();
         setAllJustices(justices);
       } catch (e) {
         console.error(e);
       }
     }
-  }, [props.justiceStore, showAll]);
+  }, [justiceStore, showAll]);
 
-  const active = props.justiceStore.activeJustices;
+  const active = justiceStore.activeJustices;
   const justiceList = showAll ? allJustices : active;
 
   const classes = useStyles();
@@ -138,4 +139,4 @@ const JusticePage = (props: Props) => {
   );
 };
 
-export default inject('routing', 'justiceStore')(observer(JusticePage));
+export default inject('routing')(observer(JusticePage));

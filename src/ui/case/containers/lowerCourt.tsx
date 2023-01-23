@@ -1,11 +1,11 @@
 import { Grid, IconButton, makeStyles, Paper, Theme, Typography } from "@material-ui/core";
 import BackIcon from '@material-ui/icons/ArrowBack';
 import { inject } from "mobx-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import {  useParams } from "react-router";
 import { History } from 'history';
-import { CaseStatus, CaseStore, FullCase } from "../../../stores/caseStore";
-import { DocketStore } from "../../../stores/docketStore";
+import { CaseStatus, CaseStoreContext, FullCase } from "../../../stores/caseStore";
+import { DocketStoreContext } from "../../../stores/docketStore";
 import { forkJoin } from "rxjs";
 import LinkableText from '../components/linkableText';
 import { groupBy } from "../../../util/functional";
@@ -53,8 +53,6 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
   
 interface Props {
-  caseStore: CaseStore;
-  docketStore: DocketStore;
   routing: History;
 }
 
@@ -65,6 +63,9 @@ const LowerCourtPage = (props: Props) => {
   const [fullCase, setFullCase] = useState<FullCase | null>(null);
   const [lowerCourtRulings, setLowerCourtRulings] = useState<GroupedDocket[] | null>(null);
 
+  const docketStore = useContext(DocketStoreContext);
+  const caseStore = useContext(CaseStoreContext);
+
   const back = useCallback(() => {
     props.routing.goBack();
   }, [props.routing]);
@@ -73,7 +74,7 @@ const LowerCourtPage = (props: Props) => {
   useEffect( () => {
     const loadFullCase = async () => {
       try {
-        const c = await props.caseStore.getCaseById(Number(id));
+        const c = await caseStore.getCaseById(Number(id));
         setFullCase(c);
       } catch (e) {
         console.warn(e);
@@ -81,14 +82,14 @@ const LowerCourtPage = (props: Props) => {
       }
     };
     loadFullCase();
-  }, [id, props.caseStore, props.routing]);
+  }, [id, caseStore, props.routing]);
 
   useEffect(() => {
     if (!fullCase) {
       return;
     }
     document.title = `SCOTUS App | ${fullCase.case} | Lower Court`;
-    const subscription = forkJoin(fullCase.dockets.map(d => props.docketStore.getDocketById(d.docketId)))
+    const subscription = forkJoin(fullCase.dockets.map(d => docketStore.getDocketById(d.docketId)))
       .subscribe({
         next: dockets => {
           const grouped = groupBy(dockets, 'lowerCourtRuling');
@@ -125,7 +126,7 @@ const LowerCourtPage = (props: Props) => {
         },
       });
     return () => { subscription.unsubscribe() };
-  }, [fullCase, props.docketStore, props.routing]);
+  }, [fullCase, docketStore, props.routing]);
 
 
   return (
@@ -212,4 +213,4 @@ const LowerCourtPage = (props: Props) => {
   );
 };
 
-export default inject('caseStore', 'docketStore', 'routing')(LowerCourtPage);
+export default inject('routing')(LowerCourtPage);

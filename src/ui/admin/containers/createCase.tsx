@@ -1,11 +1,11 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { Grid, Typography, IconButton, TextField, Theme, Button, MenuItem, FormControlLabel, Checkbox, makeStyles } from '@material-ui/core';
 import BackIcon from '@material-ui/icons/ArrowBack';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { inject, observer } from 'mobx-react';
 import { History } from 'history';
-import { DocketStore, BareDocket } from '../../../stores/docketStore';
-import { CaseStore } from '../../../stores/caseStore';
+import { BareDocket, DocketStoreContext } from '../../../stores/docketStore';
+import { CaseStoreContext } from '../../../stores/caseStore';
 import { autorun } from 'mobx';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -22,8 +22,6 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 interface Props {
   routing: History;
-  docketStore: DocketStore;
-  caseStore: CaseStore;
 }
 
 const CreateCasePage = (props: Props) => {
@@ -39,19 +37,22 @@ const CreateCasePage = (props: Props) => {
   const [caseError, setCaseError] = useState<string | null>(null);
   const [shortSummaryError, setShortSummaryError] = useState<string | null>(null);
 
+  const docketStore = useContext(DocketStoreContext);
+  const caseStore = useContext(CaseStoreContext);
+
   useEffect(() => {
     document.title = 'SCOTUS App | Admin | Create Case';
   }, []);
 
   useEffect(() => {
     autorun((reaction) => {
-      const allTerms = props.caseStore.allTerms;
+      const allTerms = caseStore.allTerms;
       if (allTerms.length > 0) {
         setTermId(allTerms[0].id);
         reaction.dispose();
       }
     });
-  }, [props.caseStore]);
+  }, [caseStore]);
 
 
   const back = useCallback(() => {
@@ -97,14 +98,14 @@ const CreateCasePage = (props: Props) => {
 
     setSubmitting(true);
     try {
-      return await props.caseStore.createCase(title, shortSummary, termId, important, dockets.map(d => d.id));
+      return await caseStore.createCase(title, shortSummary, termId, important, dockets.map(d => d.id));
     } catch (e: any) {
       console.warn(e);
       setFormError(e?.message ?? 'There was a problem creating this case');
       setSubmitting(false);
       return null;
     }
-  }, [dockets, important, props.caseStore, shortSummary, termId, title]);
+  }, [dockets, important, caseStore, shortSummary, termId, title]);
 
   const save = useCallback(async () => {
     const newCase = await submit();
@@ -120,8 +121,8 @@ const CreateCasePage = (props: Props) => {
     }
   }, [props.routing, submit]);
 
-  const unassignedDockets = props.docketStore.unassignedDockets;
-  const allTerms = props.caseStore.allTerms;
+  const unassignedDockets = docketStore.unassignedDockets;
+  const allTerms = caseStore.allTerms;
   const classes = useStyles();
 
   return (
@@ -260,4 +261,4 @@ const CreateCasePage = (props: Props) => {
 
 };
 
-export default inject('routing', 'caseStore', 'docketStore')(observer(CreateCasePage));
+export default inject('routing')(observer(CreateCasePage));

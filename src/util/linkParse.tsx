@@ -5,7 +5,6 @@ const startElement = '[[';
 const endElement = '[[/]]';
 const caseIdRegex = /\[\[(\d+)\]\]/;
 
-
 const parse = (
   text: string, 
   apply: (caseId: string | number, linkText: string) => JSX.Element | string,
@@ -39,7 +38,6 @@ const parse = (
   }
   output.push(remainingText);
 
-
   return <>
     {output.map((val, index) =>(
       <span key={index}>{val}</span>
@@ -49,7 +47,6 @@ const parse = (
 
 export const createLinks = (text: string, className?: string): JSX.Element => {
   return parse(text, (caseId, linkText) => {
-
     return (
       <Button
         variant="text"

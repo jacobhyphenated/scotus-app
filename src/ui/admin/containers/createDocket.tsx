@@ -1,10 +1,10 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { Grid, Typography, IconButton, TextField, Theme, Button, MenuItem, makeStyles } from '@material-ui/core';
 import BackIcon from '@material-ui/icons/ArrowBack';
 import { inject, observer } from 'mobx-react';
 import { History } from 'history';
-import { DocketStore, DocketStatus } from '../../../stores/docketStore';
-import { CourtStore } from '../../../stores/courtStore';
+import { DocketStatus, DocketStoreContext } from '../../../stores/docketStore';
+import { CourtStoreContext } from '../../../stores/courtStore';
 
 const useStyles = makeStyles((theme: Theme) => ({
   formContainer: {
@@ -20,8 +20,6 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 interface Props {
   routing: History;
-  docketStore: DocketStore;
-  courtStore: CourtStore;
 }
 
 const CreateDocketPage = (props: Props) => {
@@ -36,6 +34,9 @@ const CreateDocketPage = (props: Props) => {
   const [titleError, setTitleError] = useState<string | null>(null);
   const [docketNumberError, setDocketNumberError] = useState<string | null>(null);
   const [lowerCourtError, setLowerCourtError] = useState<string | null>(null);
+
+  const courtStore = useContext(CourtStoreContext);
+  const docketStore = useContext(DocketStoreContext);
 
   useEffect(() => {
     document.title = 'SCOTUS App | Admin | Create Docket';
@@ -87,7 +88,7 @@ const CreateDocketPage = (props: Props) => {
     }
     setSubmitting(true);
     try {
-      await props.docketStore.createDocket(title, docketNumber, lowerCourtId, lowerCourtRuling, status);
+      await docketStore.createDocket(title, docketNumber, lowerCourtId, lowerCourtRuling, status);
       props.routing.goBack();
     } catch (e: any) {
       setFormError(e?.message ?? 'An error occurred creating this docket');
@@ -95,9 +96,9 @@ const CreateDocketPage = (props: Props) => {
       setSubmitting(false);
     }
     
-  }, [docketNumber, lowerCourtId, lowerCourtRuling, props.docketStore, props.routing, status, title]);
+  }, [docketNumber, lowerCourtId, lowerCourtRuling, docketStore, props.routing, status, title]);
 
-  const courts = props.courtStore.allCourts;
+  const courts = courtStore.allCourts;
   const classes = useStyles();
   return (
     <Grid container direction="column">
@@ -218,4 +219,4 @@ const CreateDocketPage = (props: Props) => {
   );
 };
 
-export default inject('routing', 'courtStore', 'docketStore')(observer(CreateDocketPage));
+export default inject('routing')(observer(CreateDocketPage));

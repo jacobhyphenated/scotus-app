@@ -1,5 +1,8 @@
 import { NetworkService } from '../services/networkService';
 import { makeObservable, observable, runInAction } from 'mobx';
+import { createContext } from 'react';
+
+export const CourtStoreContext = createContext<CourtStore>(null!);
 
 export class CourtStore {
   constructor(private networkService: NetworkService) {

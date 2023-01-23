@@ -1,6 +1,7 @@
+import { useEffect, useMemo, useContext } from 'react';
 import { observer, inject } from 'mobx-react';
 import Login from './login';
-import { UserStore } from '../../../stores/userStore';
+import { UserStoreContext } from '../../../stores/userStore';
 import { Grid, Paper, Button, Theme, Hidden } from '@material-ui/core';
 import { Switch, Route } from 'react-router';
 import { History } from 'history';
@@ -18,11 +19,8 @@ import CreateCasePage from './createCase';
 import EditCasePage from './editCase';
 import TermAdminPage from './term';
 import EditTermPage from './editTerm';
-import { useEffect } from 'react';
-import { useMemo } from 'react';
 
 interface Props {
-  userStore: UserStore;
   routing: History;
 }
 
@@ -54,7 +52,9 @@ const Admin = (props: Props) => {
     document.title = 'SCOTUS App | Admin';
   }, []);
 
-  const isAdmin = props.userStore.isAdmin;
+  const userStore = useContext(UserStoreContext);
+
+  const isAdmin = userStore.isAdmin;
   const { push, location } = props.routing;
   const classes = useStyles();
 
@@ -150,4 +150,4 @@ const Admin = (props: Props) => {
   );
 };
 
-export default inject('userStore', 'routing')(observer(Admin));
+export default inject('routing')(observer(Admin));

@@ -1,19 +1,16 @@
-import { useMemo } from 'react';
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { makeStyles } from '@material-ui/styles';
 import { Theme, Paper, Grid, Typography, IconButton } from '@material-ui/core';
 import BackIcon from '@material-ui/icons/ArrowBack';
-import { Case, CaseStore, FullCase, Term } from '../../../stores/caseStore';
+import { Case, CaseStoreContext, FullCase, Term } from '../../../stores/caseStore';
 import { forkJoin } from 'rxjs';
 import { inject, observer } from 'mobx-react';
 import { History } from 'history';
 import { CaseListItem } from '../components';
 import { useParams } from 'react-router';
-import { Justice, JusticeStore } from '../../../stores/justiceStore';
+import { Justice, JusticeStoreContext } from '../../../stores/justiceStore';
 import { Opinion, OpinionType } from '../../../stores/opinionStore';
 import { partitionArray } from '../../../util';
-import { useState } from 'react';
-import { useEffect } from 'react';
-import { useCallback } from 'react';
 
 const useStyles = makeStyles((theme: Theme) => ({
   paper: {
@@ -30,8 +27,6 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 interface Props {
-  caseStore: CaseStore;
-  justiceStore: JusticeStore;
   routing: History;
 }
 
@@ -41,6 +36,9 @@ const TermJusticeSummary = (props: Props) => {
   const [term, setTerm] = useState<Term>();
   const [justice, setJustice] = useState<Justice>();
 
+  const justiceStore = useContext(JusticeStoreContext);
+  const caseStore = useContext(CaseStoreContext);
+
   const { termId, justiceId } = useParams<{ termId: string, justiceId: string }>();
 
   const dataLoadingError = useCallback((error: any) => {
@@ -49,21 +47,21 @@ const TermJusticeSummary = (props: Props) => {
   }, [props.routing]);
 
   useEffect(() => {
-    if (props.caseStore.allTerms.length > 0 && !term) {
-      const selectedTerm = props.caseStore.allTerms.find(t => t.id === Number(termId));
+    if (caseStore.allTerms.length > 0 && !term) {
+      const selectedTerm = caseStore.allTerms.find(t => t.id === Number(termId));
       if (!selectedTerm) {
         dataLoadingError(`${termId} is not a valid term id`);
         return;
       }
       setTerm(selectedTerm);
     }
-  }, [dataLoadingError, props.caseStore.allTerms, term, termId]);
+  }, [dataLoadingError, caseStore.allTerms, term, termId]);
 
   useEffect(() => {
     const loadTermCases = async () => {
       if (termId && !isNaN(Number(termId))) {
-        const cases = await props.caseStore.getCaseByTerm(Number(termId));
-        const fetchAllSubscription = forkJoin(cases.filter(c => c.argumentDate).map(c => props.caseStore.getCaseById(c.id)))
+        const cases = await caseStore.getCaseByTerm(Number(termId));
+        const fetchAllSubscription = forkJoin(cases.filter(c => c.argumentDate).map(c => caseStore.getCaseById(c.id)))
           .subscribe({
             next: setTermCases,
             error: dataLoadingError,
@@ -74,13 +72,13 @@ const TermJusticeSummary = (props: Props) => {
       }
     };
     loadTermCases();
-  }, [dataLoadingError, props.caseStore, termId]);
+  }, [dataLoadingError, caseStore, termId]);
 
   useEffect(() => {
     const loadJustice = async () => {
       if (justiceId && !isNaN(Number(justiceId))) {
         try {
-          const j = await props.justiceStore.getById(Number(justiceId));
+          const j = await justiceStore.getById(Number(justiceId));
           setJustice(j);
         } catch(e) {
           dataLoadingError(e);
@@ -90,7 +88,7 @@ const TermJusticeSummary = (props: Props) => {
       }
     };
     loadJustice();
-  }, [dataLoadingError, justiceId, props.justiceStore]);
+  }, [dataLoadingError, justiceId, justiceStore]);
 
   useEffect(() => {
     document.title = `SCOTUS App | Term ${term?.name} | ${justice?.name}`;
@@ -116,13 +114,13 @@ const TermJusticeSummary = (props: Props) => {
           <Grid container direction="column">
             <Grid item><Typography variant="h6">{header} ({cases.length})</Typography></Grid>
             {cases.map(c => (
-              <CaseListItem key={c.id} onCaseClick={onCaseClick} scotusCase={c} caseStore={props.caseStore} />
+              <CaseListItem key={c.id} onCaseClick={onCaseClick} scotusCase={c} caseStore={caseStore} />
             ))}
           </Grid>
         </div>
       </Grid>
     );
-  }, [classes.caseGroup, onCaseClick, props.caseStore]);
+  }, [classes.caseGroup, onCaseClick, caseStore]);
 
 
   const isAuthor = useCallback((o: Opinion) => o.justices.some(j => j.isAuthor && j.justiceId === justice?.id), [justice]);
@@ -176,4 +174,4 @@ const TermJusticeSummary = (props: Props) => {
   );
 };
 
-export default inject('caseStore', 'justiceStore', 'routing')(observer(TermJusticeSummary));
+export default inject('routing')(observer(TermJusticeSummary));

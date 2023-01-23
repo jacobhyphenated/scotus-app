@@ -1,15 +1,15 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState, useContext } from 'react';
 import { Theme, Paper, Grid, Typography, IconButton, Button, Link, makeStyles } from '@material-ui/core';
 import BackIcon from '@material-ui/icons/ArrowBack';
 import { useParams } from 'react-router';
-import { CaseStore, FullCase, CaseStatus } from '../../../stores/caseStore';
+import { FullCase, CaseStatus, CaseStoreContext } from '../../../stores/caseStore';
 import { inject, observer } from 'mobx-react';
 import { History } from 'history';
 import { DateTimeFormatter, LocalDate } from '@js-joda/core';
 import { Locale as JsJodaLocale } from '@js-joda/locale_en-us';
 import { OpinionView } from '../components';
 import { opinionSort } from '../../../stores/opinionStore';
-import { UserStore } from '../../../stores/userStore';
+import { UserStoreContext } from '../../../stores/userStore';
 import LinkableText from '../components/linkableText';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -35,14 +35,15 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 interface Props {
-  caseStore: CaseStore;
   routing: History;
-  userStore: UserStore;
 }
 
 const CasePage = (props: Props) => {
 
   const [fullCase, setFullCase] = useState<FullCase>();
+
+  const userStore = useContext(UserStoreContext);
+  const caseStore = useContext(CaseStoreContext);
 
   const dateFormatter = useMemo(() =>{
     return DateTimeFormatter.ofPattern('MM/dd/yyyy').withLocale(JsJodaLocale.US);
@@ -59,7 +60,7 @@ const CasePage = (props: Props) => {
     }
     const loadCase = async () => {
       try {
-        const fullCase = await props.caseStore.getCaseById(Number(caseId));
+        const fullCase = await caseStore.getCaseById(Number(caseId));
         if (!fullCase) {
           throw new Error(`No case found with id ${caseId}`);
         }
@@ -71,7 +72,7 @@ const CasePage = (props: Props) => {
       }
     };
     loadCase();
-  }, [id, props.routing, props.caseStore]);
+  }, [id, props.routing, caseStore]);
 
   const classes = useStyles();
 
@@ -83,7 +84,7 @@ const CasePage = (props: Props) => {
         break;
       case CaseStatus.DIG:
         text = <>
-            <span className={classes.bold}>Dismissed as Improvidently Granted:</span>
+            <span className={classes.bold}>Dismissed as Improvidently Granted: </span>
             The court originally granted this case to hear arguments, but later decided that granting the case was a mistake. The case is dismissed.
           </>;
         break;
@@ -111,8 +112,7 @@ const CasePage = (props: Props) => {
     props.routing.push(`/admin/case/edit/${id}`);
   }, [id, props.routing]);
 
-  const isAdmin = props.userStore.isAdmin;
-
+  const isAdmin = userStore.isAdmin;
   const combinedWith = fullCase?.dockets.filter(d => d.title !== fullCase.case) ?? [];
 
   return (
@@ -217,4 +217,4 @@ const CasePage = (props: Props) => {
   );
 };
 
-export default inject('caseStore', 'routing', "userStore")(observer(CasePage));
+export default inject('routing')(observer(CasePage));

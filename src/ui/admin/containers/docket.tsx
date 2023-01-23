@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { inject, observer } from 'mobx-react';
-import { DocketStore, BareDocket, FullDocket } from '../../../stores/docketStore';
+import { BareDocket, FullDocket, DocketStoreContext } from '../../../stores/docketStore';
 import { Typography, Theme, Grid, Fab, TextField, InputAdornment, Button, makeStyles } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 import AddIcon from '@material-ui/icons/Add';
@@ -21,13 +21,14 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 interface Props {
   routing: History;
-  docketStore: DocketStore;
 }
 
 const DocketPage = (props: Props) => {
   
   const [searchResults, setSearchResults] = useState<BareDocket[]>([]);
   const [searchText, setSearchText] = useState('');
+
+  const docketStore = useContext(DocketStoreContext);
 
   useEffect(() => {
     document.title = 'SCOTUS App | Admin | Docket';
@@ -46,9 +47,9 @@ const DocketPage = (props: Props) => {
       setSearchResults([]);
       return;
     }
-    const results = await props.docketStore.searchDocket(searchText);
+    const results = await docketStore.searchDocket(searchText);
     setSearchResults(results);
-  }, [props.docketStore, searchText]);
+  }, [docketStore, searchText]);
 
   const keyPress = useCallback((ev: React.KeyboardEvent<HTMLDivElement>) => {
     if (ev.key === 'Enter') {
@@ -69,10 +70,10 @@ const DocketPage = (props: Props) => {
   }, [props.routing]);
 
   const getFullDocketFun = useCallback((docketId: number): () => Promise<FullDocket> => {
-    return () => props.docketStore.getDocketById(docketId);
-  }, [props.docketStore]);
+    return () => docketStore.getDocketById(docketId);
+  }, [docketStore]);
 
-  const unassigned = props.docketStore.unassignedDockets;
+  const unassigned = docketStore.unassignedDockets;
   const classes = useStyles();
 
   return (
@@ -118,4 +119,4 @@ const DocketPage = (props: Props) => {
   );
 };
 
-export default inject('routing', 'docketStore')(observer(DocketPage));
+export default inject('routing')(observer(DocketPage));
