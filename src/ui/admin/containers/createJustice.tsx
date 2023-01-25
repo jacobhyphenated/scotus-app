@@ -1,12 +1,11 @@
 import React, { useCallback, useEffect, useState, useContext } from 'react';
 import { Grid, Typography, IconButton, TextField, Theme, Button } from '@material-ui/core';
 import BackIcon from '@material-ui/icons/ArrowBack';
-import { inject } from 'mobx-react';
-import { History } from 'history';
 import { JusticeStoreContext } from '../../../stores/justiceStore';
 import { LocalDate } from '@js-joda/core';
 import { makeStyles } from '@material-ui/styles';
 import DatePicker from '../components/datePicker';
+import { useNavigate } from 'react-router';
 
 const useStyles = makeStyles((theme: Theme) => ({
   formContainer: {
@@ -20,11 +19,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-interface Props {
-  routing: History;
-}
-
-const CreateJusticePage = (props: Props) => {
+const CreateJusticePage = () => {
 
   const [name, setName] = useState('');
   const [dateConfirmed, setDateConfirmed] = useState<LocalDate | null>(LocalDate.now());
@@ -36,14 +31,15 @@ const CreateJusticePage = (props: Props) => {
   const [birthdayError, setBirthdayError] = useState<string | null>(null);
 
   const justiceStore = useContext(JusticeStoreContext);
+  const navigate = useNavigate();
 
   useEffect(() => {
     document.title = 'SCOTUS App | Admin | Create Justice';
   }, []);
 
   const back = useCallback(() => {
-    props.routing.goBack();
-  }, [props.routing]);
+    navigate(-1);
+  }, [navigate]);
 
   const changeName = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     setName(event.target.value);
@@ -89,14 +85,14 @@ const CreateJusticePage = (props: Props) => {
     try{ 
       await justiceStore.createJustice(name, birthday!, dateConfirmed!);
       justiceStore.refreshActiveJustices();
-      props.routing.goBack();
+      navigate(-1);
     } catch (e: any) {
       setFormError(e?.message ?? 'An error occurred creating this justice');
     } finally {
       setSubmitting(false);
     }
 
-  }, [birthday, birthdayError, confirmDateError, dateConfirmed, name, nameError, justiceStore, props.routing]);
+  }, [birthday, birthdayError, confirmDateError, dateConfirmed, name, nameError, justiceStore, navigate]);
 
   const classes = useStyles();
 
@@ -175,4 +171,4 @@ const CreateJusticePage = (props: Props) => {
   );
 };
 
-export default inject('routing')(CreateJusticePage);
+export default CreateJusticePage;

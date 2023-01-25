@@ -1,6 +1,5 @@
 import { useCallback, useContext, useEffect, useState } from 'react';
-import { inject, observer } from 'mobx-react';
-import { History } from 'history';
+import { observer } from 'mobx-react';
 import { Justice, JusticeStoreContext } from '../../../stores/justiceStore';
 import { Theme, Typography, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, Fab, Grid, FormControlLabel, makeStyles } from '@material-ui/core';
 import JusticeCard from '../components/justiceCard';
@@ -8,6 +7,7 @@ import DatePicker from '../components/datePicker';
 import { LocalDate } from '@js-joda/core';
 import AddIcon from '@material-ui/icons/Add';
 import Switch from '@material-ui/core/Switch';
+import { useNavigate } from 'react-router';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -20,11 +20,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-interface Props {
-  routing: History;
-}
-
-const JusticePage = (props: Props) => {
+const JusticePage = () => {
 
   const [showAll, setShowAll] = useState(false);
   const [allJustices, setAllJustices] = useState<Justice[]>([]);
@@ -32,6 +28,7 @@ const JusticePage = (props: Props) => {
   const [retireDate, setRetireDate] = useState<LocalDate>();
 
   const justiceStore = useContext(JusticeStoreContext);
+  const navigate = useNavigate();
 
   useEffect(() => {
     document.title = 'SCOTUS App | Admin | Justice';
@@ -61,8 +58,8 @@ const JusticePage = (props: Props) => {
   }, []);
 
   const createJustice = useCallback(() => {
-    props.routing!.push('/admin/justice/create');
-  }, [props.routing]);
+    navigate('/admin/justice/create');
+  }, [navigate]);
 
   const toggleShowAll = useCallback(async () => {
     const showAllCurrent = showAll;
@@ -139,4 +136,4 @@ const JusticePage = (props: Props) => {
   );
 };
 
-export default inject('routing')(observer(JusticePage));
+export default observer(JusticePage);

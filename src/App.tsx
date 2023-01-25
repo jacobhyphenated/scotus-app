@@ -1,5 +1,5 @@
 import './App.css';
-import { Route, Switch, Redirect } from 'react-router';
+import { Navigate, Route, Routes } from 'react-router';
 import { Link } from 'react-router-dom';
 import Home from './ui/home/containers/home';
 import Admin from './ui/admin/containers/admin';
@@ -28,15 +28,15 @@ export const App = () => (
         <Button component={Link} to="/admin" color="primary" variant="text">admin</Button>
       </Grid>
     </Paper>
-    <Switch>
-      <Route exact path="/" component={Home} />
-      <Route path="/term/:termId/justice/:justiceId" component={TermJusticeSummary} />
-      <Route path="/term/:id/all" component={AllTermCasesPage} />
-      <Route path="/term/:id" component={Home} />
-      <Route path="/admin" component={Admin} />
-      <Route path="/case/:id/lowerCourt" component={LowerCourtPage} />
-      <Route path="/case/:id" component={CasePage} />
-      <Redirect to="/" />
-    </Switch>
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/term/:termId/justice/:justiceId" element={<TermJusticeSummary />} />
+      <Route path="/term/:id/all" element={<AllTermCasesPage />} />
+      <Route path="/term/:id" element={<Home />} />
+      <Route path="/case/:id/lowerCourt" element={<LowerCourtPage />} />
+      <Route path="/case/:id" element={<CasePage />} />
+      <Route path="/admin/*" element={<Admin />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   </div>
 );

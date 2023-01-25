@@ -1,10 +1,10 @@
 import { useCallback, useContext, useEffect, useState } from 'react';
-import { inject, observer } from 'mobx-react';
+import { observer } from 'mobx-react';
 import { Typography, Theme, Grid, Fab, makeStyles } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
-import { History } from 'history';
 import { CaseStoreContext, Term } from '../../../stores/caseStore';
 import TermCard from '../components/termCard';
+import { useNavigate } from 'react-router';
 
 const useStyles = makeStyles((theme: Theme) => ({
   formContainer: {
@@ -23,15 +23,12 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-interface Props {
-  routing: History;
-}
-
-const TermAdminPage = (props: Props) => {
+const TermAdminPage = () => {
 
   const [terms, setTerms] = useState<Term[]>([]);
 
   const caseStore = useContext(CaseStoreContext);
+  const navigate = useNavigate();
   
   useEffect(() => {
     document.title = 'SCOTUS App | Admin | Term';
@@ -42,12 +39,12 @@ const TermAdminPage = (props: Props) => {
   }, [caseStore.allTerms]);
 
   const selectTerm = useCallback((term: Term) => {
-    props.routing.push(`/admin/term/edit/${term.id}`);
-  }, [props.routing]);
+    navigate(`/admin/term/edit/${term.id}`);
+  }, [navigate]);
 
   const createTerm = useCallback(() => {
-    props.routing.push(`/admin/term/create`);
-  }, [props.routing]);
+    navigate(`/admin/term/create`);
+  }, [navigate]);
 
   const classes = useStyles();
 
@@ -68,4 +65,4 @@ const TermAdminPage = (props: Props) => {
   );
 };
 
-export default inject('routing')(observer(TermAdminPage));
+export default observer(TermAdminPage);

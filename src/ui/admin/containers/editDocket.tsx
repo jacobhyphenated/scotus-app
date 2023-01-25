@@ -1,10 +1,8 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { Grid, Typography, IconButton, Theme, MenuItem, FormControlLabel, FormControl, FormLabel, RadioGroup, Radio, makeStyles } from '@material-ui/core';
 import BackIcon from '@material-ui/icons/ArrowBack';
-import { inject } from 'mobx-react';
-import { History } from 'history';
 import { DocketStatus, FullDocket, DocketEdit, DocketStoreContext } from '../../../stores/docketStore';
-import { useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import ViewEditInputText from '../components/viewEditInputText';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -19,17 +17,14 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-interface Props {
-  routing: History;
-}
-
-const EditDocketPage = (props: Props) => {
+const EditDocketPage = () => {
 
   const [submitting, setSubmitting] = useState(false);
   const [docket, setDocket] = useState<FullDocket | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
 
   const docketStore = useContext(DocketStoreContext);
+  const navigate = useNavigate();
 
   const { id } = useParams<{ id: string }>();
   
@@ -37,7 +32,7 @@ const EditDocketPage = (props: Props) => {
     const docketId = id;
     if (!docketId || isNaN(Number(docketId))) {
       console.warn('No docket id in url params');
-      props.routing.push('/admin/docket');
+      navigate('/admin/docket', { replace: true });
       return;
     }
     const loadDocket = async () => {
@@ -50,11 +45,11 @@ const EditDocketPage = (props: Props) => {
         setDocket(docket);
       } catch (e: any) {
         console.warn(e);
-        props.routing.push('/admin/docket');
+        navigate('/admin/docket', { replace: true });
       }
     };
     loadDocket();
-  }, [id, docketStore, props.routing]);
+  }, [id, docketStore, navigate]);
 
   const edit = useCallback(async (docketEdit: DocketEdit) => {
     if (!docket) {
@@ -106,8 +101,8 @@ const EditDocketPage = (props: Props) => {
   }, [edit]);
 
   const back = useCallback(() => {
-    props.routing.goBack();
-  }, [props.routing]);
+    navigate(-1);
+  }, [navigate]);
 
   const classes = useStyles();
 
@@ -205,4 +200,4 @@ const EditDocketPage = (props: Props) => {
   );
 };
 
-export default inject('routing')(EditDocketPage);
+export default EditDocketPage;

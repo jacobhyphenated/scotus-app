@@ -1,11 +1,11 @@
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { inject, observer } from 'mobx-react';
+import { observer } from 'mobx-react';
 import { Typography, Theme, Grid, Fab, TextField, MenuItem, makeStyles } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
-import { History } from 'history';
 import { Case, CaseStatus, CaseStoreContext } from '../../../stores/caseStore';
 import { autorun } from 'mobx';
 import CaseCard from '../components/caseCard';
+import { useNavigate } from 'react-router';
 
 const useStyles = makeStyles((theme: Theme) =>({
   fab: {
@@ -22,11 +22,7 @@ const useStyles = makeStyles((theme: Theme) =>({
   },
 }));
 
-interface Props {
-  routing: History;
-}
-
-const CasePage = (props: Props) => {
+const CasePage = () => {
 
   const [termResults, setTermResults] = useState<Case[]>([]);
   const [searchText, setSearchText] = useState('');
@@ -35,6 +31,7 @@ const CasePage = (props: Props) => {
   const [caseStatus, setCaseStatus] = useState<CaseStatus | 'all'>('all');
 
   const caseStore = useContext(CaseStoreContext);
+  const navigate = useNavigate();
 
   useEffect(() => {
     document.title = 'SCOTUS App | Admin | Case';
@@ -73,12 +70,12 @@ const CasePage = (props: Props) => {
   },[]);
 
   const createCase = useCallback(() => {
-    props.routing.push('/admin/case/create');
-  },[props.routing]);
+    navigate('/admin/case/create');
+  },[navigate]);
 
   const editCase = useCallback((c: Case) => {
-    props.routing.push(`/admin/case/edit/${c.id}`);
-  },[props.routing]);
+    navigate(`/admin/case/edit/${c.id}`);
+  },[navigate]);
 
   const changeCaseStatus = useCallback((event: React.ChangeEvent<{value: unknown}>) => {
     setCaseStatus(event.target.value as CaseStatus | 'all');
@@ -166,4 +163,4 @@ const CasePage = (props: Props) => {
   );
 };
 
-export default inject('routing')(observer(CasePage));
+export default observer(CasePage);

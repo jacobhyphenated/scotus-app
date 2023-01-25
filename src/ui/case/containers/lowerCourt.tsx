@@ -1,9 +1,7 @@
 import { Grid, IconButton, makeStyles, Paper, Theme, Typography } from "@material-ui/core";
 import BackIcon from '@material-ui/icons/ArrowBack';
-import { inject } from "mobx-react";
 import { useCallback, useContext, useEffect, useState } from "react";
-import {  useParams } from "react-router";
-import { History } from 'history';
+import {  useNavigate, useParams } from "react-router";
 import { CaseStatus, CaseStoreContext, FullCase } from "../../../stores/caseStore";
 import { DocketStoreContext } from "../../../stores/docketStore";
 import { forkJoin } from "rxjs";
@@ -51,12 +49,8 @@ const useStyles = makeStyles((theme: Theme) => ({
     fontWeight: 'bold',
   },
 }));
-  
-interface Props {
-  routing: History;
-}
 
-const LowerCourtPage = (props: Props) => {
+const LowerCourtPage = () => {
 
   const styles = useStyles();
 
@@ -65,10 +59,11 @@ const LowerCourtPage = (props: Props) => {
 
   const docketStore = useContext(DocketStoreContext);
   const caseStore = useContext(CaseStoreContext);
+  const navigate = useNavigate();
 
   const back = useCallback(() => {
-    props.routing.goBack();
-  }, [props.routing]);
+    navigate(-1);
+  }, [navigate]);
 
   const { id } = useParams<{ id: string }>();
   useEffect( () => {
@@ -78,11 +73,11 @@ const LowerCourtPage = (props: Props) => {
         setFullCase(c);
       } catch (e) {
         console.warn(e);
-        props.routing.push('/');
+        navigate('/', { replace: true });
       }
     };
     loadFullCase();
-  }, [id, caseStore, props.routing]);
+  }, [id, caseStore, navigate]);
 
   useEffect(() => {
     if (!fullCase) {
@@ -122,11 +117,11 @@ const LowerCourtPage = (props: Props) => {
         },
         error: error => {
           console.warn(error);
-          props.routing.push("/");
+          navigate('/', { replace: true });
         },
       });
     return () => { subscription.unsubscribe() };
-  }, [fullCase, docketStore, props.routing]);
+  }, [fullCase, docketStore, navigate]);
 
 
   return (
@@ -213,4 +208,4 @@ const LowerCourtPage = (props: Props) => {
   );
 };
 
-export default inject('routing')(LowerCourtPage);
+export default LowerCourtPage;

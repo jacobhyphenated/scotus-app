@@ -1,10 +1,10 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { Grid, Typography, IconButton, TextField, Theme, Button, MenuItem, makeStyles } from '@material-ui/core';
 import BackIcon from '@material-ui/icons/ArrowBack';
-import { inject, observer } from 'mobx-react';
-import { History } from 'history';
+import { observer } from 'mobx-react';
 import { DocketStatus, DocketStoreContext } from '../../../stores/docketStore';
 import { CourtStoreContext } from '../../../stores/courtStore';
+import { useNavigate } from 'react-router';
 
 const useStyles = makeStyles((theme: Theme) => ({
   formContainer: {
@@ -18,11 +18,8 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-interface Props {
-  routing: History;
-}
 
-const CreateDocketPage = (props: Props) => {
+const CreateDocketPage = () => {
 
   const [title, setTitle] =  useState('');
   const [docketNumber, setDocketNumber] = useState('');
@@ -37,14 +34,15 @@ const CreateDocketPage = (props: Props) => {
 
   const courtStore = useContext(CourtStoreContext);
   const docketStore = useContext(DocketStoreContext);
+  const navigate = useNavigate();
 
   useEffect(() => {
     document.title = 'SCOTUS App | Admin | Create Docket';
   }, []);
 
   const back = useCallback(() => {
-    props.routing.goBack();
-  }, [props.routing]);
+    navigate(-1);
+  }, [navigate]);
 
   const changeTitle = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(event.target.value);
@@ -89,14 +87,14 @@ const CreateDocketPage = (props: Props) => {
     setSubmitting(true);
     try {
       await docketStore.createDocket(title, docketNumber, lowerCourtId, lowerCourtRuling, status);
-      props.routing.goBack();
+      navigate(-1);
     } catch (e: any) {
       setFormError(e?.message ?? 'An error occurred creating this docket');
     } finally {
       setSubmitting(false);
     }
     
-  }, [docketNumber, lowerCourtId, lowerCourtRuling, docketStore, props.routing, status, title]);
+  }, [docketNumber, lowerCourtId, lowerCourtRuling, docketStore, navigate, status, title]);
 
   const courts = courtStore.allCourts;
   const classes = useStyles();
@@ -219,4 +217,4 @@ const CreateDocketPage = (props: Props) => {
   );
 };
 
-export default inject('routing')(observer(CreateDocketPage));
+export default observer(CreateDocketPage);

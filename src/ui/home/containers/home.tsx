@@ -4,10 +4,9 @@ import SearchIcon from '@material-ui/icons/Search';
 import { Case, CaseStoreContext, dismissedCases } from '../../../stores/caseStore';
 import { Subject } from 'rxjs';
 import { debounceTime, filter, mergeMap } from 'rxjs/operators';
-import { inject, observer } from 'mobx-react';
-import { History } from 'history';
+import { observer } from 'mobx-react';
 import { CasePreviewCard, TermSummaryInProgress, TermSummaryNearEnd, TermSummaryComplete } from '../components';
-import { useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 
 const useStyles = makeStyles((theme: Theme) => ({
   paper: {
@@ -44,11 +43,8 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-interface Props {
-  routing: History;
-}
 
-const Home = (props: Props) => {
+const Home = () => {
 
   const [searchText, setSearchText] = useState('');
   const [searchResults, setSearchResults] = useState<Case[]>([]);
@@ -58,6 +54,7 @@ const Home = (props: Props) => {
   const [searchText$] = useState(() => new Subject<string>());
 
   const caseStore = useContext(CaseStoreContext);
+  const navigate = useNavigate();
 
   const { id } = useParams<{ id: string }>();
 
@@ -91,9 +88,9 @@ const Home = (props: Props) => {
     }
     catch (e: any) {
       console.error(e?.message ?? 'Error occurred getting cases by term', e);
-      props.routing.replace('/');
+      navigate('/', { replace: true });
     }
-  }, [caseStore, props.routing]);
+  }, [caseStore, navigate]);
 
   useEffect(() => {
     if (activeTerms.length > 0 && !selectedTermId) {
@@ -124,18 +121,18 @@ const Home = (props: Props) => {
   }, [setSelectedTerm]);
 
   const onCaseClick: (scotusCase: Case) => void = useCallback(scotusCase => {
-    props.routing.push(`/case/${scotusCase.id}`);
-  }, [props.routing]);
+    navigate(`/case/${scotusCase.id}`);
+  }, [navigate]);
 
   const onTermJusticeClick = useCallback((termId: number, justiceId: number) => {
-    props.routing.replace(`/term/${termId}`);
-    props.routing.push(`/term/${termId}/justice/${justiceId}`);
-  }, [props.routing]);
+    navigate(`/term/${termId}`, { replace: true });
+    navigate(`/term/${termId}/justice/${justiceId}`);
+  }, [navigate]);
 
   const allCasesClick = useCallback(() => {
-    props.routing.replace(`/term/${selectedTermId}`);
-    props.routing.push(`/term/${selectedTermId}/all`);
-  }, [props.routing, selectedTermId]);
+    navigate(`/term/${selectedTermId}`, { replace: true });
+    navigate(`/term/${selectedTermId}/all`);
+  }, [navigate, selectedTermId]);
 
   const undecidedThisTerm = useMemo(() => termCases.filter(c => !c.decisionDate && !dismissedCases(c)), [termCases]); 
   const classes = useStyles();
@@ -223,4 +220,4 @@ const Home = (props: Props) => {
   );
 };
 
-export default inject('routing')(observer(Home));
+export default observer(Home);

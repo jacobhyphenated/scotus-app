@@ -1,7 +1,6 @@
 import { createLinks, stripLinks } from "./linkParse";
 import { render } from '@testing-library/react';
-import { Router } from 'react-router';
-import { createMemoryHistory } from "history";
+import { BrowserRouter } from "react-router-dom";
 
 describe('Link Parse', () => {
   const warn = global.console.warn;
@@ -15,11 +14,10 @@ describe('Link Parse', () => {
   describe('Create Links', () => {
 
     const renderWithRouter = (text: string) => {
-      const history = createMemoryHistory();
       return render(
-        <Router history={history}>
+        <BrowserRouter>
           {createLinks(text)}
-        </Router>,
+        </BrowserRouter>,
       );
     };
 

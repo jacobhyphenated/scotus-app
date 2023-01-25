@@ -1,9 +1,8 @@
 import { useCallback, useContext, useEffect, useState } from 'react';
 import { Grid, Typography, IconButton, Theme, FormControlLabel, FormControl, FormLabel, RadioGroup, Radio, makeStyles } from '@material-ui/core';
 import BackIcon from '@material-ui/icons/ArrowBack';
-import { inject, observer } from 'mobx-react';
-import { History } from 'history';
-import { useParams } from 'react-router';
+import { observer } from 'mobx-react';
+import { useNavigate, useParams } from 'react-router';
 import ViewEditInputText from '../components/viewEditInputText';
 import { CaseStoreContext, EditTermProps, Term } from '../../../stores/caseStore';
 import { autorun } from 'mobx';
@@ -24,28 +23,21 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-interface RouteParams {
-  id: string;
-}
-
-interface Props {
-  routing: History;
-}
-
-const EditTermPage = (props: Props) => {
+const EditTermPage = () => {
   const [submitting, setSubmitting] = useState(false);
   const [term, setTerm] = useState<Term | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
 
   const caseStore = useContext(CaseStoreContext);
+  const navigate = useNavigate();
 
-  const { id } = useParams<RouteParams>();
+  const { id } = useParams<{ id: string }>();
 
   useEffect(() => {
     const termId = id;
     if (!termId || isNaN(Number(termId))) {
       console.warn('No term id in url params');
-      props.routing.replace('/admin/term');
+      navigate('/admin/term', { replace: true });
       return;
     }
     autorun((reaction) => {
@@ -55,18 +47,18 @@ const EditTermPage = (props: Props) => {
         const selectedTerm = allTerms.find(t => t.id === Number(termId));
         if (!selectedTerm) {
           console.warn(`No term found with id of ${termId}`);
-          props.routing.push('/admin/term');
+          navigate('/admin/term', { replace: true });
         } else {
           document.title = `SCOTUS App | Admin | Edit Term ${selectedTerm.name}`;
           setTerm(selectedTerm);
         }
       }
     });
-  }, [caseStore.allTerms, props.routing, id]);
+  }, [caseStore.allTerms, navigate, id]);
 
   const back = useCallback(() => {
-    props.routing.goBack();
-  }, [props.routing]);
+    navigate(-1);
+  }, [navigate]);
 
   const edit = useCallback(async (termEdit: EditTermProps) => {
     if (!term) {
@@ -176,4 +168,4 @@ const EditTermPage = (props: Props) => {
   );
 };
 
-export default inject('routing')(observer(EditTermPage));
+export default observer(EditTermPage);

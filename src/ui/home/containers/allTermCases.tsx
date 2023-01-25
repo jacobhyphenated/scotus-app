@@ -5,11 +5,10 @@ import BackIcon from '@material-ui/icons/ArrowBack';
 import { Case, CaseSitting, CaseStatus, CaseStoreContext, Term } from '../../../stores/caseStore';
 import { Subject } from 'rxjs';
 import { debounceTime, map } from 'rxjs/operators';
-import { inject, observer } from 'mobx-react';
+import { observer } from 'mobx-react';
 import { autorun } from 'mobx';
-import { History } from 'history';
 import { CaseListItem } from '../components';
-import { useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 
 const useStyles = makeStyles((theme: Theme) => ({
   paper: {
@@ -37,11 +36,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-interface Props {
-  routing: History;
-}
-
-const AllTermCasesPage = (props: Props) => {
+const AllTermCasesPage = () => {
 
   const [termCases, setTermCases] = useState<Case[]>([]);
   const [filteredCases, setFilteredCases] = useState<Case[]>([]);
@@ -50,6 +45,7 @@ const AllTermCasesPage = (props: Props) => {
   const [searchText$] = useState(() => new Subject<string>());
 
   const caseStore = useContext(CaseStoreContext);
+  const navigate = useNavigate();
 
   const caseSorter = useCallback((c1: Case, c2: Case) => {
     if (!c1.argumentDate && !!c2.argumentDate) {
@@ -92,7 +88,7 @@ const AllTermCasesPage = (props: Props) => {
         const selectedTerm = allTerms.find(t => t.id === Number(termId));
         if (!selectedTerm) {
           console.warn(`${termId} is not a valid term id`);
-          props.routing.replace('/');
+          navigate('/', { replace: true });
           return;
         }
         setTerm(selectedTerm);
@@ -100,7 +96,7 @@ const AllTermCasesPage = (props: Props) => {
         reaction.dispose();
       }
     });
-  }, [allTerms, id, props.routing, term]);
+  }, [allTerms, id, navigate, term]);
 
   useEffect(() => {
     if(!!term) {
@@ -123,12 +119,12 @@ const AllTermCasesPage = (props: Props) => {
   }, [searchText$, termCases]);
 
   const onCaseClick = useCallback((c: Case) => {
-    props.routing.push(`/case/${c.id}`);
-  }, [props.routing]);
+    navigate(`/case/${c.id}`);
+  }, [navigate]);
 
   const back = useCallback(() => {
-    props.routing.goBack();
-  }, [props.routing]);
+    navigate(-1);
+  }, [navigate]);
 
   const mappedCases = useMemo(() => {
     return filteredCases.reduce((acc, value) => {
@@ -188,4 +184,4 @@ const AllTermCasesPage = (props: Props) => {
   );
 };
 
-export default inject('routing')(observer(AllTermCasesPage));
+export default observer(AllTermCasesPage);

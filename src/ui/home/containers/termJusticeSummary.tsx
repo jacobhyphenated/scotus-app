@@ -4,10 +4,9 @@ import { Theme, Paper, Grid, Typography, IconButton } from '@material-ui/core';
 import BackIcon from '@material-ui/icons/ArrowBack';
 import { Case, CaseStoreContext, FullCase, Term } from '../../../stores/caseStore';
 import { forkJoin } from 'rxjs';
-import { inject, observer } from 'mobx-react';
-import { History } from 'history';
+import { observer } from 'mobx-react';
 import { CaseListItem } from '../components';
-import { useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import { Justice, JusticeStoreContext } from '../../../stores/justiceStore';
 import { Opinion, OpinionType } from '../../../stores/opinionStore';
 import { partitionArray } from '../../../util';
@@ -26,11 +25,8 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-interface Props {
-  routing: History;
-}
 
-const TermJusticeSummary = (props: Props) => {
+const TermJusticeSummary = () => {
   
   const [termCases, setTermCases] = useState<FullCase[]>([]);
   const [term, setTerm] = useState<Term>();
@@ -38,13 +34,14 @@ const TermJusticeSummary = (props: Props) => {
 
   const justiceStore = useContext(JusticeStoreContext);
   const caseStore = useContext(CaseStoreContext);
+  const navigate = useNavigate();
 
   const { termId, justiceId } = useParams<{ termId: string, justiceId: string }>();
 
   const dataLoadingError = useCallback((error: any) => {
     console.warn(error);
-    props.routing.replace('/');
-  }, [props.routing]);
+    navigate('/', { replace: true });
+  }, [navigate ]);
 
   useEffect(() => {
     if (caseStore.allTerms.length > 0 && !term) {
@@ -95,12 +92,12 @@ const TermJusticeSummary = (props: Props) => {
   }, [term, justice]);
 
   const back = useCallback(() => {
-    props.routing.goBack();
-  }, [props.routing]);
+    navigate(-1);
+  }, [navigate]);
 
   const onCaseClick = useCallback((c: Case) => {
-    props.routing.push(`/case/${c.id}`);
-  }, [props.routing]);
+    navigate(`/case/${c.id}`);
+  }, [navigate]);
 
   const classes = useStyles();
 
@@ -174,4 +171,4 @@ const TermJusticeSummary = (props: Props) => {
   );
 };
 
-export default inject('routing')(observer(TermJusticeSummary));
+export default observer(TermJusticeSummary);

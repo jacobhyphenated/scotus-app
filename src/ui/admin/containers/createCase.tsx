@@ -2,11 +2,11 @@ import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { Grid, Typography, IconButton, TextField, Theme, Button, MenuItem, FormControlLabel, Checkbox, makeStyles } from '@material-ui/core';
 import BackIcon from '@material-ui/icons/ArrowBack';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import { inject, observer } from 'mobx-react';
-import { History } from 'history';
+import { observer } from 'mobx-react';
 import { BareDocket, DocketStoreContext } from '../../../stores/docketStore';
 import { CaseStoreContext } from '../../../stores/caseStore';
 import { autorun } from 'mobx';
+import { useNavigate } from 'react-router';
 
 const useStyles = makeStyles((theme: Theme) => ({
   formContainer: {
@@ -20,11 +20,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-interface Props {
-  routing: History;
-}
-
-const CreateCasePage = (props: Props) => {
+const CreateCasePage = () => {
 
   const [title, setTitle] = useState('');
   const [shortSummary, setShortSummary] = useState('');
@@ -39,6 +35,7 @@ const CreateCasePage = (props: Props) => {
 
   const docketStore = useContext(DocketStoreContext);
   const caseStore = useContext(CaseStoreContext);
+  const navigate = useNavigate();
 
   useEffect(() => {
     document.title = 'SCOTUS App | Admin | Create Case';
@@ -56,8 +53,8 @@ const CreateCasePage = (props: Props) => {
 
 
   const back = useCallback(() => {
-    props.routing.goBack();
-  }, [props.routing]);
+    navigate(-1);
+  }, [navigate]);
 
   const changeTitle = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(event.target.value);
@@ -110,16 +107,16 @@ const CreateCasePage = (props: Props) => {
   const save = useCallback(async () => {
     const newCase = await submit();
     if (newCase) {
-      props.routing.push('/admin/case');
+      navigate('/admin/case');
     }
-  }, [props.routing, submit]);
+  }, [navigate, submit]);
 
   const saveAndEdit = useCallback(async () => {
     const newCase = await submit();
     if (newCase) {
-      props.routing.push(`/admin/case/edit/${newCase.id}`);
+      navigate(`/admin/case/edit/${newCase.id}`);
     }
-  }, [props.routing, submit]);
+  }, [navigate, submit]);
 
   const unassignedDockets = docketStore.unassignedDockets;
   const allTerms = caseStore.allTerms;
@@ -258,7 +255,6 @@ const CreateCasePage = (props: Props) => {
       </Grid>
     </Grid>
   );
-
 };
 
-export default inject('routing')(observer(CreateCasePage));
+export default observer(CreateCasePage);

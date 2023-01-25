@@ -1,11 +1,11 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
-import { inject, observer } from 'mobx-react';
+import { observer } from 'mobx-react';
 import { BareDocket, FullDocket, DocketStoreContext } from '../../../stores/docketStore';
 import { Typography, Theme, Grid, Fab, TextField, InputAdornment, Button, makeStyles } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 import AddIcon from '@material-ui/icons/Add';
-import { History } from 'history';
 import DocketCard from '../components/docketCard';
+import { useNavigate } from 'react-router';
 
 const useStyles = makeStyles((theme: Theme) => ({
   fab: {
@@ -19,16 +19,13 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-interface Props {
-  routing: History;
-}
-
-const DocketPage = (props: Props) => {
+const DocketPage = () => {
   
   const [searchResults, setSearchResults] = useState<BareDocket[]>([]);
   const [searchText, setSearchText] = useState('');
 
   const docketStore = useContext(DocketStoreContext);
+  const navigate = useNavigate();
 
   useEffect(() => {
     document.title = 'SCOTUS App | Admin | Docket';
@@ -58,16 +55,16 @@ const DocketPage = (props: Props) => {
   }, [search]);
 
   const createDocket = useCallback(() => {
-    props.routing.push('/admin/docket/create');
-  }, [props.routing]);
+    navigate('/admin/docket/create');
+  }, [navigate]);
 
   const editDocket = useCallback((docket: BareDocket) => {
-    props.routing.push(`/admin/docket/edit/${docket.id}`);
-  }, [props.routing]);
+    navigate(`/admin/docket/edit/${docket.id}`);
+  }, [navigate]);
 
   const casePage = useCallback((caseId: number) => {
-    props.routing.push(`/admin/case/edit/${caseId}`);
-  }, [props.routing]);
+    navigate(`/admin/case/edit/${caseId}`);
+  }, [navigate]);
 
   const getFullDocketFun = useCallback((docketId: number): () => Promise<FullDocket> => {
     return () => docketStore.getDocketById(docketId);
@@ -119,4 +116,4 @@ const DocketPage = (props: Props) => {
   );
 };
 
-export default inject('routing')(observer(DocketPage));
+export default observer(DocketPage);

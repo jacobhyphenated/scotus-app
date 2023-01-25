@@ -1,10 +1,9 @@
 import { useCallback, useEffect, useMemo, useState, useContext } from 'react';
 import { Theme, Paper, Grid, Typography, IconButton, Button, Link, makeStyles } from '@material-ui/core';
 import BackIcon from '@material-ui/icons/ArrowBack';
-import { useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import { FullCase, CaseStatus, CaseStoreContext } from '../../../stores/caseStore';
-import { inject, observer } from 'mobx-react';
-import { History } from 'history';
+import { observer } from 'mobx-react';
 import { DateTimeFormatter, LocalDate } from '@js-joda/core';
 import { Locale as JsJodaLocale } from '@js-joda/locale_en-us';
 import { OpinionView } from '../components';
@@ -34,16 +33,13 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-interface Props {
-  routing: History;
-}
-
-const CasePage = (props: Props) => {
+const CasePage = () => {
 
   const [fullCase, setFullCase] = useState<FullCase>();
 
   const userStore = useContext(UserStoreContext);
   const caseStore = useContext(CaseStoreContext);
+  const navigate = useNavigate();
 
   const dateFormatter = useMemo(() =>{
     return DateTimeFormatter.ofPattern('MM/dd/yyyy').withLocale(JsJodaLocale.US);
@@ -55,7 +51,7 @@ const CasePage = (props: Props) => {
     const caseId = id;
     if (!caseId || isNaN(Number(caseId))) {
       console.warn('No case id in url params');
-      props.routing.push('/');
+      navigate('/', { replace: true });
       return;
     }
     const loadCase = async () => {
@@ -68,11 +64,11 @@ const CasePage = (props: Props) => {
         setFullCase(fullCase);
       } catch (e) {
         console.warn(e);
-        props.routing.push('/');
+        navigate('/', { replace: true });
       }
     };
     loadCase();
-  }, [id, props.routing, caseStore]);
+  }, [id, navigate, caseStore]);
 
   const classes = useStyles();
 
@@ -105,12 +101,12 @@ const CasePage = (props: Props) => {
   }, [classes]);
 
   const back = useCallback(() => {
-    props.routing.goBack();
-  }, [props.routing]);
+    navigate(-1);
+  }, [navigate]);
 
   const editClick = useCallback(() => {
-    props.routing.push(`/admin/case/edit/${id}`);
-  }, [id, props.routing]);
+    navigate(`/admin/case/edit/${id}`);
+  }, [id, navigate]);
 
   const isAdmin = userStore.isAdmin;
   const combinedWith = fullCase?.dockets.filter(d => d.title !== fullCase.case) ?? [];
@@ -217,4 +213,4 @@ const CasePage = (props: Props) => {
   );
 };
 
-export default inject('routing')(observer(CasePage));
+export default observer(CasePage);

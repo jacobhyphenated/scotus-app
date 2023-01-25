@@ -3,10 +3,9 @@ import { Grid, Typography, IconButton, Theme, MenuItem, Paper, TextField, FormCo
 import BackIcon from '@material-ui/icons/ArrowBack';
 import CloseIcon from '@material-ui/icons/Close';
 import AddIcon from '@material-ui/icons/Add';
-import { inject, observer } from 'mobx-react';
-import { History } from 'history';
+import { observer } from 'mobx-react';
 import { BareDocket, DocketStatus, DocketStoreContext } from '../../../stores/docketStore';
-import { useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import ViewEditInputText from '../components/viewEditInputText';
 import ViewEditDatePicker from '../components/viewEditDatePicker';
 import ArgumentDateEditField from '../components/argumentDateEditField';
@@ -39,11 +38,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-interface Props {
-  routing: History;
-}
-
-const EditCasePage = (props: Props) => {
+const EditCasePage = () => {
 
   const [submitting, setSubmitting] = useState(false);
   const [fullCase, setFullCase] = useState<FullCase | null>(null);
@@ -53,13 +48,14 @@ const EditCasePage = (props: Props) => {
   const docketStore = useContext(DocketStoreContext);
   const opinionStore = useContext(OpinionStoreContext);
   const caseStore = useContext(CaseStoreContext);
+  const navigate = useNavigate();
   
   const { id } = useParams<{ id: string }>();
 
   useEffect(() => {
     if (!id || isNaN(Number(id))) {
       console.warn('No case id in url params');
-      props.routing.push('/admin/case');
+      navigate('/admin/case', { replace: true });
       return;
     }
     const loadCase = async () => {
@@ -72,11 +68,11 @@ const EditCasePage = (props: Props) => {
         setFullCase(fullCase);
       } catch (e: any) {
         console.warn(e);
-        props.routing.push('/admin/case');
+        navigate('/admin/case', { replace: true });
       }
     };
     loadCase();
-  }, [id, caseStore, props.routing]);
+  }, [id, caseStore, navigate]);
 
   const edit = useCallback(async (caseEdit: EditCase) => {
     if (!fullCase) {
@@ -201,9 +197,9 @@ const EditCasePage = (props: Props) => {
 
   const onClickDocket = useCallback((docket: CaseDocket): () => void => {
     return () => {
-      props.routing.push(`/admin/docket/edit/${docket.docketId}`);
+      navigate(`/admin/docket/edit/${docket.docketId}`);
     };
-  }, [props.routing]);
+  }, [navigate]);
 
   const assignDocket = useCallback(async (_: React.ChangeEvent<{}>, value: BareDocket | null) => {
     if (!value) {
@@ -262,12 +258,12 @@ const EditCasePage = (props: Props) => {
   
 
   const back = useCallback(() => {
-    props.routing.goBack();
-  }, [props.routing]);
+    navigate(-1);
+  }, [navigate]);
 
   const newDocket = useCallback(() => {
-    props.routing.push('/admin/docket/create');
-  }, [props.routing]);
+    navigate('/admin/docket/create');
+  }, [navigate]);
 
   const getAllJustices = useCallback(() => {
     return justiceStore.getAllJustices();
@@ -542,4 +538,4 @@ const EditCasePage = (props: Props) => {
   );
 };
 
-export default inject('routing')(observer(EditCasePage));
+export default observer(EditCasePage);

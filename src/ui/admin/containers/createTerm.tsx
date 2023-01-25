@@ -1,9 +1,8 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
-import { inject } from 'mobx-react';
 import { Typography, Theme, Grid, TextField, Button, IconButton, makeStyles } from '@material-ui/core';
 import BackIcon from '@material-ui/icons/ArrowBack';
-import { History } from 'history';
 import { CaseStoreContext } from '../../../stores/caseStore';
+import { useNavigate } from 'react-router';
 
 const useStyles = makeStyles((theme: Theme) => ({
   formContainer: {
@@ -17,11 +16,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-interface Props {
-  routing: History;
-}
-
-const CreateTermPage = (props: Props) => {
+const CreateTermPage = () => {
 
   const [name, setName] = useState('');
   const [otName, setOtName] = useState('');
@@ -31,14 +26,15 @@ const CreateTermPage = (props: Props) => {
   const [formError, setFormError] = useState<string | null>(null);
 
   const caseStore = useContext(CaseStoreContext);
+  const navigate = useNavigate();
 
   useEffect(() => {
     document.title = 'SCOTUS App | Admin | Create Term';
   }, []);
 
   const back = useCallback(() => {
-    props.routing.goBack();
-  }, [props.routing]);
+    navigate(-1);
+  }, [navigate]);
 
   const changeName = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     setName(event.target.value);
@@ -67,13 +63,13 @@ const CreateTermPage = (props: Props) => {
     setSubmitting(true);
     try {
       await caseStore.createTerm(name, otName);
-      props.routing.goBack();
+      navigate(-1);
     } catch(e: any) {
       setFormError(e?.errorMessage ?? 'An error occurred creating the term');
     } finally {
       setSubmitting(false);
     }
-  }, [name, otName, caseStore, props.routing]);
+  }, [name, otName, caseStore, navigate]);
 
   const classes = useStyles();
 
@@ -144,4 +140,4 @@ const CreateTermPage = (props: Props) => {
   );
 };
 
-export default inject('routing')(CreateTermPage);
+export default CreateTermPage;

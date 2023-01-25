@@ -1,9 +1,9 @@
 import { useCallback, useContext, useEffect } from 'react';
-import { inject, observer } from 'mobx-react';
+import { observer } from 'mobx-react';
 import { Typography, Paper, Theme, Grid, Fab, makeStyles } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
-import { History } from 'history';
 import { CourtStoreContext } from '../../../stores/courtStore';
+import { useNavigate } from 'react-router';
 
 const useStyles = makeStyles((theme: Theme) => ({
   courtCard: {
@@ -26,21 +26,18 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-interface Props {
-  routing: History;
-}
+const CourtPage = () => {
 
-const CourtPage = (props: Props) => {
+  const courtStore = useContext(CourtStoreContext);
+  const navigate = useNavigate();
 
   useEffect(() => {
     document.title = 'SCOTUS App | Admin | Court';
   }, []);   
 
   const createCourt = useCallback(() => {
-    props.routing.push('/admin/court/create');
-  }, [props.routing]);
-
-  const courtStore = useContext(CourtStoreContext);
+    navigate('/admin/court/create');
+  }, [navigate]);
 
   const courts = courtStore.allCourts;
   const classes = useStyles();
@@ -65,4 +62,4 @@ const CourtPage = (props: Props) => {
   );
 };
 
-export default inject('routing')(observer(CourtPage));
+export default observer(CourtPage);
