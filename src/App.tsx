@@ -30,9 +30,11 @@ export const App = () => (
     </Paper>
     <Routes>
       <Route path="/" element={<Home />} />
-      <Route path="/term/:termId/justice/:justiceId" element={<TermJusticeSummary />} />
-      <Route path="/term/:id/all" element={<AllTermCasesPage />} />
-      <Route path="/term/:id" element={<Home />} />
+      <Route path="term/:termId">
+        <Route index element={<Home />} />
+        <Route path="justice/:justiceId" element={<TermJusticeSummary />} />
+        <Route path="all" element={<AllTermCasesPage />} />
+      </Route>
       <Route path="/case/:id/lowerCourt" element={<LowerCourtPage />} />
       <Route path="/case/:id" element={<CasePage />} />
       <Route path="/admin/*" element={<Admin />} />

@@ -78,11 +78,10 @@ const AllTermCasesPage = () => {
     return () => subscription.unsubscribe();
   }, [searchText$, termCases]);
 
-  const { id } = useParams<{ id: string }>();
+  const { termId } = useParams<{ termId: string }>();
   const allTerms = caseStore.allTerms;
 
   useEffect(() => {
-    const termId = id;
     autorun((reaction) => {
       if (allTerms.length > 0 && !term) {
         const selectedTerm = allTerms.find(t => t.id === Number(termId));
@@ -96,7 +95,7 @@ const AllTermCasesPage = () => {
         reaction.dispose();
       }
     });
-  }, [allTerms, id, navigate, term]);
+  }, [allTerms, termId, navigate, term]);
 
   useEffect(() => {
     if(!!term) {
@@ -123,7 +122,7 @@ const AllTermCasesPage = () => {
   }, [navigate]);
 
   const back = useCallback(() => {
-    navigate(-1);
+    navigate('..');
   }, [navigate]);
 
   const mappedCases = useMemo(() => {

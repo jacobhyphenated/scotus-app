@@ -56,7 +56,7 @@ const Home = () => {
   const caseStore = useContext(CaseStoreContext);
   const navigate = useNavigate();
 
-  const { id } = useParams<{ id: string }>();
+  const { termId } = useParams<{ termId: string }>();
 
   useEffect(() => {
     document.title = 'SCOTUS App';
@@ -94,14 +94,13 @@ const Home = () => {
 
   useEffect(() => {
     if (activeTerms.length > 0 && !selectedTermId) {
-      const termId = id;
       if (termId && !isNaN(Number(termId))) {
         setSelectedTerm(Number(termId));
       } else {
         setSelectedTerm(activeTerms[0].id);
       }
     }
-  }, [activeTerms, id, selectedTermId, setSelectedTerm]);
+  }, [activeTerms, termId, selectedTermId, setSelectedTerm]);
 
   const handleInvalidTerm = useCallback(() => {
     setSelectedTerm(activeTerms[0].id);

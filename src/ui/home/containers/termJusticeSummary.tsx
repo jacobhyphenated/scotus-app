@@ -92,7 +92,7 @@ const TermJusticeSummary = () => {
   }, [term, justice]);
 
   const back = useCallback(() => {
-    navigate(-1);
+    navigate('..');
   }, [navigate]);
 
   const onCaseClick = useCallback((c: Case) => {
