@@ -1,11 +1,12 @@
 import React, { useCallback, useEffect, useState, useContext } from 'react';
 import { UserStoreContext } from '../../../stores/userStore';
-import { Grid, TextField, Button, Theme, makeStyles } from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
+import { Grid, TextField, Button, Theme } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
+import { Alert } from '@mui/material';
 
 const useStyles = makeStyles((theme: Theme) => ({
   paper: {
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       maxWidth: 600,
     },
     [theme.breakpoints.up('md')]: {
@@ -14,7 +15,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     [theme.breakpoints.up('xl')]: {
       maxWidth: 1200,
     },
-    margin: `${theme.spacing(1)}px auto`,
+    margin: `${theme.spacing(1)} auto`,
     padding: '16px',
   },
 }));

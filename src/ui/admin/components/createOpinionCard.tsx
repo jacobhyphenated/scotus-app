@@ -1,22 +1,23 @@
 import React, { useCallback, useState } from "react";
-import { Typography, Paper, Grid, Button, TextField, Theme, makeStyles, IconButton, MenuItem } from '@material-ui/core';
-import CloseIcon from '@material-ui/icons/Close';
+import { Typography, Paper, Grid, Button, TextField, Theme, IconButton, MenuItem } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
+import CloseIcon from '@mui/icons-material/Close';
 import { OpinionType, CreateOpinionJustice, Opinion } from '../../../stores/opinionStore';
 import { Justice } from "../../../stores/justiceStore";
-import { Autocomplete } from "@material-ui/lab";
+import { Autocomplete } from '@mui/material';
 import { useEffect } from "react";
-import Switch from '@material-ui/core/Switch';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Switch from '@mui/material/Switch';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import { useMemo } from "react";
 
 
 const useStyles = makeStyles( (theme: Theme) => ({
   paper: {
-    padding: `${theme.spacing(1)}px`,
-    'margin-top': `${theme.spacing(1)}px`,
+    padding: theme.spacing(1),
+    'margin-top': theme.spacing(1),
   },
   createButton: {
-    'margin-top': `${theme.spacing(2)}px`,
+    'margin-top': theme.spacing(2),
   },
 }));
 
@@ -128,125 +129,123 @@ const CreateOpinionCard = (props: Props) => {
   }, [justiceOptions]);
 
   const classes = useStyles();
-  return (
-    <>
-    {!createMode ?
-      <Button color="primary" className={classes.createButton} onClick={toggleCreateMode}>
-        Add Opinion
-      </Button>
-    :
-      <Paper className={classes.paper}>
-        <Grid container direction="column" spacing={2}>
-          <Grid item>
-            <Grid direction="row" container justifyContent="space-between" alignItems="baseline">
-              <Grid item>
-                <Typography variant="h6">Create Opinion</Typography>
-                {(createError) && <Typography color="error">{createError}</Typography>}
-              </Grid>
-              <Grid>
-                <IconButton onClick={reset} >
-                  <CloseIcon />
-                </IconButton>
-              </Grid>
+  return <>
+  {!createMode ?
+    <Button color="primary" className={classes.createButton} onClick={toggleCreateMode}>
+      Add Opinion
+    </Button>
+  :
+    <Paper className={classes.paper}>
+      <Grid container direction="column" spacing={2}>
+        <Grid item>
+          <Grid direction="row" container justifyContent="space-between" alignItems="baseline">
+            <Grid item>
+              <Typography variant="h6">Create Opinion</Typography>
+              {(createError) && <Typography color="error">{createError}</Typography>}
+            </Grid>
+            <Grid>
+              <IconButton onClick={reset} size="large">
+                <CloseIcon />
+              </IconButton>
             </Grid>
           </Grid>
-          <Grid item>
-            <TextField
-              id="create-opinion-type"
-              label="Opinion Type"
-              size="small"
-              color="primary"
-              variant="outlined"
-              required
-              fullWidth
-              select
-              value={opinionType}
-              onChange={changeOpinionType}
-            >
-              {Object.values(OpinionType).map((type, index) => (
-                <MenuItem key={index} value={type}>{type}</MenuItem>
-              ))}
-            </TextField>
-          </Grid>
-          <Grid item>
-            <TextField 
-              id="create-opinion-summary"
-              label="Summary"
-              color="primary"
-              variant="outlined"
-              fullWidth
-              required
-              multiline
-              minRows={4}
-              value={summary}
-              error={!!summaryError}
-              helperText={summaryError}
-              onChange={changeSummary}
-            />
-          </Grid>
-          <Grid item>
-            <Autocomplete<number, false>
-              id="create-opinion-author-select"
-              options={justiceOptions.map(j => j.id).filter(id => id !== authorId)}
-              getOptionLabel={getJusticeLabel}
-              value={authorId}
-              onChange={changeAuthorId}
-              // eslint-disable-next-line react/jsx-no-bind
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  variant="outlined"
-                  label="Author"
-                />
-              )}
-            />
-          </Grid>
-          <Grid item>
-            <Autocomplete<number, true>
-              multiple
-              id="opinion-justices-autocomplete"
-              options={justiceOptions.map(j => j.id).filter(id => id !== authorId)}
-              getOptionLabel={getJusticeLabel}
-              onChange={changeJustices}
-              value={justiceIds}
-              filterSelectedOptions
-              // eslint-disable-next-line react/jsx-no-bind
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  variant="outlined"
-                  label="Joined By"
-                />
-              )}
-            />
-          </Grid>
-          <Grid item>
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={useAllJustices}
-                  onChange={toggleAllJustices}
-                  color="primary"
-                  name="use-old-justice-toggle"
-                />
-              }
-              label="Use old justices"
-            />
-          </Grid>
-          <Grid item>
-            <Button 
-              disabled={ submitting || !!summaryError }
-              color="primary"
-              variant="contained"
-              fullWidth
-              onClick={submit}
-            >Create</Button>
-          </Grid>
         </Grid>
-      </Paper>
-    }
-    </>
-  );
+        <Grid item>
+          <TextField
+            id="create-opinion-type"
+            label="Opinion Type"
+            size="small"
+            color="primary"
+            variant="outlined"
+            required
+            fullWidth
+            select
+            value={opinionType}
+            onChange={changeOpinionType}
+          >
+            {Object.values(OpinionType).map((type, index) => (
+              <MenuItem key={index} value={type}>{type}</MenuItem>
+            ))}
+          </TextField>
+        </Grid>
+        <Grid item>
+          <TextField 
+            id="create-opinion-summary"
+            label="Summary"
+            color="primary"
+            variant="outlined"
+            fullWidth
+            required
+            multiline
+            minRows={4}
+            value={summary}
+            error={!!summaryError}
+            helperText={summaryError}
+            onChange={changeSummary}
+          />
+        </Grid>
+        <Grid item>
+          <Autocomplete<number, false>
+            id="create-opinion-author-select"
+            options={justiceOptions.map(j => j.id).filter(id => id !== authorId)}
+            getOptionLabel={getJusticeLabel}
+            value={authorId}
+            onChange={changeAuthorId}
+            // eslint-disable-next-line react/jsx-no-bind
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                variant="outlined"
+                label="Author"
+              />
+            )}
+          />
+        </Grid>
+        <Grid item>
+          <Autocomplete<number, true>
+            multiple
+            id="opinion-justices-autocomplete"
+            options={justiceOptions.map(j => j.id).filter(id => id !== authorId)}
+            getOptionLabel={getJusticeLabel}
+            onChange={changeJustices}
+            value={justiceIds}
+            filterSelectedOptions
+            // eslint-disable-next-line react/jsx-no-bind
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                variant="outlined"
+                label="Joined By"
+              />
+            )}
+          />
+        </Grid>
+        <Grid item>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={useAllJustices}
+                onChange={toggleAllJustices}
+                color="primary"
+                name="use-old-justice-toggle"
+              />
+            }
+            label="Use old justices"
+          />
+        </Grid>
+        <Grid item>
+          <Button 
+            disabled={ submitting || !!summaryError }
+            color="primary"
+            variant="contained"
+            fullWidth
+            onClick={submit}
+          >Create</Button>
+        </Grid>
+      </Grid>
+    </Paper>
+  }
+  </>;
 };
 
 export default CreateOpinionCard;

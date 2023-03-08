@@ -3,7 +3,14 @@ import { configure as mobxConfigure } from 'mobx';
 import './index.css';
 import { App } from './App';
 import * as serviceWorker from './serviceWorker';
-import { ThemeProvider, createTheme, CssBaseline } from '@material-ui/core';
+import {
+  ThemeProvider,
+  Theme,
+  StyledEngineProvider,
+  createTheme,
+  CssBaseline,
+  adaptV4Theme,
+} from '@mui/material';
 import { UserStore } from './stores/userStore';
 import { JusticeStore, JusticeStoreContext } from './stores/justiceStore';
 import { NetworkService } from './services/networkService';
@@ -14,11 +21,18 @@ import { OpinionStore, OpinionStoreContext } from './stores/opinionStore';
 import { UserStoreContext } from './stores/userStore';
 import { BrowserRouter } from 'react-router-dom';
 
+
+declare module '@mui/styles/defaultTheme' {
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  interface DefaultTheme extends Theme {}
+}
+
+
 mobxConfigure({
   enforceActions: "observed", // don't allow state modifications outside actions
   computedRequiresReaction: true,
   reactionRequiresObservable: true,
-}); 
+});
 const networkService = new NetworkService(process.env.REACT_APP_API_SERVER!);
 const userStore = new UserStore(networkService);
 const justiceStore = new JusticeStore(networkService);
@@ -27,7 +41,7 @@ const docketStore = new DocketStore(networkService);
 const caseStore = new CaseStore(networkService, docketStore);
 const opinionStore = new OpinionStore(networkService);
 
-const theme = createTheme({
+const theme = createTheme(adaptV4Theme({
   palette: {
     primary: {
       main: '#607d8b',
@@ -36,7 +50,7 @@ const theme = createTheme({
       main: '#0288d1',
     },
   },
-});
+}));
 
 const root = createRoot(document.getElementById('root')!);
 
@@ -48,10 +62,12 @@ root.render(
           <OpinionStoreContext.Provider value={opinionStore}>
             <CaseStoreContext.Provider value={caseStore}>
               <BrowserRouter>
-                <ThemeProvider theme={theme}>
-                  <CssBaseline />
-                  <App />
-                </ThemeProvider>
+                <StyledEngineProvider injectFirst>
+                  <ThemeProvider theme={theme}>
+                    <CssBaseline />
+                    <App />
+                  </ThemeProvider>
+                </StyledEngineProvider>
               </BrowserRouter>
             </CaseStoreContext.Provider>
           </OpinionStoreContext.Provider>

@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
-import { makeStyles } from '@material-ui/styles';
-import { Theme, Paper, Grid, Typography } from '@material-ui/core';
+import { makeStyles } from '@mui/styles';
+import { Theme, Paper, Grid, Typography } from '@mui/material';
 import { Case, CaseStatus } from '../../../stores/caseStore';
 import { stripLinks } from '../../../util/linkParse';
 

@@ -1,9 +1,11 @@
 import React, { useState, ReactNode, useCallback } from "react";
-import { Typography, Paper, Grid, Button, TextField, Theme, makeStyles } from '@material-ui/core';
+import { Typography, Paper, Grid, Button, TextField, Theme } from '@mui/material';
+
+import makeStyles from '@mui/styles/makeStyles';
 
 const useStyles = makeStyles( (theme: Theme) => ({
   paper: {
-    padding: `${theme.spacing(1)}px`,
+    padding: theme.spacing(1),
     whiteSpace: 'pre-wrap',
   },
   noOverflow: {

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { makeStyles } from '@material-ui/styles';
-import { Theme, Typography, Grid, Paper } from '@material-ui/core';
+import { makeStyles } from '@mui/styles';
+import { Theme, Typography, Grid, Paper } from '@mui/material';
 import { Case, TermSummary, CaseStore, TermJusticeSummary, TermCourtSummary } from '../../../stores/caseStore';
 import { shuffleArray } from '../../../util';
 import { CaseGridRow } from './';

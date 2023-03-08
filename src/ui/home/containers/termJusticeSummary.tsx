@@ -1,7 +1,7 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { makeStyles } from '@material-ui/styles';
-import { Theme, Paper, Grid, Typography, IconButton } from '@material-ui/core';
-import BackIcon from '@material-ui/icons/ArrowBack';
+import { makeStyles } from '@mui/styles';
+import { Theme, Paper, Grid, Typography, IconButton } from '@mui/material';
+import BackIcon from '@mui/icons-material/ArrowBack';
 import { Case, CaseStoreContext, FullCase, Term } from '../../../stores/caseStore';
 import { forkJoin } from 'rxjs';
 import { observer } from 'mobx-react';
@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
     padding: theme.spacing(2),
-    height: `calc(100vh - ${theme.spacing(8)}px)`,
+    height: `calc(100vh - ${theme.spacing(8)})`,
     overflow: 'scroll',
   },
   caseGroup: {
@@ -149,7 +149,7 @@ const TermJusticeSummary = () => {
         <Grid item>
           <Grid container direction="row" justifyContent="flex-start" alignItems="center" spacing={1}>
             <Grid item>
-              <IconButton onClick={back}>
+              <IconButton onClick={back} size="large">
                 <BackIcon color="action" />
               </IconButton>
             </Grid>

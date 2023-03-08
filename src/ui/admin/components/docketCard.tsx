@@ -1,15 +1,16 @@
 import React, { useCallback, useState } from 'react';
-import { Paper, makeStyles, Theme, Grid, Typography, IconButton, Button } from '@material-ui/core';
-import ArrowRight from '@material-ui/icons/ArrowRight';
-import ArrowDown from '@material-ui/icons/ArrowDropDown';
+import { Paper, Theme, Grid, Typography, IconButton, Button } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
+import ArrowRight from '@mui/icons-material/ArrowRight';
+import ArrowDown from '@mui/icons-material/ArrowDropDown';
 import { BareDocket, FullDocket } from '../../../stores/docketStore';
 import { DateTimeFormatter } from '@js-joda/core';
 
 const useStyles = makeStyles( (theme: Theme) => ({
   docketCard: {
-    margin: `${theme.spacing(1)}px`,
-    padding: `${theme.spacing(1)}px`,
-    [theme.breakpoints.down('sm')]: {
+    margin: theme.spacing(1),
+    padding: theme.spacing(1),
+    [theme.breakpoints.down('md')]: {
       maxWidth: 300,
     },
     [theme.breakpoints.up('md')]: {
@@ -62,7 +63,7 @@ const DocketCard = (props: Props) => {
         <Typography color="textSecondary" variant="subtitle2">
           {props.docket.docketNumber}
         </Typography>
-        <IconButton onClick={toggleExpanded}>
+        <IconButton onClick={toggleExpanded} size="large">
           {expanded ? <ArrowDown /> : <ArrowRight />}
         </IconButton>
       </Grid>

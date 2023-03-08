@@ -1,6 +1,7 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
-import { Grid, Typography, IconButton, TextField, Theme, Button, MenuItem, makeStyles } from '@material-ui/core';
-import BackIcon from '@material-ui/icons/ArrowBack';
+import { Grid, Typography, IconButton, TextField, Theme, Button, MenuItem } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
+import BackIcon from '@mui/icons-material/ArrowBack';
 import { observer } from 'mobx-react';
 import { DocketStatus, DocketStoreContext } from '../../../stores/docketStore';
 import { CourtStoreContext } from '../../../stores/courtStore';
@@ -9,7 +10,7 @@ import { useNavigate } from 'react-router';
 const useStyles = makeStyles((theme: Theme) => ({
   formContainer: {
     marginTop: theme.spacing(2),
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       maxWidth: 320,
     },
     [theme.breakpoints.up('md')]: {
@@ -101,7 +102,7 @@ const CreateDocketPage = () => {
   return (
     <Grid container direction="column">
       <Grid item>
-        <IconButton onClick={back}>
+        <IconButton onClick={back} size="large">
           <BackIcon color="action" />
         </IconButton>
       </Grid>

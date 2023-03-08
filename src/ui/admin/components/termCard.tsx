@@ -1,4 +1,5 @@
-import { Grid, makeStyles, Paper, Theme, Typography } from "@material-ui/core";
+import { Grid, Paper, Theme, Typography } from "@mui/material";
+import makeStyles from '@mui/styles/makeStyles';
 import { useCallback } from "react";
 import { Term } from "../../../stores/caseStore";
 
@@ -13,7 +14,7 @@ const useStyles = makeStyles( (theme: Theme) => ({
     padding: theme.spacing(1),
     paddingRight: theme.spacing(3),
     cursor: 'pointer',
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down('sm')]: {
       maxWidth: '100%',
     },
     [theme.breakpoints.up('sm')]: {

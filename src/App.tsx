@@ -7,8 +7,8 @@ import CasePage from './ui/case/containers/case';
 import LowerCourtPage from './ui/case/containers/lowerCourt';
 import AllTermCasesPage from './ui/home/containers/allTermCases';
 import TermJusticeSummary from './ui/home/containers/termJusticeSummary';
-import HomeIcon from '@material-ui/icons/Home';
-import { Button, Grid, Paper, IconButton } from '@material-ui/core';
+import HomeIcon from '@mui/icons-material/Home';
+import { Button, Grid, Paper, IconButton } from '@mui/material';
 
 export const App = () => (
   <div>
@@ -20,7 +20,7 @@ export const App = () => (
         alignItems="center"
       >
         <Link to="/">
-          <IconButton>
+          <IconButton size="large">
             <HomeIcon color="action" />
           </IconButton>
         </Link>

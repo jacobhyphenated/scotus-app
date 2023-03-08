@@ -1,6 +1,6 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/styles';
-import { Theme, Grid, Typography } from '@material-ui/core';
+import { makeStyles } from '@mui/styles';
+import { Theme, Grid, Typography } from '@mui/material';
 import { Case, dismissedCases } from '../../../stores/caseStore';
 import { shuffleArray } from '../../../util';
 import { CaseGridRow, CasePreviewCard } from './';

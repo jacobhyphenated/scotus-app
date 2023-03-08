@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { makeStyles } from '@material-ui/styles';
-import { Theme, Grid, Typography, Paper, Hidden } from '@material-ui/core';
+import { makeStyles } from '@mui/styles';
+import { Theme, Grid, Typography, Paper, Hidden } from '@mui/material';
 import { Case, CaseStore, FullCase } from '../../../stores/caseStore';
 import { DateTimeFormatter } from '@js-joda/core';
 import { OpinionType } from '../../../stores/opinionStore';
-import StarRateRoundedIcon from '@material-ui/icons/StarRateRounded';
+import StarRateRoundedIcon from '@mui/icons-material/StarRateRounded';
 
 const useStyles = makeStyles( (theme: Theme) => ({
   row: {
@@ -23,7 +23,7 @@ const useStyles = makeStyles( (theme: Theme) => ({
   starGrid: {
     flexGrow: 0,
     marginTop: 4,
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down('sm')]: {
       maxWidth: '7%',
       flexBasis: '7%',
     },
@@ -42,7 +42,7 @@ const useStyles = makeStyles( (theme: Theme) => ({
   },
   starGridText: {
     flexGrow: 0,
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down('sm')]: {
       maxWidth: '93%',
       flexBasis: '93%',
     },
@@ -118,13 +118,13 @@ const CaseListItem = (props: Props) => {
             </div>
           </div>
         </Grid>
-        <Hidden smDown><Grid item md={2} lg={1}>
+        <Hidden mdDown><Grid item md={2} lg={1}>
           <Typography title="Date Argued">{scotusCase.argumentDate?.format(formatter)}</Typography>
         </Grid></Hidden>
-        <Hidden xsDown><Grid item sm={2} md={2} lg={1} className={classes.noWrap}>
+        <Hidden smDown><Grid item sm={2} md={2} lg={1} className={classes.noWrap}>
           <Typography noWrap title={scotusCase.status}>{scotusCase.status}</Typography>
         </Grid></Hidden>
-        <Hidden mdDown><Grid item lg={2}>
+        <Hidden lgDown><Grid item lg={2}>
           <Typography title="Author">{author}</Typography>
         </Grid></Hidden>
         <Grid item xs={2} sm={1}>

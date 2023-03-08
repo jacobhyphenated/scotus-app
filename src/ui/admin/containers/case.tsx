@@ -1,7 +1,8 @@
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { observer } from 'mobx-react';
-import { Typography, Theme, Grid, Fab, TextField, MenuItem, makeStyles } from '@material-ui/core';
-import AddIcon from '@material-ui/icons/Add';
+import { Typography, Theme, Grid, Fab, TextField, MenuItem } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
+import AddIcon from '@mui/icons-material/Add';
 import { Case, CaseStatus, CaseStoreContext } from '../../../stores/caseStore';
 import { autorun } from 'mobx';
 import CaseCard from '../components/caseCard';

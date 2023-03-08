@@ -1,16 +1,16 @@
 import React, { useCallback, useEffect, useState, useContext } from 'react';
-import { Grid, Typography, IconButton, TextField, Theme, Button } from '@material-ui/core';
-import BackIcon from '@material-ui/icons/ArrowBack';
+import { Grid, Typography, IconButton, TextField, Theme, Button } from '@mui/material';
+import BackIcon from '@mui/icons-material/ArrowBack';
 import { JusticeStoreContext } from '../../../stores/justiceStore';
 import { LocalDate } from '@js-joda/core';
-import { makeStyles } from '@material-ui/styles';
+import { makeStyles } from '@mui/styles';
 import DatePicker from '../components/datePicker';
 import { useNavigate } from 'react-router';
 
 const useStyles = makeStyles((theme: Theme) => ({
   formContainer: {
     marginTop: theme.spacing(2),
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       maxWidth: 280,
     },
     [theme.breakpoints.up('md')]: {
@@ -96,10 +96,10 @@ const CreateJusticePage = () => {
 
   const classes = useStyles();
 
-  return(
+  return (
     <Grid container direction="column">
       <Grid item>
-        <IconButton onClick={back}>
+        <IconButton onClick={back} size="large">
           <BackIcon color="action" />
         </IconButton>
       </Grid>

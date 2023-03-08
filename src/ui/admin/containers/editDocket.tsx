@@ -1,6 +1,18 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
-import { Grid, Typography, IconButton, Theme, MenuItem, FormControlLabel, FormControl, FormLabel, RadioGroup, Radio, makeStyles } from '@material-ui/core';
-import BackIcon from '@material-ui/icons/ArrowBack';
+import {
+  Grid,
+  Typography,
+  IconButton,
+  Theme,
+  MenuItem,
+  FormControlLabel,
+  FormControl,
+  FormLabel,
+  RadioGroup,
+  Radio,
+} from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
+import BackIcon from '@mui/icons-material/ArrowBack';
 import { DocketStatus, FullDocket, DocketEdit, DocketStoreContext } from '../../../stores/docketStore';
 import { useNavigate, useParams } from 'react-router';
 import ViewEditInputText from '../components/viewEditInputText';
@@ -8,7 +20,7 @@ import ViewEditInputText from '../components/viewEditInputText';
 const useStyles = makeStyles((theme: Theme) => ({
   formContainer: {
     marginTop: theme.spacing(2),
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       maxWidth: 320,
     },
     [theme.breakpoints.up('md')]: {
@@ -109,7 +121,7 @@ const EditDocketPage = () => {
   return (
     <Grid container direction="column">
       <Grid item>
-        <IconButton onClick={back}>
+        <IconButton onClick={back} size="large">
           <BackIcon color="action" />
         </IconButton>
       </Grid>

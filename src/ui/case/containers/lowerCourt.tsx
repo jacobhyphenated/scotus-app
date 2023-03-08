@@ -1,5 +1,6 @@
-import { Grid, IconButton, makeStyles, Paper, Theme, Typography } from "@material-ui/core";
-import BackIcon from '@material-ui/icons/ArrowBack';
+import { Grid, IconButton, Paper, Theme, Typography } from "@mui/material";
+import makeStyles from '@mui/styles/makeStyles';
+import BackIcon from '@mui/icons-material/ArrowBack';
 import { useCallback, useContext, useEffect, useState } from "react";
 import {  useNavigate, useParams } from "react-router";
 import { CaseStatus, CaseStoreContext, FullCase } from "../../../stores/caseStore";
@@ -26,7 +27,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
     padding: theme.spacing(2),
-    height: `calc(100vh - ${theme.spacing(8)}px)`,
+    height: `calc(100vh - ${theme.spacing(8)})`,
     overflowY: 'scroll',
   },
   flexEnd: {
@@ -132,7 +133,7 @@ const LowerCourtPage = () => {
             <Grid item>
               <Grid container direction="row" justifyContent="flex-start" alignItems="baseline" spacing={2}>
                 <Grid item>
-                  <IconButton onClick={back}>
+                  <IconButton onClick={back} size="large">
                     <BackIcon color="action" />
                   </IconButton>
                 </Grid>

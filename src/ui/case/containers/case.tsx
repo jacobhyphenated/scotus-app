@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState, useContext } from 'react';
-import { Theme, Paper, Grid, Typography, IconButton, Button, Link, makeStyles } from '@material-ui/core';
-import BackIcon from '@material-ui/icons/ArrowBack';
+import { Theme, Paper, Grid, Typography, IconButton, Button, Link } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
+import BackIcon from '@mui/icons-material/ArrowBack';
 import { useNavigate, useParams } from 'react-router';
 import { FullCase, CaseStatus, CaseStoreContext } from '../../../stores/caseStore';
 import { observer } from 'mobx-react';
@@ -17,7 +18,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
     padding: theme.spacing(2),
-    height: `calc(100vh - ${theme.spacing(8)}px)`,
+    height: `calc(100vh - ${theme.spacing(8)})`,
     overflowY: 'scroll',
   },
   bold: {
@@ -120,7 +121,7 @@ const CasePage = () => {
               <Grid item>
                 <Grid container direction="row" justifyContent="flex-start" alignItems="baseline" spacing={2}>
                   <Grid item>
-                    <IconButton onClick={back}>
+                    <IconButton onClick={back} size="large">
                       <BackIcon color="action" />
                     </IconButton>
                   </Grid>

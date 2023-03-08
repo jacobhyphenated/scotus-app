@@ -1,10 +1,11 @@
 import React, { useState, useCallback } from "react";
-import { Typography, Paper, Grid, Button, TextField, Theme, makeStyles, IconButton } from '@material-ui/core';
-import CloseIcon from '@material-ui/icons/Close';
+import { Typography, Paper, Grid, Button, TextField, Theme, IconButton } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
+import CloseIcon from '@mui/icons-material/Close';
 
 const useStyles = makeStyles( (theme: Theme) => ({
   paper: {
-    padding: `${theme.spacing(1)}px`,
+    padding: theme.spacing(1),
     whiteSpace: 'pre-wrap',
   },
   bottomSpacer: {
@@ -12,7 +13,7 @@ const useStyles = makeStyles( (theme: Theme) => ({
   },
   title: {
     marginLeft: theme.spacing(1),
-    marginRight: -1 * theme.spacing(1),
+    marginRight: theme.spacing(-1), // TODO: Test margin here
   },
   topSpacer: {
     marginTop: theme.spacing(1),

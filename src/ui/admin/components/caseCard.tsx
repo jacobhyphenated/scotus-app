@@ -1,18 +1,19 @@
 import React, { useCallback, useState } from 'react';
-import { Paper, makeStyles, Theme, Grid, Typography, IconButton, Button } from '@material-ui/core';
-import ArrowRight from '@material-ui/icons/ArrowRight';
-import ArrowDown from '@material-ui/icons/ArrowDropDown';
+import { Paper, Theme, Grid, Typography, IconButton, Button } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
+import ArrowRight from '@mui/icons-material/ArrowRight';
+import ArrowDown from '@mui/icons-material/ArrowDropDown';
 import { DateTimeFormatter } from '@js-joda/core';
 import { Case } from '../../../stores/caseStore';
 
 const useStyles = makeStyles( (theme: Theme) => ({
   caseCard: {
-    margin: `${theme.spacing(1)}px`,
-    padding: `${theme.spacing(1)}px`,
-    [theme.breakpoints.down('xs')]: {
+    margin: theme.spacing(1),
+    padding: theme.spacing(1),
+    [theme.breakpoints.down('sm')]: {
       maxWidth: 300,
     },
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       maxWidth: 400,
     },
     [theme.breakpoints.up('md')]: {
@@ -47,7 +48,7 @@ const CaseCard = (props: Props) => {
         <Typography color="textSecondary" variant="subtitle2">
           {props.case.status}{props.case.result && `: ${props.case.result}`}
         </Typography>
-        <IconButton onClick={toggleExpanded}>
+        <IconButton onClick={toggleExpanded} size="large">
           {expanded ? <ArrowDown /> : <ArrowRight />}
         </IconButton>
       </Grid>

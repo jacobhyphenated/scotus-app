@@ -1,17 +1,32 @@
 import React, { useCallback, useState } from "react";
-import { Typography, Paper, Grid, Button, TextField, Theme, makeStyles, IconButton, Chip, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@material-ui/core';
-import CloseIcon from '@material-ui/icons/Close';
+import {
+  Typography,
+  Paper,
+  Grid,
+  Button,
+  TextField,
+  Theme,
+  IconButton,
+  Chip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+} from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
+import CloseIcon from '@mui/icons-material/Close';
 import { Opinion } from '../../../stores/opinionStore';
 
 const useStyles = makeStyles( (theme: Theme) => ({
   paper: {
-    padding: `${theme.spacing(1)}px`,
-    'margin-top': `${theme.spacing(1)}px`,
+    padding: theme.spacing(1),
+    'margin-top': theme.spacing(1),
   },
   chip: {
     'margin-left': '4px',
     'margin-bottom': '2px',
-    'height': `${theme.spacing(3)}px`,
+    'height': theme.spacing(3),
   },
   opinionSummary: {
     'white-space': 'pre-line',
@@ -70,7 +85,7 @@ const OpinionEditCard = (props: Props) => {
               </Typography>
             </Grid>
             <Grid item>
-              <IconButton onClick={toggleConfirmDelete}>
+              <IconButton onClick={toggleConfirmDelete} size="large">
                 <CloseIcon />
               </IconButton>
             </Grid>

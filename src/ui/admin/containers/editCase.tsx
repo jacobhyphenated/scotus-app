@@ -1,8 +1,20 @@
 import React, { useCallback, useEffect, useState, useContext } from 'react';
-import { Grid, Typography, IconButton, Theme, MenuItem, Paper, TextField, FormControlLabel, Checkbox, Button, makeStyles } from '@material-ui/core';
-import BackIcon from '@material-ui/icons/ArrowBack';
-import CloseIcon from '@material-ui/icons/Close';
-import AddIcon from '@material-ui/icons/Add';
+import {
+  Grid,
+  Typography,
+  IconButton,
+  Theme,
+  MenuItem,
+  Paper,
+  TextField,
+  FormControlLabel,
+  Checkbox,
+  Button,
+} from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
+import BackIcon from '@mui/icons-material/ArrowBack';
+import CloseIcon from '@mui/icons-material/Close';
+import AddIcon from '@mui/icons-material/Add';
 import { observer } from 'mobx-react';
 import { BareDocket, DocketStatus, DocketStoreContext } from '../../../stores/docketStore';
 import { useNavigate, useParams } from 'react-router';
@@ -11,7 +23,7 @@ import ViewEditDatePicker from '../components/viewEditDatePicker';
 import ArgumentDateEditField from '../components/argumentDateEditField';
 import { FullCase, EditCase, CaseStatus, CaseDocket, CaseSitting, CaseStoreContext } from '../../../stores/caseStore';
 import { LocalDate } from '@js-joda/core';
-import { Autocomplete } from '@material-ui/lab';
+import { Autocomplete } from '@mui/material';
 import OpinionEditCard from '../components/opinionEditCard';
 import OpinionCreateCard from '../components/createOpinionCard';
 import { Opinion, OpinionType, CreateOpinionJustice, opinionSort, OpinionStoreContext } from '../../../stores/opinionStore';
@@ -296,7 +308,7 @@ const EditCasePage = () => {
   return (
     <Grid container direction="column">
       <Grid item>
-        <IconButton onClick={back}>
+        <IconButton onClick={back} size="large">
           <BackIcon color="action" />
         </IconButton>
       </Grid>
@@ -476,7 +488,7 @@ const EditCasePage = () => {
                         </Button>
                       </Grid>
                       <Grid item>
-                        <IconButton onClick={onDeleteDocket(docket)}><CloseIcon /></IconButton>
+                        <IconButton onClick={onDeleteDocket(docket)} size="large"><CloseIcon /></IconButton>
                       </Grid>
                     </Grid>
                   </Paper>
@@ -506,7 +518,7 @@ const EditCasePage = () => {
                     />
                   </Grid>
                   <Grid item xs={1}>
-                    <IconButton onClick={newDocket}><AddIcon /></IconButton>
+                    <IconButton onClick={newDocket} size="large"><AddIcon /></IconButton>
                   </Grid>
                 </Grid>
               </Grid>

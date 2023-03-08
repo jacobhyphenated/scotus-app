@@ -1,12 +1,25 @@
 import { useCallback, useContext, useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import { Justice, JusticeStoreContext } from '../../../stores/justiceStore';
-import { Theme, Typography, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, Fab, Grid, FormControlLabel, makeStyles } from '@material-ui/core';
+import {
+  Theme,
+  Typography,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Button,
+  Fab,
+  Grid,
+  FormControlLabel,
+} from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import JusticeCard from '../components/justiceCard';
 import DatePicker from '../components/datePicker';
 import { LocalDate } from '@js-joda/core';
-import AddIcon from '@material-ui/icons/Add';
-import Switch from '@material-ui/core/Switch';
+import AddIcon from '@mui/icons-material/Add';
+import Switch from '@mui/material/Switch';
 import { useNavigate } from 'react-router';
 
 const useStyles = makeStyles((theme: Theme) => ({

@@ -1,7 +1,8 @@
 import { useCallback, useContext, useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
-import { Typography, Theme, Grid, Fab, makeStyles } from '@material-ui/core';
-import AddIcon from '@material-ui/icons/Add';
+import { Typography, Theme, Grid, Fab } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
+import AddIcon from '@mui/icons-material/Add';
 import { CaseStoreContext, Term } from '../../../stores/caseStore';
 import TermCard from '../components/termCard';
 import { useNavigate } from 'react-router';
@@ -9,7 +10,7 @@ import { useNavigate } from 'react-router';
 const useStyles = makeStyles((theme: Theme) => ({
   formContainer: {
     marginTop: theme.spacing(2),
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       maxWidth: 280,
     },
     [theme.breakpoints.up('md')]: {

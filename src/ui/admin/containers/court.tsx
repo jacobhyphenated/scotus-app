@@ -1,15 +1,16 @@
 import { useCallback, useContext, useEffect } from 'react';
 import { observer } from 'mobx-react';
-import { Typography, Paper, Theme, Grid, Fab, makeStyles } from '@material-ui/core';
-import AddIcon from '@material-ui/icons/Add';
+import { Typography, Paper, Theme, Grid, Fab } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
+import AddIcon from '@mui/icons-material/Add';
 import { CourtStoreContext } from '../../../stores/courtStore';
 import { useNavigate } from 'react-router';
 
 const useStyles = makeStyles((theme: Theme) => ({
   courtCard: {
-    margin: `${theme.spacing(1)}px`,
-    padding: `${theme.spacing(1)}px`,
-    [theme.breakpoints.down('sm')]: {
+    margin: theme.spacing(1),
+    padding: theme.spacing(1),
+    [theme.breakpoints.down('md')]: {
       maxWidth: 250,
     },
     [theme.breakpoints.up('md')]: {

@@ -1,7 +1,8 @@
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { Theme, TextField, InputAdornment, Paper, Grid, Typography, IconButton, makeStyles } from '@material-ui/core';
-import SearchIcon from '@material-ui/icons/Search';
-import BackIcon from '@material-ui/icons/ArrowBack';
+import { Theme, TextField, InputAdornment, Paper, Grid, Typography, IconButton } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
+import SearchIcon from '@mui/icons-material/Search';
+import BackIcon from '@mui/icons-material/ArrowBack';
 import { Case, CaseSitting, CaseStatus, CaseStoreContext, Term } from '../../../stores/caseStore';
 import { Subject } from 'rxjs';
 import { debounceTime, map } from 'rxjs/operators';
@@ -16,7 +17,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
     padding: theme.spacing(2),
-    height: `calc(100vh - ${theme.spacing(8)}px)`,
+    height: `calc(100vh - ${theme.spacing(8)})`,
     overflowY: 'scroll',
   },
   search: {
@@ -139,7 +140,7 @@ const AllTermCasesPage = () => {
     <Paper className={classes.paper}>
       <Grid container direction="row" justifyContent="flex-start" alignItems="center" spacing={1}>
         <Grid item>
-          <IconButton onClick={back}>
+          <IconButton onClick={back} size="large">
             <BackIcon color="action" />
           </IconButton>
         </Grid>

@@ -1,11 +1,12 @@
 import React, { useCallback, useState } from "react";
-import { Typography, Paper, Grid, Button, Theme, makeStyles } from '@material-ui/core';
+import { Typography, Paper, Grid, Button, Theme } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import { LocalDate, DateTimeFormatter } from "@js-joda/core";
 import DatePicker from './datePicker';
 
 const useStyles = makeStyles( (theme: Theme) => ({
   paper: {
-    padding: `${theme.spacing(1)}px`,
+    padding: theme.spacing(1),
   },
 }));
 

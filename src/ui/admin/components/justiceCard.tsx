@@ -1,13 +1,14 @@
 import React, { useCallback } from 'react';
-import { Theme, Typography, Button, makeStyles, Paper, Grid } from '@material-ui/core';
+import { Theme, Typography, Button, Paper, Grid } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import { Justice } from '../../../stores/justiceStore';
 import { DateTimeFormatter } from '@js-joda/core';
 
 const useStyles = makeStyles( (theme: Theme) => ({
   justiceCard: {
-    margin: `${theme.spacing(1)}px`,
-    padding: `${theme.spacing(1)}px`,
-    [theme.breakpoints.down('sm')]: {
+    margin: theme.spacing(1),
+    padding: theme.spacing(1),
+    [theme.breakpoints.down('md')]: {
       maxWidth: 300,
     },
     [theme.breakpoints.up('md')]: {

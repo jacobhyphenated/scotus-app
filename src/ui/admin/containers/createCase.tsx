@@ -1,7 +1,18 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
-import { Grid, Typography, IconButton, TextField, Theme, Button, MenuItem, FormControlLabel, Checkbox, makeStyles } from '@material-ui/core';
-import BackIcon from '@material-ui/icons/ArrowBack';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import {
+  Grid,
+  Typography,
+  IconButton,
+  TextField,
+  Theme,
+  Button,
+  MenuItem,
+  FormControlLabel,
+  Checkbox,
+} from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
+import BackIcon from '@mui/icons-material/ArrowBack';
+import Autocomplete from '@mui/material/Autocomplete';
 import { observer } from 'mobx-react';
 import { BareDocket, DocketStoreContext } from '../../../stores/docketStore';
 import { CaseStoreContext } from '../../../stores/caseStore';
@@ -10,8 +21,8 @@ import { useNavigate } from 'react-router';
 
 const useStyles = makeStyles((theme: Theme) => ({
   formContainer: {
-    'margin-top': `${theme.spacing(2)}px`,
-    [theme.breakpoints.down('sm')]: {
+    'margin-top': theme.spacing(2),
+    [theme.breakpoints.down('md')]: {
       maxWidth: 320,
     },
     [theme.breakpoints.up('md')]: {
@@ -125,7 +136,7 @@ const CreateCasePage = () => {
   return (
     <Grid container direction="column">
       <Grid item>
-        <IconButton onClick={back}>
+        <IconButton onClick={back} size="large">
           <BackIcon color="action" />
         </IconButton>
       </Grid>
