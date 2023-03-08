@@ -1,4 +1,4 @@
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { configure as mobxConfigure } from 'mobx';
 import './index.css';
 import { App } from './App';
@@ -38,7 +38,9 @@ const theme = createTheme({
   },
 });
 
-ReactDOM.render(
+const root = createRoot(document.getElementById('root')!);
+
+root.render(
   <UserStoreContext.Provider value={userStore}>
     <JusticeStoreContext.Provider value={justiceStore}>
       <CourtStoreContext.Provider value={courtStore}>
@@ -57,7 +59,6 @@ ReactDOM.render(
       </CourtStoreContext.Provider>
     </JusticeStoreContext.Provider>
   </UserStoreContext.Provider>,
-  document.getElementById('root'),
 );
 
 // If you want your app to work offline and load faster, you can change

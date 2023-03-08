@@ -123,7 +123,7 @@ const CreateOpinionCard = (props: Props) => {
     return (useAllJustices && allJustices.length > 0) ? allJustices : props.activeJustices;
   }, [allJustices, props.activeJustices, useAllJustices]);
 
-  const getJusticeLabel = useCallback((jid) => {
+  const getJusticeLabel = useCallback((jid: number) => {
     return justiceOptions.find(j => j.id === jid)?.name ?? 'Unknown Justice';
   }, [justiceOptions]);
 
