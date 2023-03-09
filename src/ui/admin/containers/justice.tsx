@@ -131,7 +131,6 @@ const JusticePage = () => {
             Are you sure you want to mark {retireModal?.name} as retired?
           </DialogContentText>
           <DatePicker
-            disableToolbar
             onChange={handleRetireDateChange}
             value={retireDate}
           />

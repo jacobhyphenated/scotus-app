@@ -46,7 +46,9 @@ const useStyles = makeStyles((theme: Theme) => ({
     border: '1px solid rgba(0,0,0,0.12)',
     borderRadius: 4,
     marginRight: theme.spacing(1),
-    marginLeft: theme.spacing(1),
+    marginLeft: 0,
+    width: '100%',
+    height: theme.spacing(7),
   },
 }));
 
@@ -356,8 +358,9 @@ const EditCasePage = () => {
                   onSave={saveShortSummary}
                 />
               </Grid>
-              <Grid className={classes.border} item xs={12}>
+              <Grid item xs={12}>
                 <FormControlLabel
+                  className={classes.border}
                   control={
                     <Checkbox
                       checked={!!fullCase.important}

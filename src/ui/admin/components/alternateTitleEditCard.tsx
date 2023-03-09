@@ -13,7 +13,7 @@ const useStyles = makeStyles( (theme: Theme) => ({
   },
   title: {
     marginLeft: theme.spacing(1),
-    marginRight: theme.spacing(-1), // TODO: Test margin here
+    marginRight: theme.spacing(-1),
   },
   topSpacer: {
     marginTop: theme.spacing(1),

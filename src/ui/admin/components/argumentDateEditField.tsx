@@ -9,6 +9,9 @@ const useStyles = makeStyles( (theme: Theme) => ({
   paper: {
     padding: theme.spacing(1),
   },
+  topSpacer: {
+    marginTop: theme.spacing(1),
+  },
 }));
 
 interface Props {
@@ -87,11 +90,11 @@ const ArgumentDateEditField = (props: Props) => {
                 onChange={onChangeDate}
                 label="Argument Date"
                 value={editArgumentDate}
-                inputVariant="outlined"
                 {...inputProps}
               />
               <TextField
                 label="Sitting"
+                className={classes.topSpacer}
                 value={editSitting}
                 variant="outlined"
                 color="secondary"

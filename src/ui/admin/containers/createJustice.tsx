@@ -138,7 +138,6 @@ const CreateJusticePage = () => {
                 onChange={changeBirthday}
                 value={birthday}
                 label="Birthday"
-                inputVariant="outlined"
                 error={!!birthdayError}
                 helperText={birthdayError}
               />
@@ -150,7 +149,6 @@ const CreateJusticePage = () => {
                 onChange={changeConfirmDate}
                 value={dateConfirmed}
                 label="Confirmation Date"
-                inputVariant="outlined"
                 error={!!confirmDateError}
                 helperText={confirmDateError}
               />

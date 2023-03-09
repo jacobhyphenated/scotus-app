@@ -72,7 +72,6 @@ const ViewEditDatePicker = (props: Props) => {
               onChange={onChange}
               label={label}
               value={editValue}
-              inputVariant="outlined"
               {...inputProps}
             />
           </Grid>

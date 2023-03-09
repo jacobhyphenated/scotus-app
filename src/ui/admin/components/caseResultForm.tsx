@@ -132,7 +132,6 @@ const CaseResultForm = (props: Props) => {
             label="Decision Date"
             value={decisionDate}
             onChange={onDecisionDateChange}
-            inputVariant="outlined"
           />
         </Grid>
         <Grid item>
