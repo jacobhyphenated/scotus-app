@@ -9,6 +9,7 @@ import AllTermCasesPage from './ui/home/containers/allTermCases';
 import TermJusticeSummary from './ui/home/containers/termJusticeSummary';
 import HomeIcon from '@mui/icons-material/Home';
 import { Button, Grid, Paper, IconButton } from '@mui/material';
+import React from 'react';
 
 export const App = () => (
   <div>

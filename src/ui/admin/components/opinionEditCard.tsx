@@ -111,6 +111,7 @@ const OpinionEditCard = (props: Props) => {
                   fullWidth
                   multiline
                   minRows={4}
+                  maxRows={10}
                   value={summaryText}
                   variant="outlined"
                   color="secondary"

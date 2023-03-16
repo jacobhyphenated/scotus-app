@@ -15,6 +15,9 @@ const useStyles = makeStyles( (theme: Theme) => ({
     maxHeight: theme.spacing(6),
     width: '100%', // without this, grid doesn't scale properly... don't know why
   },
+  flex: {
+    display: 'flex',
+  },
   noWrap: {
     overflow: 'hidden',
     textOverflow: 'ellipsis',
@@ -24,39 +27,39 @@ const useStyles = makeStyles( (theme: Theme) => ({
     flexGrow: 0,
     marginTop: 4,
     [theme.breakpoints.down('sm')]: {
-      maxWidth: '7%',
-      flexBasis: '7%',
+      maxWidth: '6%',
+      flexBasis: '6%',
     },
     [theme.breakpoints.up('sm')]: {
+      maxWidth: '6%',
+      flexBasis: '6%',
+    },
+    [theme.breakpoints.up('md')]: {
       maxWidth: '5%',
       flexBasis: '5%',
     },
-    [theme.breakpoints.up('md')]: {
+    [theme.breakpoints.up('lg')]: {
       maxWidth: '4%',
       flexBasis: '4%',
-    },
-    [theme.breakpoints.up('lg')]: {
-      maxWidth: '3%',
-      flexBasis: '3%',
     },
   },
   starGridText: {
     flexGrow: 0,
     [theme.breakpoints.down('sm')]: {
-      maxWidth: '93%',
-      flexBasis: '93%',
+      maxWidth: '94%',
+      flexBasis: '94%',
     },
     [theme.breakpoints.up('sm')]: {
+      maxWidth: '94%',
+      flexBasis: '94%',
+    },
+    [theme.breakpoints.up('md')]: {
       maxWidth: '95%',
       flexBasis: '95%',
     },
-    [theme.breakpoints.up('md')]: {
+    [theme.breakpoints.up('lg')]: {
       maxWidth: '96%',
       flexBasis: '96%',
-    },
-    [theme.breakpoints.up('lg')]: {
-      maxWidth: '97%',
-      flexBasis: '97%',
     },
   },
 }));
@@ -107,13 +110,13 @@ const CaseListItem = (props: Props) => {
     <Paper elevation={1} className={classes.row} onClick={onClick}>
       <Grid container direction="row" alignItems='center'>
         <Grid item xs={10} sm={9} md={7}>
-          <div className="MuiGrid-container">
+          <div className={classes.flex}>
             {scotusCase.important &&
-              <div className={classes.starGrid + ' MuiGrid-item'}>
+              <div className={classes.starGrid}>
                 <StarRateRoundedIcon color='primary' />
               </div>
             }
-            <div className={'MuiGrid-item ' + classes.noWrap + ' ' + (scotusCase.important ? classes.starGridText : '')}>
+            <div className={classes.noWrap + ' ' + (scotusCase.important ? classes.starGridText : '')}>
               <Typography noWrap variant="h6" component="span" title={scotusCase.case}>{scotusCase.case}</Typography>
             </div>
           </div>

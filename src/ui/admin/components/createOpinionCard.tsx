@@ -178,6 +178,7 @@ const CreateOpinionCard = (props: Props) => {
             required
             multiline
             minRows={4}
+            maxRows={10}
             value={summary}
             error={!!summaryError}
             helperText={summaryError}
@@ -187,7 +188,7 @@ const CreateOpinionCard = (props: Props) => {
         <Grid item>
           <Autocomplete<number, false>
             id="create-opinion-author-select"
-            options={justiceOptions.map(j => j.id).filter(id => id !== authorId)}
+            options={justiceOptions.map(j => j.id)}
             getOptionLabel={getJusticeLabel}
             value={authorId}
             onChange={changeAuthorId}

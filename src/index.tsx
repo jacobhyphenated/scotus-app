@@ -9,7 +9,6 @@ import {
   StyledEngineProvider,
   createTheme,
   CssBaseline,
-  adaptV4Theme,
 } from '@mui/material';
 import { UserStore } from './stores/userStore';
 import { JusticeStore, JusticeStoreContext } from './stores/justiceStore';
@@ -41,7 +40,7 @@ const docketStore = new DocketStore(networkService);
 const caseStore = new CaseStore(networkService, docketStore);
 const opinionStore = new OpinionStore(networkService);
 
-const theme = createTheme(adaptV4Theme({
+const theme = createTheme({
   palette: {
     primary: {
       main: '#607d8b',
@@ -50,7 +49,7 @@ const theme = createTheme(adaptV4Theme({
       main: '#0288d1',
     },
   },
-}));
+});
 
 const root = createRoot(document.getElementById('root')!);
 

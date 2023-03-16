@@ -165,7 +165,7 @@ const CasePage = () => {
             </Grid>
           }
           <Grid item>
-            <Link href={`/case/${fullCase.id}/lowerCourt`}><Typography>lower court rulings</Typography></Link>
+            <Typography><Link href={`/case/${fullCase.id}/lowerCourt`}>lower court rulings</Link></Typography>
           </Grid>
           {courtStatusText(fullCase)}
           <Grid item>
