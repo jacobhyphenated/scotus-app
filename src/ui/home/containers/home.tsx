@@ -12,8 +12,8 @@ import {
 import makeStyles from '@mui/styles/makeStyles';
 import SearchIcon from '@mui/icons-material/Search';
 import { Case, CaseStoreContext, dismissedCases } from '../../../stores/caseStore';
-import { Subject } from 'rxjs';
-import { debounceTime, filter, mergeMap } from 'rxjs/operators';
+import { of, Subject } from 'rxjs';
+import { debounceTime, mergeMap } from 'rxjs/operators';
 import { observer } from 'mobx-react';
 import { CasePreviewCard, TermSummaryInProgress, TermSummaryNearEnd, TermSummaryComplete } from '../components';
 import { useNavigate, useParams } from 'react-router';
@@ -75,8 +75,7 @@ const Home = () => {
   useEffect(() => {
     const subscription = searchText$.pipe(
       debounceTime(400),
-      filter(text => text.length >= 3),
-      mergeMap((searchText) => caseStore.searchCase(searchText)),
+      mergeMap((searchText) => searchText.length >= 3 ? caseStore.searchCase(searchText) : of([])),
     ).subscribe({
       next: setSearchResults,
       error: err => {

@@ -39,7 +39,7 @@ const Login = () => {
         setError('Invalid Username or Password');
       }
     } catch (e: any) {
-      console.log(e);
+      console.error(e);
       setError(e.message);
     }
   }, [password, userStore, username]);
