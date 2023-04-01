@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Theme, Typography, Button, Paper, Grid } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import { Justice } from '../../../stores/justiceStore';
@@ -28,7 +28,7 @@ interface Props {
 const JusticeCard = (props: Props) => {
   const justice = props.justice;
   const styles = useStyles();
-  const formatter = DateTimeFormatter.ofPattern('MM/dd/yyyy');
+  const formatter = useMemo(() => DateTimeFormatter.ofPattern('MM/dd/yyyy'), []);
 
   const retireClick = useCallback(() => {
     props.retireCallback?.(justice);
@@ -40,7 +40,7 @@ const JusticeCard = (props: Props) => {
         Confirmed: {justice.dateConfirmed.format(formatter)}
       </Typography>
       <Typography variant="h6">
-        {justice.name}
+        {justice.name} ({justice.party})
       </Typography>
       {justice.dateRetired && (
         <Typography color="textSecondary">

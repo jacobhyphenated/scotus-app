@@ -31,8 +31,8 @@ export class JusticeStore {
     return this.mapRaw(result);
   }
 
-  async createJustice(name: string, birthday: LocalDate, dateConfirmed: LocalDate): Promise<Justice> {
-    const result = await this.networkService.post<RawJustice>('/justices', { name, birthday, dateConfirmed });
+  async createJustice(name: string, birthday: LocalDate, dateConfirmed: LocalDate, party: string): Promise<Justice> {
+    const result = await this.networkService.post<RawJustice>('/justices', { name, birthday, dateConfirmed, party });
     return this.mapRaw(result);
   }
 
@@ -56,6 +56,7 @@ interface RawJustice {
   name: string;
   dateConfirmed: string;
   dateRetired?: string;
+  party: string;
 }
 
 export interface Justice {
@@ -63,4 +64,5 @@ export interface Justice {
   name: string;
   dateConfirmed: LocalDate;
   dateRetired?: LocalDate;
+  party: string;
 }

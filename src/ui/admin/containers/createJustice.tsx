@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState, useContext } from 'react';
-import { Grid, Typography, IconButton, TextField, Theme, Button } from '@mui/material';
+import { Grid, Typography, IconButton, TextField, Theme, Button, MenuItem } from '@mui/material';
 import BackIcon from '@mui/icons-material/ArrowBack';
 import { JusticeStoreContext } from '../../../stores/justiceStore';
 import { LocalDate } from '@js-joda/core';
@@ -24,6 +24,7 @@ const CreateJusticePage = () => {
   const [name, setName] = useState('');
   const [dateConfirmed, setDateConfirmed] = useState<LocalDate | null>(LocalDate.now());
   const [birthday, setBirthday] = useState<LocalDate | null>(LocalDate.now().minusYears(50));
+  const [party, setParty] = useState('R');
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [nameError, setNameError] = useState<string | null>(null);
@@ -64,6 +65,10 @@ const CreateJusticePage = () => {
     setConfirmDateError(null);
   }, []);
 
+  const changeParty = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    setParty(event.target.value);
+  }, []);
+
   const submit = useCallback(async () => {
     let valid = true;
     if (!name) {
@@ -83,7 +88,7 @@ const CreateJusticePage = () => {
     }
     setSubmitting(true);
     try{ 
-      await justiceStore.createJustice(name, birthday!, dateConfirmed!);
+      await justiceStore.createJustice(name, birthday!, dateConfirmed!, party);
       justiceStore.refreshActiveJustices();
       navigate(-1);
     } catch (e: any) {
@@ -92,7 +97,7 @@ const CreateJusticePage = () => {
       setSubmitting(false);
     }
 
-  }, [birthday, birthdayError, confirmDateError, dateConfirmed, name, nameError, justiceStore, navigate]);
+  }, [name, dateConfirmed, birthday, nameError, confirmDateError, birthdayError, justiceStore, party, navigate]);
 
   const classes = useStyles();
 
@@ -152,6 +157,23 @@ const CreateJusticePage = () => {
                 error={!!confirmDateError}
                 helperText={confirmDateError}
               />
+            </Grid>
+            <Grid item>
+              <TextField
+                id="create-justice-party"
+                label="Appointing Party"
+                size="small"
+                color="primary"
+                variant="outlined"
+                required
+                fullWidth
+                select
+                value={party}
+                onChange={changeParty}
+              >
+                <MenuItem value="R">Republican</MenuItem>
+                <MenuItem value="D">Democrat</MenuItem>
+              </TextField>
             </Grid>
             <Grid item>
               <Button 
