@@ -88,6 +88,8 @@ export interface TermSummary {
   termEndDate: LocalDate;
   justiceSummary: TermJusticeSummary[];
   courtSummary: TermCourtSummary[];
+  unanimous: Case[];
+  partySplit: Case[];
 }
 
 export interface TermJusticeSummary {
@@ -229,6 +231,8 @@ export class CaseStore {
     return {
       ...result,
       termEndDate: this.localDateParse(result.termEndDate) ?? LocalDate.MIN,
+      unanimous: result.unanimous.map(c => this.mapCase(c)),
+      partySplit: result.partySplit.map(c => this.mapCase(c)),
     };
   }
 

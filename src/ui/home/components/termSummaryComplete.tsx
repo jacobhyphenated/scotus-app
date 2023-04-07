@@ -3,7 +3,7 @@ import { makeStyles } from '@mui/styles';
 import { Theme, Typography, Grid, Paper } from '@mui/material';
 import { Case, TermSummary, CaseStore, TermJusticeSummary, TermCourtSummary } from '../../../stores/caseStore';
 import { shuffleArray } from '../../../util';
-import { CaseGridRow } from './';
+import { CaseGridRow, CasePreviewCard } from './';
 
 const useStyles = makeStyles( (theme: Theme) => ({
   summaryBox: {
@@ -80,6 +80,7 @@ const TermSummaryComplete = (props: Props) => {
 
   return (
     <>
+      <CaseGridRow cases={importantCases} title="Key Decision Highlights" onCaseClick={props.onCaseClick} />
       <Typography variant="h5" color="textSecondary">The Justices</Typography>
       <Grid container direction="row" className={classes.termSummaryGrid} spacing={1}>
         {summary && summary.justiceSummary.sort(sortJusticeSummary).map(item => (
@@ -97,8 +98,25 @@ const TermSummaryComplete = (props: Props) => {
           </Grid>
         ))}
       </Grid>
+
+      <Typography variant="h5" color="textSecondary">Unanimous Opinions ({summary?.unanimous.length})</Typography>
+      <Grid container direction="row" className={classes.termSummaryGrid} spacing={1}>
+        {summary && summary.unanimous.map(c => (
+          <Grid key={c.id} item xs={12} sm={6} md={4} lg={3}>
+            <CasePreviewCard case={c} onClick={props.onCaseClick} />
+          </Grid>
+        ))}
+      </Grid>
+
+      <Typography variant="h5" color="textSecondary">Opinions Along Party Lines ({summary?.partySplit.length})</Typography>
+      <Grid container direction="row" className={classes.termSummaryGrid} spacing={1}>
+        {summary && summary.partySplit.map(c => (
+          <Grid key={c.id} item xs={12} sm={6} md={4} lg={3}>
+            <CasePreviewCard case={c} onClick={props.onCaseClick} />
+          </Grid>
+        ))}
+      </Grid>
       
-      <CaseGridRow cases={importantCases} title="Key Decision Highlights" onCaseClick={props.onCaseClick} />
     </>
   );
 };

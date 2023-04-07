@@ -129,8 +129,9 @@ const Home = () => {
   }, [setSelectedTerm]);
 
   const onCaseClick: (scotusCase: Case) => void = useCallback(scotusCase => {
+    navigate(`/term/${selectedTermId}`, { replace: true });
     navigate(`/case/${scotusCase.id}`);
-  }, [navigate]);
+  }, [navigate, selectedTermId]);
 
   const onTermJusticeClick = useCallback((termId: number, justiceId: number) => {
     navigate(`/term/${termId}`, { replace: true });
@@ -188,6 +189,9 @@ const Home = () => {
                 ))}
               </TextField>
             }
+          </Grid>
+          <Grid item marginLeft={1}>
+            <Button variant="text" color="secondary" onClick={allCasesClick}>All Term Cases</Button>
           </Grid>
         </Grid>
       }
