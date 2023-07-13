@@ -88,6 +88,7 @@ export interface TermSummary {
   termEndDate: LocalDate;
   justiceSummary: TermJusticeSummary[];
   courtSummary: TermCourtSummary[];
+  justiceAgreement: JusticeAgreement[];
   unanimous: Case[];
   partySplit: Case[];
 }
@@ -109,6 +110,12 @@ export interface TermCourtSummary {
   cases: number;
   affirmed: number;
   reversedRemanded: number;
+}
+
+export interface JusticeAgreement {
+  justiceId: number;
+  opinionAgreementMap: { [id: number]: number };
+  caseAgreementMap: { [id: number]: number };
 }
 
 export interface EditTermProps {

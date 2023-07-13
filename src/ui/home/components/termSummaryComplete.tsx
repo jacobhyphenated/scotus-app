@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { makeStyles } from '@mui/styles';
-import { Theme, Typography, Grid, Paper } from '@mui/material';
+import { Theme, Typography, Grid, Paper, Hidden } from '@mui/material';
 import { Case, TermSummary, CaseStore, TermJusticeSummary, TermCourtSummary } from '../../../stores/caseStore';
 import { shuffleArray } from '../../../util';
 import { CaseGridRow, CasePreviewCard } from './';
@@ -21,6 +21,60 @@ const useStyles = makeStyles( (theme: Theme) => ({
   },
   error: {
     marginBottom: theme.spacing(5),
+  },
+  tableHead: {
+    fontWeight: 'bold',
+    borderBottomStyle: 'solid',
+    borderBottomWidth: 2,
+    borderBottomColor: theme.palette.primary.main,
+    borderRightStyle: 'solid',
+    borderRightWidth: 1,
+    borderRightColor: theme.palette.primary.main,
+    paddingLeft: theme.spacing(1),
+    paddingRight: theme.spacing(1),
+  },
+  tableLeft: {
+    fontWeight: 'bold',
+    borderRightStyle: 'solid',
+    borderRightWidth: 2,
+    borderRightColor: theme.palette.primary.main,
+    borderBottomStyle: 'solid',
+    borderBottomWidth: 1,
+    borderBottomColor: theme.palette.primary.main,
+  },
+  tableCell: {
+    borderRightStyle: 'solid',
+    borderRightWidth: 1,
+    borderRightColor: theme.palette.primary.main,
+    borderBottomStyle: 'solid',
+    borderBottomWidth: 1,
+    borderBottomColor: theme.palette.primary.main,
+    textAlign: 'center',
+    height: 64,
+  },
+  matchVeryLow: {
+    background: '#e7edf2',
+  },
+  matchLow: {
+    background: '#d0dce5',
+  },
+  matchLowMid: {
+    background: '#b9cbd8',
+  },
+  matchMid: {
+    background: '#a1bacb',
+  },
+  matchMidHigh: {
+    background: '#8aa9be',
+  },
+  matchHigh: {
+    background: '#7397b1',
+  },
+  matchVeryHigh: {
+    background: '#5b86a4',
+  },
+  matchExtreme: {
+    background: '#447597',
   },
 }));
 
@@ -78,6 +132,74 @@ const TermSummaryComplete = (props: Props) => {
     navigateToJustice(termId, justiceId);
   }, [navigateToJustice, termId]);
 
+  const justiceAgreement = useMemo(() => {
+    if (!summary) {
+      return null;
+    }
+    const justiceNameLookup = (id: number) => {
+      return summary.justiceSummary.find((js => js.justice.id === id))?.justice.name ?? `${id}`;
+    };
+
+    const ideologyMap = ['Sonia Sotomayor', 'Elena Kagan', 'Ketanji Brown Jackson', 'Ruth Bader Ginsburg', 'Stephen Breyer', 'John Roberts', 'Brett Kavanaugh', 'Amy Coney Barrett', 'Neil Gorsuch', 'Samuel Alito', 'Clarence Thomas'];
+
+    return summary.justiceAgreement.map(j => ({
+      justiceName: justiceNameLookup(j.justiceId),
+      ...j,
+    })).sort((j1, j2) => {
+      // sort by the most agreeable justices as defined by the sum of the agreement map values
+      // return Object.values(j2.opinionAgreementMap).reduce((a, j) => a + j, 0) - Object.values(j1.opinionAgreementMap).reduce((a, j) => a + j, 0);
+      return ideologyMap.indexOf(j1.justiceName) - ideologyMap.indexOf(j2.justiceName);
+    });
+
+  }, [summary]);
+
+  const heatMapStyle = useCallback((percentage: number) => {
+    if (percentage <= .255) {
+      return classes.matchVeryLow;
+    } else if (percentage <= .35) {
+      return classes.matchLow;
+    } else if (percentage <= .45) {
+      return classes.matchLowMid;
+    } else if (percentage <= .55) {
+      return classes.matchMid;
+    } else if (percentage <= .65) {
+      return classes.matchMidHigh;
+    } else if (percentage <= .75) {
+      return classes.matchHigh;
+    } else if (percentage <= .85) {
+      return classes.matchVeryHigh;
+    } else {
+      return classes.matchExtreme;
+    }
+  }, [classes]);
+
+  const agreementHeatMap = useCallback((agreementMap: 'caseAgreementMap' | 'opinionAgreementMap') => {
+    return (
+      <table>
+        <thead>
+          <tr>
+            <td></td>
+            {justiceAgreement && justiceAgreement.map( j => (<td key={j.justiceId} className={classes.tableHead}>{j.justiceName}</td>) ) }
+          </tr>
+        </thead>
+        <tbody>
+          {justiceAgreement && justiceAgreement.map(j =>(
+            <tr key={j.justiceId}>
+              <td className={classes.tableLeft}>{j.justiceName}</td>
+              {justiceAgreement.map(other => (
+                <td key={other.justiceId} className={`${classes.tableCell} ${j.justiceId !== other.justiceId && heatMapStyle(j[agreementMap][other.justiceId])}`}>
+                  {j.justiceId === other.justiceId 
+                    ? '\u2014\u2014'
+                    : `${Math.round(j[agreementMap][other.justiceId] * 100)}%`}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    );
+  }, [classes, heatMapStyle, justiceAgreement]);
+
   return (
     <>
       <CaseGridRow cases={importantCases} title="Key Decision Highlights" onCaseClick={props.onCaseClick} />
@@ -98,19 +220,35 @@ const TermSummaryComplete = (props: Props) => {
           </Grid>
         ))}
       </Grid>
+      
+      <Hidden mdDown>
+        <Typography variant="h5" color="textSecondary">Justice Agreement by Case</Typography>
+        <Typography>The percentage of time the justices are on the same side of a case.</Typography>
+        <Grid container direction="row" className={classes.termSummaryGrid} spacing={1}>
+          {agreementHeatMap('caseAgreementMap')}
+        </Grid>
+      </Hidden>
 
-      <Typography variant="h5" color="textSecondary">Unanimous Opinions ({summary?.unanimous.length})</Typography>
+      <Hidden mdDown>
+        <Typography variant="h5" color="textSecondary">Justice Agreement by Opinion</Typography>
+        <Typography>The percentage of the time the justice along the top joins the same opinions as the justice along the left.</Typography>
+        <Grid container direction="row" className={classes.termSummaryGrid} spacing={1}>
+        {agreementHeatMap('opinionAgreementMap')}
+        </Grid>
+      </Hidden>
+
+      <Typography variant="h5" color="textSecondary">Opinions Along Party Lines ({summary?.partySplit.length})</Typography>
       <Grid container direction="row" className={classes.termSummaryGrid} spacing={1}>
-        {summary && summary.unanimous.map(c => (
+        {summary && summary.partySplit.map(c => (
           <Grid key={c.id} item xs={12} sm={6} md={4} lg={3}>
             <CasePreviewCard case={c} onClick={props.onCaseClick} />
           </Grid>
         ))}
       </Grid>
 
-      <Typography variant="h5" color="textSecondary">Opinions Along Party Lines ({summary?.partySplit.length})</Typography>
+      <Typography variant="h5" color="textSecondary">Unanimous Opinions ({summary?.unanimous.length})</Typography>
       <Grid container direction="row" className={classes.termSummaryGrid} spacing={1}>
-        {summary && summary.partySplit.map(c => (
+        {summary && summary.unanimous.map(c => (
           <Grid key={c.id} item xs={12} sm={6} md={4} lg={3}>
             <CasePreviewCard case={c} onClick={props.onCaseClick} />
           </Grid>
