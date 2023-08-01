@@ -18,7 +18,10 @@ jobs:
     strategy:
       matrix:
         node-version: [16.x]
-
+    # These permissions are needed to interact with GitHub's OIDC Token endpoint.
+    permissions:
+      id-token: write
+      contents: read
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - uses: actions/checkout@v2
