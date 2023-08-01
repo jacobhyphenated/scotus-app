@@ -29,16 +29,16 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Yarn Install
-        run: yarn install
-      - name: Production Build
-        run: yarn build
-      - name: Unit Tests
-        run: yarn test
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           role-to-assume: arn:aws:iam::052160773772:role/GitHubActions
           aws-region: us-east-1
+      - name: Yarn Install
+        run: yarn install
+      - name: Unit Tests
+        run: yarn test
+      - name: Production Build
+        run: yarn build
       - name: Deploy
         run: aws s3 cp build/ s3://scotus-app-23/ --recursive --acl public-read
