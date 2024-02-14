@@ -7,11 +7,12 @@ export const JusticeStoreContext = createContext<JusticeStore>(null!);
 
 export class JusticeStore {
   constructor(private networkService: NetworkService) {
-    makeObservable(this);
+    makeObservable(this, {
+      activeJustices: observable,
+    });
     this.refreshActiveJustices();
   }
 
-  @observable
   activeJustices?: Justice[];
 
   async refreshActiveJustices() {

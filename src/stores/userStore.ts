@@ -9,12 +9,20 @@ import { NetworkService } from '../services/networkService';
 export const UserStoreContext = createContext<UserStore>(null!);
 
 export class UserStore {
-  @observable username?: string;
-  @observable password?: string;
-  @observable roles?: string[];
+  username?: string;
+  password?: string;
+  roles?: string[];
 
   constructor(private networkService: NetworkService) {
-    makeObservable(this);
+    makeObservable(this, {
+      username: observable,
+      password: observable,
+      roles: observable,
+      authHeaderToken: computed,
+      isAdmin: computed,
+      authenticate: action,
+
+    });
     const rawUser = sessionStorage.getItem('user');
     if (rawUser) {
       const user = JSON.parse(rawUser);
@@ -31,15 +39,14 @@ export class UserStore {
     }, {requiresObservable: true});
   }
 
-  @computed get authHeaderToken(): string | null {
+  get authHeaderToken(): string | null {
     return this.username ? `Basic ${btoa(`${this.username}:${this.password}`)}` : null;
   }
 
-  @computed get isAdmin(): boolean {
+  get isAdmin(): boolean {
     return this.roles?.some(role => role === 'ROLE_ADMIN') ?? false;
   }
 
-  @action
   async authenticate(username: string, password: string) {
     this.username = undefined;
     this.password = undefined;

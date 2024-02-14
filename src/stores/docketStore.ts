@@ -39,11 +39,12 @@ export const DocketStoreContext = createContext<DocketStore>(null!);
 
 export class DocketStore {
   constructor(private networkService: NetworkService) {
-    makeObservable(this);
+    makeObservable(this, {
+      unassignedDockets: observable,
+    });
     this.refreshUnassigned();
   }
 
-  @observable
   unassignedDockets: BareDocket[] = [];
 
   async refreshUnassigned() {

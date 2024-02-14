@@ -130,7 +130,6 @@ export const CaseStoreContext = createContext<CaseStore>(null!);
 
 export class CaseStore {
 
-  @observable
   allTerms: Term[] = [];
 
   caseCache: ObjectCache<FullCase, 'id'>;
@@ -139,7 +138,9 @@ export class CaseStore {
 
   constructor(private networkService: NetworkService,
               private docketStore: DocketStore) {
-    makeObservable(this);
+    makeObservable(this, {
+      allTerms: observable,
+    });
     this.caseCache = new ObjectCache();
     this.refreshAllTerms();
   }
