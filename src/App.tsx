@@ -7,6 +7,7 @@ import CasePage from './ui/case/containers/case';
 import LowerCourtPage from './ui/case/containers/lowerCourt';
 import AllTermCasesPage from './ui/home/containers/allTermCases';
 import TermJusticeSummary from './ui/home/containers/termJusticeSummary';
+import GlossaryPage from './ui/home/containers/glossary';
 import HomeIcon from '@mui/icons-material/Home';
 import { Button, Grid, Paper, IconButton } from '@mui/material';
 import React from 'react';
@@ -26,7 +27,10 @@ export const App = () => (
           </IconButton>
         </Link>
         SCOTUS App
-        <Button component={Link} to="/admin" color="primary" variant="text">admin</Button>
+        <Grid item>
+          <Button component={Link} to="/glossary" color="primary" variant="text">Glossary</Button>
+          <Button component={Link} to="/admin" color="primary" variant="text">admin</Button>
+        </Grid>
       </Grid>
     </Paper>
     <Routes>
@@ -36,6 +40,7 @@ export const App = () => (
         <Route path="justice/:justiceId" element={<TermJusticeSummary />} />
         <Route path="all" element={<AllTermCasesPage />} />
       </Route>
+      <Route path="/glossary" element={<GlossaryPage />} />
       <Route path="/case/:id/lowerCourt" element={<LowerCourtPage />} />
       <Route path="/case/:id" element={<CasePage />} />
       <Route path="/admin/*" element={<Admin />} />

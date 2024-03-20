@@ -4,7 +4,7 @@ import { NetworkService } from '../services/networkService';
 
 // React Type definitions require a default value, but this makes little sense.
 // A provider must provide a value in the component tree, the default should never be used.
-// And reating a default here would break dependency injection principles.
+// And creating a default here would break dependency injection principles.
 // https://github.com/DefinitelyTyped/DefinitelyTyped/pull/24509#issuecomment-382213106
 export const UserStoreContext = createContext<UserStore>(null!);
 
