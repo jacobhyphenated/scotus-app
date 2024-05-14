@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { Theme, TextField, InputAdornment, Paper, Grid, Typography, IconButton } from '@mui/material';
+import { Theme, TextField, InputAdornment, Paper, Grid, Typography, IconButton, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, MenuItem } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import SearchIcon from '@mui/icons-material/Search';
 import BackIcon from '@mui/icons-material/ArrowBack';
@@ -10,6 +10,8 @@ import { observer } from 'mobx-react';
 import { autorun } from 'mobx';
 import { CaseListItem } from '../components';
 import { useNavigate, useParams } from 'react-router';
+import { LocalDate } from '@js-joda/core';
+import DatePicker from '../../admin/components/datePicker';
 
 const useStyles = makeStyles((theme: Theme) => ({
   paper: {
@@ -35,6 +37,12 @@ const useStyles = makeStyles((theme: Theme) => ({
   sitting: {
     padding: theme.spacing(1),
   },
+  editModalText: {
+    marginTop: theme.spacing(1),
+  },
+  padLeft: {
+    marginLeft: theme.spacing(1),
+  },
 }));
 
 const AllTermCasesPage = () => {
@@ -44,6 +52,11 @@ const AllTermCasesPage = () => {
   const [searchText, setSearchText] = useState('');
   const [term, setTerm] = useState<Term>();
   const [searchText$] = useState(() => new Subject<string>());
+
+  const [editModal, setEditModal] = useState<Case>();
+  const [editArgumentDate, setEditArgumentDate] = useState<LocalDate>();
+  const [editArgumentSitting, setEditArgumentSitting] = useState(CaseSitting.October);
+  const [disableEditSave, setDisableEditSave] = useState(false);
 
   const caseStore = useContext(CaseStoreContext);
   const navigate = useNavigate();
@@ -122,6 +135,54 @@ const AllTermCasesPage = () => {
     navigate(`/case/${c.id}`);
   }, [navigate]);
 
+  const onEditClick = useCallback((c: Case) => {
+    setEditArgumentDate(c.argumentDate);
+    setEditArgumentSitting(c.sitting ?? CaseSitting.October);
+    setEditModal(c);
+  }, []);
+
+  const closeEditModal = useCallback(() => {
+    setEditModal(undefined);
+    setEditArgumentDate(undefined);
+  }, []);
+
+  const handleEditDateChange = useCallback((event: LocalDate | null) => {
+    if (event && !(event instanceof LocalDate)){
+      return;
+    }
+    setEditArgumentDate(event ?? undefined);
+  }, []);
+
+  const handleEditSitting = useCallback((event: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<{value: unknown}>) => {
+    setEditArgumentSitting(event.target.value as CaseSitting);
+  }, []);
+
+  const saveEditDateChanges = useCallback(async () => {
+    if (!editModal) {
+      console.error("No case to edit");
+      return;
+    }
+    const payload = {
+      argumentDate: editArgumentDate,
+      sitting: editArgumentSitting,
+    };
+    try {
+      setDisableEditSave(true);
+      const result = await caseStore.editCase(editModal.id, payload);
+      const otherCases = termCases.filter(c => c.id !== editModal.id);
+      const updatedCaases = [...otherCases, result];
+      setTermCases(updatedCaases);
+      setFilteredCases([...filteredCases.filter(c => c.id !== editModal.id), result]);
+      closeEditModal();
+    } catch(e) {
+      console.error(e);
+      console.error("Failed to save argument date");
+    }
+    finally {
+      setDisableEditSave(false);
+    }
+  }, [caseStore, closeEditModal, editArgumentDate, editArgumentSitting, editModal, filteredCases, termCases]);
+
   const back = useCallback(() => {
     navigate('..');
   }, [navigate]);
@@ -174,12 +235,54 @@ const AllTermCasesPage = () => {
             <Paper className={classes.sitting}>
               {sitting !== 'None' && <Typography variant="h4">{sitting}</Typography> }
               {mappedCases.get(sitting)?.sort(caseSorter).map(termCase => (
-                <CaseListItem key={termCase.id} onCaseClick={onCaseClick} scotusCase={termCase} caseStore={caseStore} />
+                <CaseListItem key={termCase.id} onCaseClick={onCaseClick} scotusCase={termCase} caseStore={caseStore} onEditClick={onEditClick} />
               ))}
             </Paper>
           </Grid>
         ))}
       </Grid>
+      <Dialog
+        open={!!editModal}
+        onClose={closeEditModal}
+        aria-labelledby="edit-dialog-title"
+        aria-describedby="edit-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">Edit Argument Date</DialogTitle>
+        
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Edit Arguiment Date for {editModal?.case}
+          </DialogContentText>
+          <div className={classes.editModalText}>
+            <DatePicker
+              onChange={handleEditDateChange}
+              value={editArgumentDate}
+            />
+            <TextField
+              label="Sitting"
+              className={classes.padLeft}
+              value={editArgumentSitting}
+              variant="outlined"
+              color="secondary"
+              size="small"
+              select
+              onChange={handleEditSitting}
+            >
+              {Object.values(CaseSitting).map((val, index) => (
+                <MenuItem key={index} value={val}>{val}</MenuItem>
+              ))}
+            </TextField>
+          </div>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={closeEditModal} color="primary">
+            Cancel
+          </Button>
+          <Button disabled={!editArgumentDate || disableEditSave} onClick={saveEditDateChanges} color="primary" autoFocus>
+            Save
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Paper>
   );
 };

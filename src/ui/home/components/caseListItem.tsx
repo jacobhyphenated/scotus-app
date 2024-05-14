@@ -1,10 +1,13 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { makeStyles } from '@mui/styles';
-import { Theme, Grid, Typography, Paper, Hidden } from '@mui/material';
+import { Theme, Grid, Typography, Paper, Hidden, IconButton } from '@mui/material';
 import { Case, CaseStore, FullCase } from '../../../stores/caseStore';
 import { DateTimeFormatter } from '@js-joda/core';
 import { OpinionType } from '../../../stores/opinionStore';
+import EditIcon from '@mui/icons-material/Edit';
 import StarRateRoundedIcon from '@mui/icons-material/StarRateRounded';
+import { UserStoreContext } from '../../../stores/userStore';
+import { observer } from 'mobx-react';
 
 const useStyles = makeStyles( (theme: Theme) => ({
   row: {
@@ -62,18 +65,61 @@ const useStyles = makeStyles( (theme: Theme) => ({
       flexBasis: '96%',
     },
   },
+  editGrid: {
+    flexGrow: 0,
+    marginTop: -4,
+    [theme.breakpoints.down('sm')]: {
+      maxWidth: '40%',
+      flexBasis: '40%',
+    },
+    [theme.breakpoints.up('sm')]: {
+      maxWidth: '40%',
+      flexBasis: '40%',
+    },
+    [theme.breakpoints.up('md')]: {
+      maxWidth: '35%',
+      flexBasis: '35%',
+    },
+    [theme.breakpoints.up('lg')]: {
+      maxWidth: '30%',
+      flexBasis: '30%',
+    },
+  },
+  editGridText: {
+    flexGrow: 0,
+    marginTop: 4,
+    [theme.breakpoints.down('sm')]: {
+      maxWidth: '60%',
+      flexBasis: '60%',
+    },
+    [theme.breakpoints.up('sm')]: {
+      maxWidth: '60%',
+      flexBasis: '60%',
+    },
+    [theme.breakpoints.up('md')]: {
+      maxWidth: '65%',
+      flexBasis: '65%',
+    },
+    [theme.breakpoints.up('lg')]: {
+      maxWidth: '70%',
+      flexBasis: '70%',
+    },
+  },
 }));
 
 interface Props {
   scotusCase: Case | FullCase;
   caseStore: CaseStore;
   onCaseClick: (scotusCase: Case) => void;
+  onEditClick?: (scotusCase: Case) => void;
 }
 
 const CaseListItem = (props: Props) => {
   const classes = useStyles();
   const { scotusCase, caseStore } = props;
   const [author, setAuthor] = useState<string | undefined>();
+
+  const userStore = useContext(UserStoreContext);
 
   useEffect(() => {
     const setFullCase = (fullCase: FullCase) => {
@@ -106,6 +152,13 @@ const CaseListItem = (props: Props) => {
     props.onCaseClick(props.scotusCase);
   }, [props]);
 
+  const onEditClick = useCallback((event: React.MouseEvent<HTMLElement>) => {
+    event.stopPropagation();
+    props.onEditClick?.(props.scotusCase);
+  }, [props]);
+
+  const isAdmin = userStore.isAdmin;
+
   return (
     <Paper elevation={1} className={classes.row} onClick={onClick}>
       <Grid container direction="row" alignItems='center'>
@@ -131,7 +184,18 @@ const CaseListItem = (props: Props) => {
           <Typography title="Author">{author}</Typography>
         </Grid></Hidden>
         <Grid item xs={2} sm={1}>
-          <Typography>{scotusCase.result}</Typography>
+          <div className={classes.flex}>
+            <div className={classes.noWrap + ' ' +  (isAdmin ? classes.editGridText : '')}>
+              <Typography noWrap component="span">{scotusCase.result}</Typography>
+            </div>
+            {isAdmin && onEditClick && 
+              <div className={classes.editGrid}>
+                <IconButton onClick={onEditClick}>
+                  <EditIcon />
+                </IconButton>
+              </div>
+            }
+          </div>
         </Grid>
       </Grid>
     </Paper>
@@ -139,4 +203,4 @@ const CaseListItem = (props: Props) => {
 
 };
 
-export default CaseListItem;
+export default observer(CaseListItem);

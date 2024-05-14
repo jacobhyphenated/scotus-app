@@ -219,7 +219,7 @@ const Home = () => {
               onCaseClick={onCaseClick} 
               navigateToJustice={onTermJusticeClick}
             />
-          : (undecidedThisTerm.length / termCases.length < .25) ?
+          : (undecidedThisTerm.length / termCases.length < .35) ?
             <TermSummaryNearEnd cases={termCases} onCaseClick={onCaseClick} />
           : <TermSummaryInProgress cases={termCases} onCaseClick={onCaseClick} />
           }
