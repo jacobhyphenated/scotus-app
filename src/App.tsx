@@ -10,7 +10,7 @@ import TermJusticeSummary from './ui/home/containers/termJusticeSummary';
 import GlossaryPage from './ui/home/containers/glossary';
 import HomeIcon from '@mui/icons-material/Home';
 import { Button, Grid, Paper, IconButton } from '@mui/material';
-import React from 'react';
+import KeyTermCases from './ui/home/containers/keyTermCases';
 
 export const App = () => (
   <div>
@@ -39,6 +39,7 @@ export const App = () => (
         <Route index element={<Home />} />
         <Route path="justice/:justiceId" element={<TermJusticeSummary />} />
         <Route path="all" element={<AllTermCasesPage />} />
+        <Route path="key" element={<KeyTermCases />} />
       </Route>
       <Route path="/glossary" element={<GlossaryPage />} />
       <Route path="/case/:id/lowerCourt" element={<LowerCourtPage />} />

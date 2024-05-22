@@ -132,6 +132,13 @@ const TermSummaryComplete = (props: Props) => {
     navigateToJustice(termId, justiceId);
   }, [navigateToJustice, termId]);
 
+  const keyLink = useMemo(() => {
+    return {
+      text: 'All Key Decisions',
+      to: `/term/${termId}/key`,
+    };
+  }, [termId]);
+
   const justiceAgreement = useMemo(() => {
     if (!summary) {
       return null;
@@ -202,7 +209,7 @@ const TermSummaryComplete = (props: Props) => {
 
   return (
     <>
-      <CaseGridRow cases={importantCases} title="Key Decision Highlights" onCaseClick={props.onCaseClick} />
+      <CaseGridRow cases={importantCases} title="Key Decision Highlights" onCaseClick={props.onCaseClick} link={keyLink} />
       <Typography variant="h5" color="textSecondary">The Justices</Typography>
       <Grid container direction="row" className={classes.termSummaryGrid} spacing={1}>
         {summary && summary.justiceSummary.sort(sortJusticeSummary).map(item => (

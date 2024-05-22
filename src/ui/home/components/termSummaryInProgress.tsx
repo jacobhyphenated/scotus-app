@@ -1,5 +1,5 @@
 import { LocalDate } from '@js-joda/core';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Case, dismissedCases } from '../../../stores/caseStore';
 import { shuffleArray } from '../../../util';
 import { CaseGridRow } from './';
@@ -32,11 +32,19 @@ const TermSummaryInProgress = (props: Props) => {
     ...props.cases.filter(c => ![...recentlyDecided, ...awaitingDecision, ...open].find(rd => rd.id === c.id)),
   ]);
 
+  const keyLink = useMemo(() => {
+    const termId = props.cases[0].term.id;
+    return {
+      text: 'All Key Cases',
+      to: `/term/${termId}/key`,
+    };
+  }, [props.cases]);
+
   return (
     <>
       <CaseGridRow cases={recentlyDecided} title="Recently Decided" onCaseClick={props.onCaseClick} />
       <CaseGridRow cases={awaitingDecision} title="Awaiting Decision" onCaseClick={props.onCaseClick} />
-      <CaseGridRow cases={keyCases} title="Key Cases" onCaseClick={props.onCaseClick} />
+      <CaseGridRow cases={keyCases} title="Key Cases" onCaseClick={props.onCaseClick} link={keyLink} />
     </>
   );
 };

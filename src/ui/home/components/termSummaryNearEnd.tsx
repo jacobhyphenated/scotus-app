@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { makeStyles } from '@mui/styles';
 import { Theme, Grid, Typography } from '@mui/material';
 import { Case, dismissedCases } from '../../../stores/caseStore';
@@ -25,9 +25,17 @@ const TermSummaryNearEnd = (props: Props) => {
   const undecided = importantCases.filter(c => !c.decisionDate && c.argumentDate && !dismissedCases(c));
   const decided = shuffleArray(importantCases.filter(c => c.result));
 
+  const keyLink = useMemo(() => {
+    const termId = props.cases[0].term.id;
+    return {
+      text: 'All Key Cases',
+      to: `/term/${termId}/key`,
+    };
+  }, [props.cases]);
+
   return (
     <>
-      <CaseGridRow cases={decided} title="Key Decisions" onCaseClick={props.onCaseClick} />
+      <CaseGridRow cases={decided} title="Key Decisions" onCaseClick={props.onCaseClick} link={keyLink} />
 
       <Typography variant="h5" color="textSecondary">Anticipated Cases</Typography>
       <Grid container direction="row" justifyContent="flex-start" spacing={2} className={classes.row}>
