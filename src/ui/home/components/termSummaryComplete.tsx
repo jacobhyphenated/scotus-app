@@ -22,6 +22,9 @@ const useStyles = makeStyles( (theme: Theme) => ({
   error: {
     marginBottom: theme.spacing(5),
   },
+  extraTopMargin: {
+    marginTop: theme.spacing(2),
+  },
   tableHead: {
     fontWeight: 'bold',
     borderBottomStyle: 'solid',
@@ -244,7 +247,11 @@ const TermSummaryComplete = (props: Props) => {
         </Grid>
       </Hidden>
 
-      <Typography variant="h5" color="textSecondary">Opinions Along Party Lines ({summary?.partySplit.length})</Typography>
+      <Typography variant="h5" color="textSecondary">Pace of Decisions</Typography>
+      <Typography><>Average Decision Time: {summary?.averageDecisionDays} days</></Typography>
+      <Typography><>Median Decision Time: {summary?.medianDecisionDays} days</></Typography>
+
+      <Typography variant="h5" color="textSecondary" className={classes.extraTopMargin}>Opinions Along Party Lines ({summary?.partySplit.length})</Typography>
       <Grid container direction="row" className={classes.termSummaryGrid} spacing={1}>
         {summary && summary.partySplit.map(c => (
           <Grid key={c.id} item xs={12} sm={6} md={4} lg={3}>

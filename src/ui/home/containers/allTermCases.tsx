@@ -43,6 +43,9 @@ const useStyles = makeStyles((theme: Theme) => ({
   padLeft: {
     marginLeft: theme.spacing(1),
   },
+  bottomMargin: {
+    marginBottom: theme.spacing(2),
+  },
 }));
 
 const AllTermCasesPage = () => {
@@ -195,6 +198,10 @@ const AllTermCasesPage = () => {
     }, new Map<string, Case[]>());
   }, [filteredCases]);
 
+  const undecidedCases = useMemo(() => {
+    return termCases.filter(c => !c.decisionDate).length;
+  }, [termCases]);
+
   const classes = useStyles();
 
   return (
@@ -229,11 +236,20 @@ const AllTermCasesPage = () => {
         }}
       />
 
+      {searchText.length < 3 &&
+        <Grid container className={classes.bottomMargin}>
+          <Typography>
+            {termCases.length} total cases.
+            {undecidedCases > 0 && <>&nbsp;{undecidedCases} decisions pending.</> }
+          </Typography>
+        </Grid>
+      }
+
       <Grid container direction="column" spacing={2}>
         {[...Object.values(CaseSitting), 'None'].filter(sitting => mappedCases.has(sitting)).map((sitting) => (
           <Grid item key={sitting}>
             <Paper className={classes.sitting}>
-              {sitting !== 'None' && <Typography variant="h4">{sitting}</Typography> }
+              {sitting !== 'None' && <Typography variant="h4">{sitting} ({mappedCases.get(sitting)?.length})</Typography> }
               {mappedCases.get(sitting)?.sort(caseSorter).map(termCase => (
                 <CaseListItem key={termCase.id} onCaseClick={onCaseClick} scotusCase={termCase} caseStore={caseStore} onEditClick={onEditClick} />
               ))}

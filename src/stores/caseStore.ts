@@ -91,6 +91,8 @@ export interface TermSummary {
   justiceAgreement: JusticeAgreement[];
   unanimous: Case[];
   partySplit: Case[];
+  averageDecisionDays: Number;
+  medianDecisionDays: Number;
 }
 
 export interface TermJusticeSummary {
