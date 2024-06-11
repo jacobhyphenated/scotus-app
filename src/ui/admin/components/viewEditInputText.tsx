@@ -11,6 +11,9 @@ const useStyles = makeStyles( (theme: Theme) => ({
   noOverflow: {
     overflow: 'hidden',
   },
+  forceWrap: {
+    overflowWrap: 'anywhere',
+  },
 }));
 
 interface Props {
@@ -28,11 +31,12 @@ interface Props {
   select?: boolean;
   multiline?: boolean;
   minRows?: number;
+  forceWrap?: boolean;
 }
 
 const ViewEditInputText = (props: Props) => {
 
-  const {onSave, label, value, display, children, ...inputProps} = props;
+  const {onSave, label, value, display, children, forceWrap, ...inputProps} = props;
 
   const [editMode, setEditMode] = useState(false);
   const [editValue, setEditValue] = useState(value);
@@ -68,7 +72,7 @@ const ViewEditInputText = (props: Props) => {
                 <Typography color="textSecondary" variant="subtitle2">{label}</Typography>
               </Grid>
               <Grid item>
-                <Typography>{display ?? value}</Typography>
+                <Typography className={!!forceWrap ? classes.forceWrap : ''}>{display ?? value}</Typography>
               </Grid>
             </Grid>
           </Grid>

@@ -447,6 +447,7 @@ const EditCasePage = () => {
                     id="case-edit-decision-link"
                     fullWidth
                     disabled={submitting}
+                    forceWrap
                     name="decisionLink"
                     label="Decision Link"
                     value={fullCase.decisionLink ?? ''}
