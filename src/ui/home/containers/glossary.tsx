@@ -129,7 +129,7 @@ const GlossaryLine = (props: Props) => {
 const glossary: GlossaryItem[] = [
   {
       name: 'Substantive Due Process',
-      definition: 'The Fifth and Fourteenth Amendments prohibit the government from depriving any person of “life, liberty, or property without due process of law." Substantive Due Process is the principle that certain rights are alluded to, but not explicitly defined in the Bill of Rights. Examples of constitutional rights guaranteed under this principle include the Right to marry an individual of a different race (Loving v. Virginia) or of the same sex (Obergefell), the right to privacy, and the right to contraceptives (Griswold v. Connecticut).',
+      definition: 'The Fifth and Fourteenth Amendments prohibit the government from depriving any person of “life, liberty, or property without due process of law." Substantive Due Process is the principle that certain rights are alluded to, but not explicitly defined in the Bill of Rights. Examples of constitutional rights guaranteed under this principle include the right to marry an individual of a different race (Loving v. Virginia) or of the same sex (Obergefell), the right to privacy, and the right to contraceptives (Griswold v. Connecticut).',
       group: 'Doctrine',
   },
   {
