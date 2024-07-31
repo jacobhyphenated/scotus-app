@@ -207,5 +207,10 @@ const glossary: GlossaryItem[] = [
       definition: 'A Qui Tam action permits a private individual to file suit on behalf of a government entity and collect a share of the judgement. A Qui Tam action must be explicitly authorized by statute.',
       group: 'Judicial Procedure',
   },
+  {
+      name: 'Certiorari',
+      definition: 'A type of writ in which a higher court (often an appeals court) reviews the decision of a lower court. Certiorari is granted in cases where SCOTUS agrees to hear arguments in the case.',
+      group: 'Judicial Procedure',
+  },
   
 ];
