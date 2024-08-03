@@ -1,6 +1,6 @@
 import { NetworkService } from '../services/networkService';
 import { makeObservable, observable, runInAction } from 'mobx';
-import { LocalDate } from '@js-joda/core';
+import { Duration, LocalDate } from '@js-joda/core';
 import { Court } from './courtStore';
 import { DocketStore } from './docketStore';
 import { Opinion } from './opinionStore';
@@ -143,7 +143,7 @@ export class CaseStore {
     makeObservable(this, {
       allTerms: observable,
     });
-    this.caseCache = new ObjectCache();
+    this.caseCache = new ObjectCache(Duration.ofMinutes(20));
     this.refreshAllTerms();
   }
 

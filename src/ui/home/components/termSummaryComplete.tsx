@@ -1,9 +1,10 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { makeStyles } from '@mui/styles';
-import { Theme, Typography, Grid, Paper, Hidden } from '@mui/material';
+import { Theme, Typography, Grid, Paper, useMediaQuery } from '@mui/material';
 import { Case, TermSummary, CaseStore, TermJusticeSummary, TermCourtSummary } from '../../../stores/caseStore';
 import { shuffleArray } from '../../../util';
 import { CaseGridRow, CasePreviewCard } from './';
+import { addCourtOverviewToTermSummary, createJusticeAgreementMap } from '../service/homeService';
 
 const useStyles = makeStyles( (theme: Theme) => ({
   summaryBox: {
@@ -109,18 +110,7 @@ const TermSummaryComplete = (props: Props) => {
     const getTermSummary = async () => {
       try {
         const summaryResult = await caseStore.getTermSummary(termId);
-        let caseTotal = 0;
-        let reverseRemandTotal = 0;
-        summaryResult.courtSummary.forEach(item => {
-          caseTotal += item.cases;
-          reverseRemandTotal += item.reversedRemanded;
-        });
-        summaryResult.courtSummary.push({
-          cases: caseTotal,
-          reversedRemanded: reverseRemandTotal,
-          court: { id: 0, name: 'All Cases', shortName: 'all' },
-          affirmed: caseTotal - reverseRemandTotal,
-        });
+        addCourtOverviewToTermSummary(summaryResult);
         setSummary(summaryResult);
       } catch (e) {
         console.error(e);
@@ -143,25 +133,10 @@ const TermSummaryComplete = (props: Props) => {
   }, [termId]);
 
   const justiceAgreement = useMemo(() => {
-    if (!summary) {
-      return null;
-    }
-    const justiceNameLookup = (id: number) => {
-      return summary.justiceSummary.find((js => js.justice.id === id))?.justice.name ?? `${id}`;
-    };
-
-    const ideologyMap = ['Sonia Sotomayor', 'Elena Kagan', 'Ketanji Brown Jackson', 'Ruth Bader Ginsburg', 'Stephen Breyer', 'John Roberts', 'Brett Kavanaugh', 'Amy Coney Barrett', 'Neil Gorsuch', 'Samuel Alito', 'Clarence Thomas'];
-
-    return summary.justiceAgreement.map(j => ({
-      justiceName: justiceNameLookup(j.justiceId),
-      ...j,
-    })).sort((j1, j2) => {
-      // sort by the most agreeable justices as defined by the sum of the agreement map values
-      // return Object.values(j2.opinionAgreementMap).reduce((a, j) => a + j, 0) - Object.values(j1.opinionAgreementMap).reduce((a, j) => a + j, 0);
-      return ideologyMap.indexOf(j1.justiceName) - ideologyMap.indexOf(j2.justiceName);
-    });
-
+    return createJusticeAgreementMap(summary);
   }, [summary]);
+
+  const hideMdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down('md'));
 
   const heatMapStyle = useCallback((percentage: number) => {
     if (percentage <= .255) {
@@ -231,21 +206,21 @@ const TermSummaryComplete = (props: Props) => {
         ))}
       </Grid>
       
-      <Hidden mdDown>
+      {hideMdDown ? null : <>
         <Typography variant="h5" color="textSecondary">Justice Agreement by Case</Typography>
         <Typography>The percentage of time the justices are on the same side of a case.</Typography>
         <Grid container direction="row" className={classes.termSummaryGrid} spacing={1}>
           {agreementHeatMap('caseAgreementMap')}
         </Grid>
-      </Hidden>
+      </>}
 
-      <Hidden mdDown>
+      {hideMdDown ? null : <>
         <Typography variant="h5" color="textSecondary">Justice Agreement by Opinion</Typography>
         <Typography>The percentage of the time the justice along the top joins the same opinions as the justice along the left.</Typography>
         <Grid container direction="row" className={classes.termSummaryGrid} spacing={1}>
         {agreementHeatMap('opinionAgreementMap')}
         </Grid>
-      </Hidden>
+      </>}
 
       <Typography variant="h5" color="textSecondary">Pace of Decisions</Typography>
       <Typography><>Average Decision Time: {summary?.averageDecisionDays} days</></Typography>

@@ -1,6 +1,6 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { makeStyles } from '@mui/styles';
-import { Theme, Grid, Typography, Paper, Hidden, IconButton } from '@mui/material';
+import { Theme, Grid, Typography, Paper, IconButton } from '@mui/material';
 import { Case, CaseStore, FullCase } from '../../../stores/caseStore';
 import { DateTimeFormatter } from '@js-joda/core';
 import { OpinionType } from '../../../stores/opinionStore';
@@ -146,7 +146,7 @@ const CaseListItem = (props: Props) => {
     }
   },[scotusCase, caseStore]);
 
-  const formatter = DateTimeFormatter.ofPattern('MM/dd/yyyy');
+  const formatter = useMemo(() => DateTimeFormatter.ofPattern('MM/dd/yyyy'), []);
 
   const onClick = useCallback(() => {
     props.onCaseClick(props.scotusCase);
@@ -162,7 +162,7 @@ const CaseListItem = (props: Props) => {
   return (
     <Paper elevation={1} className={classes.row} onClick={onClick}>
       <Grid container direction="row" alignItems='center'>
-        <Grid item xs={10} sm={9} md={7}>
+        <Grid item xs={10} sm={10} md={7}>
           <div className={classes.flex}>
             {scotusCase.important &&
               <div className={classes.starGrid}>
@@ -174,16 +174,19 @@ const CaseListItem = (props: Props) => {
             </div>
           </div>
         </Grid>
-        <Hidden mdDown><Grid item md={2} lg={1}>
+        {/* sx={{ display }} replaces <Hidden mdDown>
+            <Hidden> is now deprecated
+         */}
+        <Grid sx={{ display: { xs: 'none', md: 'block' } }} item md={2} lg={1}>
           <Typography title="Date Argued">{scotusCase.argumentDate?.format(formatter)}</Typography>
-        </Grid></Hidden>
-        <Hidden smDown><Grid item sm={2} md={2} lg={1} className={classes.noWrap}>
+        </Grid>
+        <Grid sx={{ display: { xs: 'none', md: 'block' } }} item md={2} lg={1} className={classes.noWrap}>
           <Typography noWrap title={scotusCase.status}>{scotusCase.status}</Typography>
-        </Grid></Hidden>
-        <Hidden lgDown><Grid item lg={2}>
+        </Grid>
+        <Grid sx={{ display: {xs: 'none', lg: 'block' } }} item lg={2}>
           <Typography title="Author">{author}</Typography>
-        </Grid></Hidden>
-        <Grid item xs={2} sm={1}>
+        </Grid>
+        <Grid item xs={2} sm={2} md={1}>
           <div className={classes.flex}>
             <div className={classes.noWrap + ' ' +  (isAdmin ? classes.editGridText : '')}>
               <Typography noWrap component="span">{scotusCase.result}</Typography>

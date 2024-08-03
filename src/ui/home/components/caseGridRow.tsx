@@ -1,5 +1,5 @@
 import { makeStyles } from '@mui/styles';
-import { Theme, Grid, Typography, Hidden, Button } from '@mui/material';
+import { Theme, Grid, Typography, Button } from '@mui/material';
 import { Case } from '../../../stores/caseStore';
 import { CasePreviewCard } from './';
 import { Link } from 'react-router-dom';
@@ -38,25 +38,19 @@ const CaseGridRow = (props: Props) => {
             <CasePreviewCard case={cases[0]} onClick={onCaseClick} />
           </Grid>
           { cases.length > 1 && 
-            <Hidden smDown>
-              <Grid item xs={12} sm={6} md={4} lg={3}>
-                <CasePreviewCard case={cases[1]} onClick={onCaseClick} />
-              </Grid>
-            </Hidden>
+            <Grid item sx={{ display: { xs: 'none', sm: 'block' } }} xs={12} sm={6} md={4} lg={3}>
+              <CasePreviewCard case={cases[1]} onClick={onCaseClick} />
+            </Grid>
           }
           { cases.length > 2 && 
-            <Hidden mdDown>
-              <Grid item xs={12} sm={6} md={4} lg={3}>
-                <CasePreviewCard case={cases[2]} onClick={onCaseClick} />
-              </Grid>
-            </Hidden>
+            <Grid item sx={{ display: { xs: 'none', md: 'block' } }} xs={12} sm={6} md={4} lg={3}>
+              <CasePreviewCard case={cases[2]} onClick={onCaseClick} />
+            </Grid>
           }
           { cases.length > 3 && 
-            <Hidden lgDown>
-              <Grid item xs={12} sm={6} md={4} lg={3}>
-                <CasePreviewCard case={cases[3]} onClick={onCaseClick} />
-              </Grid>
-            </Hidden>
+            <Grid item sx={{ display: { xs: 'none', lg: 'block' } }} xs={12} sm={6} md={4} lg={3}>
+              <CasePreviewCard case={cases[3]} onClick={onCaseClick} />
+            </Grid>
           }
         </Grid>
       </>
