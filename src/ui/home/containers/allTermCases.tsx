@@ -3,7 +3,8 @@ import { Theme, TextField, InputAdornment, Paper, Grid, Typography, IconButton, 
 import makeStyles from '@mui/styles/makeStyles';
 import SearchIcon from '@mui/icons-material/Search';
 import BackIcon from '@mui/icons-material/ArrowBack';
-import { Case, CaseSitting, CaseStatus, CaseStoreContext, Term } from '../../../stores/caseStore';
+import CancelIcon from '@mui/icons-material/Close';
+import { Case, CaseSitting, CaseStoreContext, Term } from '../../../stores/caseStore';
 import { Subject } from 'rxjs';
 import { debounceTime, map } from 'rxjs/operators';
 import { observer } from 'mobx-react';
@@ -12,6 +13,7 @@ import { CaseListItem } from '../components';
 import { useNavigate, useParams } from 'react-router';
 import { LocalDate } from '@js-joda/core';
 import DatePicker from '../../admin/components/datePicker';
+import { caseSorter, groupCasesBySitting } from '../service/allTermCaseService';
 
 const useStyles = makeStyles((theme: Theme) => ({
   paper: {
@@ -64,23 +66,6 @@ const AllTermCasesPage = () => {
   const caseStore = useContext(CaseStoreContext);
   const navigate = useNavigate();
 
-  const caseSorter = useCallback((c1: Case, c2: Case) => {
-    if (!c1.argumentDate && !!c2.argumentDate) {
-      return 1;
-    }
-    if (!c2.argumentDate && !!c1.argumentDate) {
-      return -1;
-    }
-    if (c1.argumentDate && c2.argumentDate) {
-      const argumentOrder = c1.argumentDate.compareTo(c2.argumentDate);
-      if (argumentOrder !== 0) {
-        return argumentOrder;
-      }
-    }
-    const statusOrder = [CaseStatus.GRANTED, CaseStatus.GVR,  CaseStatus.DIG, CaseStatus.DISMISSED];
-    return statusOrder.indexOf(c1.status) - statusOrder.indexOf(c2.status);
-  }, []);
-
   useEffect(() => {
     const subscription = searchText$.pipe(
       debounceTime(200),
@@ -125,14 +110,18 @@ const AllTermCasesPage = () => {
     }
   }, [term, caseStore]);
 
-  const updateSearchText: React.ChangeEventHandler<HTMLInputElement> = useCallback(event => {
-    const newSearchText = event.target.value;
+  const setUpdatedSerachText = useCallback((newSearchText: string) => {
     if (newSearchText.length < 3) {
       setFilteredCases(termCases);
     }
     setSearchText(newSearchText);
     searchText$.next(newSearchText);
   }, [searchText$, termCases]);
+
+  const updateSearchText: React.ChangeEventHandler<HTMLInputElement> = useCallback(event => {
+    const newSearchText = event.target.value;
+    setUpdatedSerachText(newSearchText);
+  }, [setUpdatedSerachText]);
 
   const onCaseClick = useCallback((c: Case) => {
     navigate(`/case/${c.id}`);
@@ -190,12 +179,12 @@ const AllTermCasesPage = () => {
     navigate('..');
   }, [navigate]);
 
+  const clearSearch = useCallback(() => {
+    setUpdatedSerachText('');
+  }, [setUpdatedSerachText]);
+
   const mappedCases = useMemo(() => {
-    return filteredCases.reduce((acc, value) => {
-      const key = value.sitting ?? 'None';
-      acc.set(key, [...(acc.get(key) ?? []), value]);
-      return acc;
-    }, new Map<string, Case[]>());
+    return groupCasesBySitting(filteredCases);
   }, [filteredCases]);
 
   const undecidedCases = useMemo(() => {
@@ -227,13 +216,20 @@ const AllTermCasesPage = () => {
         helperText={searchText.length >0 && searchText.length < 3 && 'Enter at least 3 characters'}
         onChange={updateSearchText}
         value={searchText}
-        InputProps={{
+        slotProps={{ input: {
           startAdornment: (
             <InputAdornment position="start">
               <SearchIcon color="action" />
             </InputAdornment>
           ),
-        }}
+          endAdornment: (
+            <InputAdornment position="end">
+              <IconButton onClick={clearSearch}>
+                <CancelIcon color="action" />
+              </IconButton>
+            </InputAdornment>
+          ),
+        }}}
       />
 
       {searchText.length < 3 &&
