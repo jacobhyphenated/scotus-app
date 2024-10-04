@@ -7,7 +7,7 @@ import { CaseStatus, CaseStoreContext, FullCase } from "../../../stores/caseStor
 import { DocketStoreContext } from "../../../stores/docketStore";
 import { forkJoin } from "rxjs";
 import LinkableText from '../components/linkableText';
-import { groupBy } from "../../../util/functional";
+import { groupDocketsByDecision } from "../service/lowerCourtService";
 
 interface DocketIdentifiers {
   docketId: number;
@@ -88,32 +88,7 @@ const LowerCourtPage = () => {
     const subscription = forkJoin(fullCase.dockets.map(d => docketStore.getDocketById(d.docketId)))
       .subscribe({
         next: dockets => {
-          const grouped = groupBy(dockets, 'lowerCourtRuling');
-          const groupedDockets = Array.from(grouped.keys()).flatMap((key) => {
-            const values = grouped.get(key)!;
-            if (values.every( d => d.lowerCourt.id === values[0].lowerCourt.id)) {
-              return [{
-                lowerCourt: values[0].lowerCourt.name,
-                lowerCourtRuling: values[0].lowerCourtRuling,
-                docketIdentifiers: values.map( value => ({
-                  docketId: value.id,
-                  docketNumber: value.docketNumber,
-                  title: value.title,
-                })),
-              }];
-            } else {
-              return values.map( value => ({
-                lowerCourt: value.lowerCourt.name,
-                lowerCourtRuling: value.lowerCourtRuling,
-                docketIdentifiers: [{
-                  docketId: value.id,
-                  docketNumber: value.docketNumber,
-                  title: value.title,
-                }],
-              }));
-            }
-          });
-          
+          const groupedDockets = groupDocketsByDecision(dockets);
           setLowerCourtRulings(groupedDockets);
         },
         error: error => {
