@@ -36,17 +36,17 @@ const glossary: GlossaryItem[] = [
   },
   {
     name: 'Procedural Due Process',
-    definition: 'The principle that when the government acts to deprive an individual of life, liberty, or property, that individual must be given notice, the opportunity to be heard, and the decision must come from a nuetral party.',
+    definition: 'The principle that when the government acts to deprive an individual of life, liberty, or property, that individual must be given notice, the opportunity to be heard, and the decision must come from a neutral party.',
     group: 'Doctrine',
   },
   {
     name: 'Strict Scrutiny',
-    definition: 'Standard for evaluating the constitutionality of a law that restricts an individual\'s constitutional right. The law is presumed invalid unless the government can show that the law is narrowly tailored to acheive a compelling purpose and uses the least restrictive means to do so. This is the most difficult level of scritiny to overcome.',
+    definition: 'Standard for evaluating the constitutionality of a law that restricts an individual\'s constitutional right. The law is presumed invalid unless the government can show that the law is narrowly tailored to achieve a compelling purpose and uses the least restrictive means to do so. This is the most difficult level of scrutiny to overcome.',
     group: 'Standards of Scrutiny',
   },
   {
     name: 'Intermediate Scrutiny',
-    definition: 'Standard for evaluating the constitutionality of a law that descriminates or negatively effects a protected class. This standard is sometimes called Exacting Scrutiny. To overcome this standard, the government must show that the law furthers an important government interest and does so in a way that is substantially related to that interest.',
+    definition: 'Standard for evaluating the constitutionality of a law that discriminates or negatively effects a protected class. This standard is sometimes called Exacting Scrutiny. To overcome this standard, the government must show that the law furthers an important government interest and does so in a way that is substantially related to that interest.',
     group: 'Standards of Scrutiny',
   },
   {
@@ -61,7 +61,7 @@ const glossary: GlossaryItem[] = [
   },
   {
     name: 'Scienter',
-    definition: 'Guilty knowledge that is sufficient to charge a person with the consequences of their actions. Scienter is similar to Mens Rea but is more broadly applicable to civil liabilty cases.',
+    definition: 'Guilty knowledge that is sufficient to charge a person with the consequences of their actions. Scienter is similar to Mens Rea but is more broadly applicable to civil liability cases.',
     group: 'Legal Elements',
   },
   {
@@ -86,12 +86,12 @@ const glossary: GlossaryItem[] = [
   },
   {
     name: 'Dormant Commerce Clause',
-    definition: 'The doctrine, implicit in the Commerce Clause, that prohibits states from passing laws that descriminate against interstate commerce or otherwise unduly burden out of state actors.',
+    definition: 'The doctrine, implicit in the Commerce Clause, that prohibits states from passing laws that discriminate against interstate commerce or otherwise unduly burden out of state actors.',
     group: 'Doctrine',
   },
   {
     name: 'Qualified Immunity',
-    definition: 'The doctrine that applies to government officials in civil litigation who violate someones constitutional rights while performing discretionary functions. The official is immune from lawsuits unless the plaintiff can show the official violated a clearly established constitutional right. To qualify as a clearly established right, there should be a nearly identical precedent in the circuit court or the supreme court.',
+    definition: 'The doctrine that applies to government officials in civil litigation who violate someone\'s constitutional rights while performing discretionary functions. The official is immune from lawsuits unless the plaintiff can show the official violated a clearly established constitutional right. To qualify as a clearly established right, there should be a nearly identical precedent in the circuit court or the supreme court.',
     group: 'Doctrine',
   },
   {
