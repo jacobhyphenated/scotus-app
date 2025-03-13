@@ -19,6 +19,7 @@ import { CaseStore, CaseStoreContext } from './stores/caseStore';
 import { OpinionStore, OpinionStoreContext } from './stores/opinionStore';
 import { UserStoreContext } from './stores/userStore';
 import { BrowserRouter } from 'react-router-dom';
+import { TagStore, TagStoreContext } from './stores/tagStore';
 
 
 declare module '@mui/styles/defaultTheme' {
@@ -39,6 +40,7 @@ const courtStore = new CourtStore(networkService);
 const docketStore = new DocketStore(networkService);
 const caseStore = new CaseStore(networkService, docketStore);
 const opinionStore = new OpinionStore(networkService);
+const tagStore = new TagStore(networkService);
 
 const theme = createTheme({
   palette: {
@@ -60,14 +62,16 @@ root.render(
         <DocketStoreContext.Provider value={docketStore}>
           <OpinionStoreContext.Provider value={opinionStore}>
             <CaseStoreContext.Provider value={caseStore}>
-              <BrowserRouter>
-                <StyledEngineProvider injectFirst>
-                  <ThemeProvider theme={theme}>
-                    <CssBaseline />
-                    <App />
-                  </ThemeProvider>
-                </StyledEngineProvider>
-              </BrowserRouter>
+              <TagStoreContext.Provider value={tagStore}>
+                <BrowserRouter>
+                  <StyledEngineProvider injectFirst>
+                    <ThemeProvider theme={theme}>
+                      <CssBaseline />
+                      <App />
+                    </ThemeProvider>
+                  </StyledEngineProvider>
+                </BrowserRouter>
+              </TagStoreContext.Provider>
             </CaseStoreContext.Provider>
           </OpinionStoreContext.Provider>
         </DocketStoreContext.Provider>

@@ -18,6 +18,7 @@ import CreateCasePage from './createCase';
 import EditCasePage from './editCase';
 import TermAdminPage from './term';
 import EditTermPage from './editTerm';
+import TagAdminPage from './tags';
 import { useLocation } from 'react-router';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -80,6 +81,11 @@ const Admin = () => {
       display: 'Term',
       click: () => navigate(`/admin/term`),
     },
+    {
+      route: 'tag',
+      display: 'Tags',
+      click: () => navigate(`/admin/tag`),
+    },
   ], [navigate]);
 
   return <>
@@ -123,6 +129,7 @@ const Admin = () => {
             <Route path="term/create" element={<CreateTermPage />} />
             <Route path="term/edit/:id" element={<EditTermPage />} />
             <Route path="term" element={<TermAdminPage />} />
+            <Route path="tag" element={<TagAdminPage />} />
           </Routes>
         </Paper>
       </Grid>
