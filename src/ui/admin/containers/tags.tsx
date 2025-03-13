@@ -59,7 +59,7 @@ const TagAdminPage = () => {
       await tagStore.editTag(id, name, description);
     } catch(e: any) {
       console.error(e);
-      setGenericError(e?.errorMessage || 'An error occurred trying to edit the tag');
+      setGenericError(e?.message || 'An error occurred trying to edit the tag');
     }
   }, [tagStore]);
 
@@ -69,7 +69,7 @@ const TagAdminPage = () => {
       await tagStore.deleteTag(id);
     } catch (e: any) {
       console.error(e);
-      setGenericError(e?.errorMessage || 'An error occurred trying to delete the tag');
+      setGenericError(e?.message || 'An error occurred trying to delete the tag');
     }
   }, [tagStore]);
 

@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useState, useContext } from 'react';
 import {
-  Grid,
   Typography,
   IconButton,
   Theme,
@@ -10,6 +9,8 @@ import {
   FormControlLabel,
   Checkbox,
   Button,
+  Stack,
+  Grid2,
 } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import BackIcon from '@mui/icons-material/ArrowBack';
@@ -31,10 +32,12 @@ import { JusticeStoreContext } from '../../../stores/justiceStore';
 import AlternateTitleEditCard from '../components/alternateTitleEditCard';
 import { whenDefined } from '../../../util/functional';
 import CaseResultForm from '../components/caseResultForm';
+import { TagStoreContext } from '../../../stores/tagStore';
+import { CaseTagEditCard } from '../components/caseTagEditCard';
 
 const useStyles = makeStyles((theme: Theme) => ({
   formContainer: {
-    marginTop: theme.spacing(2),
+    marginTop: theme.spacing(1),
   },
   docketCard: {
     marginTop: theme.spacing(1),
@@ -62,9 +65,12 @@ const EditCasePage = () => {
   const docketStore = useContext(DocketStoreContext);
   const opinionStore = useContext(OpinionStoreContext);
   const caseStore = useContext(CaseStoreContext);
+  const tagStore = useContext(TagStoreContext);
   const navigate = useNavigate();
   
   const { id } = useParams<{ id: string }>();
+
+  const allTags = tagStore.allTags;
 
   useEffect(() => {
     if (!id || isNaN(Number(id))) {
@@ -162,6 +168,12 @@ const EditCasePage = () => {
       edit({argumentDate, sitting});
     }
   }, [edit, removeArgumentDate]);
+
+  const saveTags = useCallback(async (tags: number[]) => {
+    whenDefined(tags, (tagIds) => {
+      edit({tagIds});
+    });
+  }, [edit]);
 
   const saveDecisionDate = useCallback(async (date: LocalDate | null) => {
     whenDefined(date, (decisionDate) => {
@@ -308,166 +320,143 @@ const EditCasePage = () => {
 
   const opinions = fullCase?.opinions.slice().sort(opinionSort);
   return (
-    <Grid container direction="column">
-      <Grid item>
-        <IconButton onClick={back} size="large">
-          <BackIcon color="action" />
-        </IconButton>
-      </Grid>
-      <Grid item>
-        <Typography variant="h4" component="h2">Edit Case</Typography>
-      </Grid>
+    <Stack alignItems="start">
+      <IconButton onClick={back} size="large">
+        <BackIcon color="action" />
+      </IconButton>
+      <Typography variant="h4" component="h2">Edit Case</Typography>
       {!!fullCase && 
-        <Grid container className={classes.formContainer} direction="row" spacing={4}>
-          <Grid item xs={12} md={6}>
-            <Grid container direction="column" spacing={2}>
+        <Grid2 container className={classes.formContainer} spacing={4}>
+          <Grid2 size={{ xs: 12, md: 6 }}>
+            <Stack spacing={2}>
               {!!formError &&
-                <Grid item>
-                  <Typography color="error">{formError}</Typography>
-                </Grid>
+                <Typography color="error">{formError}</Typography>
               }
-              <Grid item xs={12}>
-                <ViewEditInputText
-                  id="case-edit-title"
-                  fullWidth
-                  required
-                  disabled={submitting}
-                  name="title"
-                  label="Case Title"
-                  value={fullCase.case}
-                  onSave={saveTitle}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <AlternateTitleEditCard
-                  existingTitles={fullCase.alternateTitles}
-                  onSave={saveAlternateTitles}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <ViewEditInputText
-                  id="case-edit-short-summary"
-                  fullWidth
-                  required
-                  disabled={submitting}
-                  name="shortSummary"
-                  label="Short Summary"
-                  multiline
-                  minRows={2}
-                  value={fullCase.shortSummary}
-                  onSave={saveShortSummary}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <FormControlLabel
-                  className={classes.border}
-                  control={
-                    <Checkbox
-                      checked={!!fullCase.important}
-                      onChange={saveImportant}
-                      name="caseImportant"
-                      color="primary"
-                    />
-                  }
-                  label="Important?"
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <ViewEditInputText
-                  id="case-edit-term"
-                  fullWidth
-                  required
-                  disabled={submitting}
-                  name="term"
-                  label="Term"
-                  select
-                  value={`${fullCase.term.id}`}
-                  display={fullCase.term.name}
-                  onSave={saveTerm}
-                >
-                  {allTerms.map((term, index) => (
-                    <MenuItem key={index} value={`${term.id}`}>{term.name}</MenuItem>
-                  ))}
-                </ViewEditInputText>
-              </Grid>
-              <Grid item xs={12}>
-                <ArgumentDateEditField
-                  fullWidth
-                  disabled={submitting}
-                  argumentDate={fullCase.argumentDate ?? null}
-                  sitting={fullCase.sitting}
-                  onSave={saveArgumentDate}
-                />
-              </Grid>
+              <ViewEditInputText
+                id="case-edit-title"
+                fullWidth
+                required
+                disabled={submitting}
+                name="title"
+                label="Case Title"
+                value={fullCase.case}
+                onSave={saveTitle}
+              />
+              <AlternateTitleEditCard
+                existingTitles={fullCase.alternateTitles}
+                onSave={saveAlternateTitles}
+              />
+              <ViewEditInputText
+                id="case-edit-short-summary"
+                fullWidth
+                required
+                disabled={submitting}
+                name="shortSummary"
+                label="Short Summary"
+                multiline
+                minRows={2}
+                value={fullCase.shortSummary}
+                onSave={saveShortSummary}
+              />
+              <FormControlLabel
+                className={classes.border}
+                control={
+                  <Checkbox
+                    checked={!!fullCase.important}
+                    onChange={saveImportant}
+                    name="caseImportant"
+                    color="primary"
+                  />
+                }
+                label="Important?"
+              />
+              <ViewEditInputText
+                id="case-edit-term"
+                fullWidth
+                required
+                disabled={submitting}
+                name="term"
+                label="Term"
+                select
+                value={`${fullCase.term.id}`}
+                display={fullCase.term.name}
+                onSave={saveTerm}
+              >
+                {allTerms.map((term, index) => (
+                  <MenuItem key={index} value={`${term.id}`}>{term.name}</MenuItem>
+                ))}
+              </ViewEditInputText>
+              <ArgumentDateEditField
+                fullWidth
+                disabled={submitting}
+                argumentDate={fullCase.argumentDate ?? null}
+                sitting={fullCase.sitting}
+                onSave={saveArgumentDate}
+              />
+              <CaseTagEditCard 
+                tags={fullCase.tags}
+                allTags={allTags}
+                save={saveTags}
+              />
               { (!!fullCase.resultStatus || !!fullCase.decisionDate) ?
                 <>
-                <Grid item xs={12}>
-                  <ViewEditInputText
-                    id="case-edit-status"
-                    fullWidth
-                    required
-                    disabled={submitting}
-                    name="status"
-                    label="Result Status"
-                    select
-                    value={fullCase.resultStatus ?? ''}
-                    onSave={saveStatus}
-                  >
-                    <MenuItem value="">Select a result</MenuItem>
-                    {Object.values(CaseStatus)
-                    .filter(status => ![CaseStatus.ARGUED, CaseStatus.ARGUMENT_SCHEDULED, CaseStatus.GRANTED].includes(status))
-                    .map((status, index) => (
-                      <MenuItem key={index} value={status}>{status}</MenuItem>
-                    ))}
-                  </ViewEditInputText>
-                </Grid>
-                <Grid item xs={12}>
-                  <ViewEditDatePicker
-                    fullWidth
-                    required
-                    disabled={submitting}
-                    label="Decision Date"
-                    value={fullCase.decisionDate ?? null}
-                    onSave={saveDecisionDate}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <ViewEditInputText
-                    id="case-edit-result"
-                    fullWidth
-                    disabled={submitting}
-                    name="result"
-                    label="Result"
-                    value={fullCase.result ?? ''}
-                    onSave={saveResult}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <ViewEditInputText
-                    id="case-edit-decision-link"
-                    fullWidth
-                    disabled={submitting}
-                    forceWrap
-                    name="decisionLink"
-                    label="Decision Link"
-                    value={fullCase.decisionLink ?? ''}
-                    onSave={saveDecisionLink}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <ViewEditInputText
-                    id="case-edit-decision-summary"
-                    fullWidth
-                    required
-                    disabled={submitting}
-                    name="decisionSummary"
-                    label="Decision Summary"
-                    multiline
-                    minRows={3}
-                    value={fullCase.decisionSummary ?? ''}
-                    onSave={saveDecisionSummary}
-                  />
-                </Grid>
+                <ViewEditInputText
+                  id="case-edit-status"
+                  fullWidth
+                  required
+                  disabled={submitting}
+                  name="status"
+                  label="Result Status"
+                  select
+                  value={fullCase.resultStatus ?? ''}
+                  onSave={saveStatus}
+                >
+                  <MenuItem value="">Select a result</MenuItem>
+                  {Object.values(CaseStatus)
+                  .filter(status => ![CaseStatus.ARGUED, CaseStatus.ARGUMENT_SCHEDULED, CaseStatus.GRANTED].includes(status))
+                  .map((status, index) => (
+                    <MenuItem key={index} value={status}>{status}</MenuItem>
+                  ))}
+                </ViewEditInputText>
+                <ViewEditDatePicker
+                  fullWidth
+                  required
+                  disabled={submitting}
+                  label="Decision Date"
+                  value={fullCase.decisionDate ?? null}
+                  onSave={saveDecisionDate}
+                />
+                <ViewEditInputText
+                  id="case-edit-result"
+                  fullWidth
+                  disabled={submitting}
+                  name="result"
+                  label="Result"
+                  value={fullCase.result ?? ''}
+                  onSave={saveResult}
+                />
+                <ViewEditInputText
+                  id="case-edit-decision-link"
+                  fullWidth
+                  disabled={submitting}
+                  forceWrap
+                  name="decisionLink"
+                  label="Decision Link"
+                  value={fullCase.decisionLink ?? ''}
+                  onSave={saveDecisionLink}
+                />
+                <ViewEditInputText
+                  id="case-edit-decision-summary"
+                  fullWidth
+                  required
+                  disabled={submitting}
+                  name="decisionSummary"
+                  label="Decision Summary"
+                  multiline
+                  minRows={3}
+                  value={fullCase.decisionSummary ?? ''}
+                  onSave={saveDecisionSummary}
+                />
                 </>
                 : 
                 <CaseResultForm 
@@ -477,28 +466,28 @@ const EditCasePage = () => {
                   createEditDocketOverruled={createEditDocketOverrruled}
                 />
               }
-            </Grid>
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <Grid container direction="column" spacing={4}>
-              <Grid item>
+            </Stack>
+          </Grid2>
+          <Grid2 size={{ xs: 12, md: 6 }}>
+            <Stack spacing={4}>
+              <div>
                 <Typography variant="h5" component="h4">Dockets</Typography>
                 {fullCase.dockets?.map(docket => (
                   <Paper key={docket.docketId} variant="elevation" className={classes.docketCard}>
-                    <Grid container direction="row" justifyContent="space-between" alignItems="center">
-                      <Grid item>
+                    <Grid2 container justifyContent="space-between" alignItems="center">
+                      <Grid2>
                         <Button disableRipple color="primary" onClick={onClickDocket(docket)}>
                           {docket.docketNumber} {'\u2014'} {docket.lowerCourt.shortName}
                         </Button>
-                      </Grid>
-                      <Grid item>
+                      </Grid2>
+                      <Grid2>
                         <IconButton onClick={onDeleteDocket(docket)} size="large"><CloseIcon /></IconButton>
-                      </Grid>
-                    </Grid>
+                      </Grid2>
+                    </Grid2>
                   </Paper>
                 ))}
-                <Grid container direction="row" alignItems="center">
-                  <Grid item xs={11}>
+                <Grid2 container alignItems="center">
+                  <Grid2 size={11}>
                     <Autocomplete<BareDocket>
                       id="case-create-docket-autocomplete"
                       // Tells component to re-render when docket list changes
@@ -520,13 +509,13 @@ const EditCasePage = () => {
                         />
                       )}
                     />
-                  </Grid>
-                  <Grid item xs={1}>
+                  </Grid2>
+                  <Grid2 size={1}>
                     <IconButton onClick={newDocket} size="large"><AddIcon /></IconButton>
-                  </Grid>
-                </Grid>
-              </Grid>
-              <Grid item>
+                  </Grid2>
+                </Grid2>
+              </div>
+              <div>
                 <Typography variant="h5" component="h4">Opinions</Typography>
                 {opinions?.map(opinion => (
                   <OpinionEditCard
@@ -545,12 +534,12 @@ const EditCasePage = () => {
                     getAllJustices={getAllJustices}
                   />
                 }
-              </Grid>
-            </Grid>
-          </Grid>
-        </Grid>
+              </div>
+            </Stack>
+          </Grid2>
+        </Grid2>
       }
-    </Grid>
+    </Stack>
   );
 };
 

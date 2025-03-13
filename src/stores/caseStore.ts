@@ -7,6 +7,7 @@ import { Opinion } from './opinionStore';
 import { Justice } from './justiceStore';
 import { ObjectCache }  from '../util/cache';
 import { createContext } from 'react';
+import { Tag } from './tagStore';
 
 export enum CaseStatus {
   GRANTED = 'GRANTED',
@@ -66,6 +67,7 @@ export interface FullCase extends Case {
   alternateTitles: string[];
   decisionLink?: string;
   resultStatus?: CaseStatus;
+  tags: Tag[];
 }
 
 export interface EditCase {
@@ -81,6 +83,7 @@ export interface EditCase {
   important?: boolean;
   alternateTitles?: string[];
   sitting?: CaseSitting;
+  tagIds?: number[];
 }
 
 export interface TermSummary {
