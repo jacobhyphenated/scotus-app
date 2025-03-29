@@ -1,6 +1,6 @@
 import { useCallback, useContext, useEffect } from 'react';
 import { observer } from 'mobx-react';
-import { Typography, Paper, Theme, Grid, Fab } from '@mui/material';
+import { Typography, Paper, Theme, Grid2 as Grid, Fab } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import AddIcon from '@mui/icons-material/Add';
 import { CourtStoreContext } from '../../../stores/courtStore';
@@ -48,7 +48,7 @@ const CourtPage = () => {
       <Typography variant="h5">Appeals Courts:</Typography>
       <Grid container>
         {courts.map(court => (
-          <Grid item key={court.id} xs={12} md={6} lg={4} xl={3}>
+          <Grid key={court.id} size={{ xs: 12, md: 6, lg: 4, xl: 3 }}>
             <Paper className={classes.courtCard} variant="elevation">
               <Typography variant="subtitle2" color="textSecondary">{court.shortName}</Typography>
               <Typography>{court.name}</Typography>

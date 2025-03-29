@@ -2,7 +2,7 @@ import { useEffect, useMemo, useContext } from 'react';
 import { observer } from 'mobx-react';
 import Login from './login';
 import { UserStoreContext } from '../../../stores/userStore';
-import { Grid, Paper, Button, Theme } from '@mui/material';
+import { Grid2 as Grid, Paper, Button, Theme } from '@mui/material';
 import { Route, Routes, useNavigate } from 'react-router';
 import { makeStyles } from '@mui/styles';
 import JusticePage from './justice';
@@ -92,8 +92,8 @@ const Admin = () => {
   { !isAdmin ?
     <Login />
     :
-    <Grid className={classes.root} container direction="row">
-      <Grid item xs={12} sm={3} md={2}>
+    <Grid className={classes.root} container>
+      <Grid size={{ xs: 12, sm: 3, md: 2 }}>
         <Paper sx={{ display: { xs: 'none', sm: 'block' } }} className={classes.leftNav} elevation={1}>
           {adminRoutes.map(({route, display, click}) => {
             return (
@@ -113,7 +113,7 @@ const Admin = () => {
           })}
         </Paper>
       </Grid>
-      <Grid item xs={12} sm={9} md={10}>
+      <Grid size={{ xs: 12, sm: 9, md: 10 }}>
         <Paper className={classes.main} elevation={0}>
           <Routes>
             <Route path="justice/create" element={<CreateJusticePage />} />

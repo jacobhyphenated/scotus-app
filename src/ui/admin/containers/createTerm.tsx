@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
-import { Typography, Theme, Grid, TextField, Button, IconButton } from '@mui/material';
+import { Typography, Theme, TextField, Button, IconButton, Stack } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import BackIcon from '@mui/icons-material/ArrowBack';
 import { CaseStoreContext } from '../../../stores/caseStore';
@@ -9,10 +9,10 @@ const useStyles = makeStyles((theme: Theme) => ({
   formContainer: {
     marginTop: theme.spacing(2),
     [theme.breakpoints.down('md')]: {
-      maxWidth: 280,
+      width: 280,
     },
     [theme.breakpoints.up('md')]: {
-      maxWidth: 400,
+      width: 400,
     },
   },
 }));
@@ -75,69 +75,54 @@ const CreateTermPage = () => {
   const classes = useStyles();
 
   return (
-    <Grid container direction="column">
-      <Grid item>
-        <IconButton onClick={back} size="large">
-          <BackIcon color="action" />
-        </IconButton>
-      </Grid>
-      <Grid item>
-        <Typography variant="h4" component="h2">Create Term</Typography>
-      </Grid>
-      <Grid item>
-        <form className={classes.formContainer} onSubmit={submit}>
-          <Grid container direction="column" spacing={2}>
-            {!!formError ? (
-              <Grid item>
-                <Typography color="error">{formError}</Typography>
-              </Grid>) 
-              : ''
-            }
-            <Grid item>
-              <TextField
-                id="create-term-name"
-                name="name"
-                size="small"
-                color="primary"
-                variant="outlined"
-                fullWidth
-                required
-                label="Name"
-                onChange={changeName}
-                value={name}
-                error={!!nameError}
-                helperText={nameError}
-              />
-            </Grid>
-            <Grid item>
-              <TextField
-                id="create-term-otname"
-                name="otname"
-                size="small"
-                color="primary"
-                variant="outlined"
-                fullWidth
-                required
-                label="OT Name"
-                onChange={changeOtName}
-                value={otName}
-                error={!!otNameError}
-                helperText={otNameError || 'October Term name notation'}
-              />
-            </Grid>
-            <Grid item>
-              <Button 
-                disabled={submitting || !!nameError || !!otNameError}
-                color="primary"
-                variant="contained"
-                fullWidth
-                onClick={submit}
-              >Create</Button>
-            </Grid>
-          </Grid>
-        </form>
-      </Grid>
-    </Grid>
+    <Stack alignItems="start">
+      <IconButton onClick={back} size="large">
+        <BackIcon color="action" />
+      </IconButton>
+      <Typography variant="h4" component="h2">Create Term</Typography>
+      <form className={classes.formContainer} onSubmit={submit}>
+        <Stack spacing={2}>
+          {!!formError &&
+            <Typography color="error">{formError}</Typography>
+          }
+          <TextField
+            id="create-term-name"
+            name="name"
+            size="small"
+            color="primary"
+            variant="outlined"
+            fullWidth
+            required
+            label="Name"
+            onChange={changeName}
+            value={name}
+            error={!!nameError}
+            helperText={nameError}
+          />
+          <TextField
+            id="create-term-otname"
+            name="otname"
+            size="small"
+            color="primary"
+            variant="outlined"
+            fullWidth
+            required
+            label="OT Name"
+            onChange={changeOtName}
+            value={otName}
+            error={!!otNameError}
+            helperText={otNameError || 'October Term name notation'}
+          />
+          <Button 
+            disabled={submitting || !!nameError || !!otNameError}
+            color="primary"
+            variant="contained"
+            fullWidth
+            onClick={submit}
+          >Create</Button>
+        </Stack>
+      </form>
+    </Stack>
   );
 };
 

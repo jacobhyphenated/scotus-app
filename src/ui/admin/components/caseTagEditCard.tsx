@@ -6,6 +6,7 @@ import { Tag } from "../../../stores/tagStore";
 interface Props {
   tags: Tag[];
   allTags: Tag[];
+  disabled: boolean;
   save: (tags: number[]) => void;
 }
 
@@ -62,6 +63,7 @@ export const CaseTagEditCard = (props: Props) => {
             <Button
               color="primary"
               onClick={editClick}
+              disabled={props.disabled}
             >
               Edit
             </Button>
@@ -92,6 +94,7 @@ export const CaseTagEditCard = (props: Props) => {
         <Grid2 size={2}>
           <Button
             color="primary"
+            disabled={props.disabled}
             onClick={save}
           >
             Save

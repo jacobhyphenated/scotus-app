@@ -1,6 +1,6 @@
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { observer } from 'mobx-react';
-import { Typography, Theme, Grid, Fab, TextField, MenuItem } from '@mui/material';
+import { Typography, Theme, Grid2 as Grid, Fab, TextField, MenuItem } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import AddIcon from '@mui/icons-material/Add';
 import { Case, CaseStatus, CaseStoreContext } from '../../../stores/caseStore';
@@ -92,10 +92,10 @@ const CasePage = () => {
   ), [caseStatus, searchText, termResults]);
   return (
     <>
-      <Grid container direction="row" spacing={3} alignItems="center">
-        <Grid item><Typography variant="h4">Cases</Typography></Grid>
+      <Grid container spacing={3} alignItems="center">
+        <Grid><Typography variant="h4">Cases</Typography></Grid>
         {!!selectedTermId &&
-          <Grid item>
+          <Grid>
             <TextField
               id="admin-case-term-filter"
               label="Term"
@@ -117,8 +117,8 @@ const CasePage = () => {
         <Typography variant="h6" color="textSecondary">Searching...</Typography>  
         :
         <>
-          <Grid container direction="row" alignItems="baseline" spacing={2} className={classes.filters}>
-            <Grid item>
+          <Grid container alignItems="baseline" spacing={2} className={classes.filters}>
+            <Grid>
               <TextField
                 id="admin-case-search"
                 label="Filter"
@@ -129,7 +129,7 @@ const CasePage = () => {
                 onChange={changeSearchText}
               />
             </Grid>
-            <Grid item>
+            <Grid>
               <TextField
                 id="create-case-status-select"
                 label="Status"
@@ -150,7 +150,7 @@ const CasePage = () => {
           </Grid>
           <Grid container>
             {filteredCases.map(filteredCase => (
-              <Grid item key={filteredCase.id} xs={12} md={6} lg={4}>
+              <Grid key={filteredCase.id} size={{ xs: 12, md: 6, lg: 4 }}>
                 <CaseCard key={filteredCase.id} case={filteredCase} onEditCase={editCase} />
               </Grid>
             ))}

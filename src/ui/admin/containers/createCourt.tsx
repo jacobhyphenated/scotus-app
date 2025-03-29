@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
-import { Grid, Typography, IconButton, TextField, Theme, Button } from '@mui/material';
+import { Typography, IconButton, TextField, Theme, Button, Stack } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import BackIcon from '@mui/icons-material/ArrowBack';
 import { CourtStoreContext } from '../../../stores/courtStore';
@@ -9,10 +9,10 @@ const useStyles = makeStyles((theme: Theme) => ({
   formContainer: {
     marginTop: theme.spacing(2),
     [theme.breakpoints.down('md')]: {
-      maxWidth: 280,
+      width: 300,
     },
     [theme.breakpoints.up('md')]: {
-      maxWidth: 400,
+      width: 420,
     },
   },
 }));
@@ -75,69 +75,54 @@ const CreateCourtPage = () => {
   const classes = useStyles();
 
   return (
-    <Grid container direction="column">
-      <Grid item>
-        <IconButton onClick={back} size="large">
-          <BackIcon color="action" />
-        </IconButton>
-      </Grid>
-      <Grid item>
-        <Typography variant="h4" component="h2">Create Court</Typography>
-      </Grid>
-      <Grid item>
-        <form className={classes.formContainer} onSubmit={submit}>
-          <Grid container direction="column" spacing={2}>
-            {!!formError ? (
-              <Grid item>
-                <Typography color="error">{formError}</Typography>
-              </Grid>) 
-              : ''
-            }
-            <Grid item>
-              <TextField
-                id="create-court-name"
-                name="name"
-                size="small"
-                color="primary"
-                variant="outlined"
-                fullWidth
-                required
-                label="Name"
-                onChange={changeName}
-                value={name ?? ''}
-                error={!!nameError}
-                helperText={nameError || 'Full name of the appeals court'}
-              />
-            </Grid>
-            <Grid item>
-              <TextField
-                id="create-court-short-name"
-                name="shortName"
-                size="small"
-                color="primary"
-                variant="outlined"
-                fullWidth
-                required
-                label="Short Name"
-                onChange={changeShortName}
-                value={shortName ?? ''}
-                error={!!shortNameError}
-                helperText={shortNameError || 'Abbreviation or short name for the court'}
-              />
-            </Grid>
-            <Grid item>
-              <Button 
-                disabled={ submitting || !!nameError || !!shortNameError }
-                color="primary"
-                variant="contained"
-                fullWidth
-                onClick={submit}
-              >Create</Button>
-            </Grid>
-          </Grid>
-        </form>
-      </Grid>
-    </Grid>
+    <Stack alignItems="start">
+      <IconButton onClick={back} size="large">
+        <BackIcon color="action" />
+      </IconButton>
+      <Typography variant="h4" component="h2">Create Court</Typography>
+      <form className={classes.formContainer} onSubmit={submit}>
+        <Stack spacing={2}>
+          {!!formError && 
+              <Typography color="error">{formError}</Typography>
+          }
+          <TextField
+            id="create-court-name"
+            name="name"
+            size="small"
+            color="primary"
+            variant="outlined"
+            fullWidth
+            required
+            label="Name"
+            onChange={changeName}
+            value={name ?? ''}
+            error={!!nameError}
+            helperText={nameError || 'Full name of the appeals court'}
+          />
+          <TextField
+            id="create-court-short-name"
+            name="shortName"
+            size="small"
+            color="primary"
+            variant="outlined"
+            fullWidth
+            required
+            label="Short Name"
+            onChange={changeShortName}
+            value={shortName ?? ''}
+            error={!!shortNameError}
+            helperText={shortNameError || 'Abbreviation or short name for the court'}
+          />
+          <Button 
+            disabled={ submitting || !!nameError || !!shortNameError }
+            color="primary"
+            variant="contained"
+            fullWidth
+            onClick={submit}
+          >Create</Button>
+        </Stack>
+      </form>
+    </Stack>
   );
 };
 

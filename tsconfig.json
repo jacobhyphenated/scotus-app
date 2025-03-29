@@ -20,7 +20,7 @@
     "jsx": "react-jsx",
     "experimentalDecorators": true,
     "noFallthroughCasesInSwitch": true,
-    "useDefineForClassFields": true
+    "useDefineForClassFields": true,
   },
   "include": [
     "src"

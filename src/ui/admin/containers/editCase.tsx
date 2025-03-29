@@ -396,6 +396,7 @@ const EditCasePage = () => {
               <CaseTagEditCard 
                 tags={fullCase.tags}
                 allTags={allTags}
+                disabled={submitting}
                 save={saveTags}
               />
               { (!!fullCase.resultStatus || !!fullCase.decisionDate) ?

@@ -1,6 +1,6 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import {
-  Grid,
+  Grid2 as Grid,
   Typography,
   IconButton,
   TextField,
@@ -18,15 +18,21 @@ import { BareDocket, DocketStoreContext } from '../../../stores/docketStore';
 import { CaseStoreContext } from '../../../stores/caseStore';
 import { autorun } from 'mobx';
 import { useNavigate } from 'react-router';
+import { Stack } from '@mui/system';
 
 const useStyles = makeStyles((theme: Theme) => ({
   formContainer: {
-    'margin-top': theme.spacing(2),
+    marginTop: theme.spacing(2),
     [theme.breakpoints.down('md')]: {
-      maxWidth: 320,
+      width: 350,
     },
     [theme.breakpoints.up('md')]: {
-      maxWidth: 450,
+      width: 500,
+    },
+  },
+  checkbox: {
+    '&&': {
+      marginLeft: -11,
     },
   },
 }));
@@ -134,137 +140,117 @@ const CreateCasePage = () => {
   const classes = useStyles();
 
   return (
-    <Grid container direction="column">
-      <Grid item>
-        <IconButton onClick={back} size="large">
-          <BackIcon color="action" />
-        </IconButton>
-      </Grid>
-      <Grid item>
-        <Typography variant="h4" component="h2">Create Case</Typography>
-      </Grid>
-      <Grid item>
-        <form className={classes.formContainer} onSubmit={submit}>
-          <Grid container direction="column" spacing={2}>
-            {!!formError ? (
-              <Grid item>
-                <Typography color="error">{formError}</Typography>
-              </Grid>) 
-              : ''
-            }
-            <Grid item>
-              <TextField
-                id="create-case-title"
-                name="title"
-                size="small"
+    <Stack alignItems='start'>
+      <IconButton onClick={back} size="large">
+        <BackIcon color="action" />
+      </IconButton>
+      <Typography variant="h4" component="h2">Create Case</Typography>
+      <form className={classes.formContainer} onSubmit={submit}>
+        <Stack spacing={2}>
+          {!!formError &&
+              <Typography color="error">{formError}</Typography>
+          }
+          <TextField
+            id="create-case-title"
+            name="title"
+            size="small"
+            color="primary"
+            variant="outlined"
+            fullWidth
+            required
+            label="Title"
+            onChange={changeTitle}
+            value={title}
+            error={!!caseError}
+            helperText={caseError}
+          />
+          <TextField
+            id="create-case-short-summary"
+            name="shortSummary"
+            size="small"
+            color="primary"
+            variant="outlined"
+            fullWidth
+            required
+            multiline
+            minRows={2}
+            label="Short Summary"
+            onChange={changeShortSummary}
+            value={shortSummary}
+            error={!!shortSummaryError}
+            helperText={shortSummaryError}
+          />
+          { termId > 0 && 
+            <TextField
+              id="create-case-term-select"
+              label="Term"
+              size="small"
+              color="primary"
+              variant="outlined"
+              required
+              fullWidth
+              select
+              value={termId}
+              onChange={changeTermId}
+            >
+              {allTerms.map(term => (
+                <MenuItem key={term.id} value={term.id}>{term.name}</MenuItem>
+              ))}
+            </TextField>
+          }
+          <FormControlLabel
+            className={classes.checkbox}
+            control={
+              <Checkbox
+                checked={important}
+                onChange={changeImportant}
+                name="caseImportant"
                 color="primary"
-                variant="outlined"
-                fullWidth
-                required
-                label="Title"
-                onChange={changeTitle}
-                value={title}
-                error={!!caseError}
-                helperText={caseError}
               />
-            </Grid>
-            <Grid item>
-              <TextField
-                id="create-case-short-summary"
-                name="shortSummary"
-                size="small"
-                color="primary"
-                variant="outlined"
-                fullWidth
-                required
-                multiline
-                minRows={2}
-                label="Short Summary"
-                onChange={changeShortSummary}
-                value={shortSummary}
-                error={!!shortSummaryError}
-                helperText={shortSummaryError}
-              />
-            </Grid>
-            { termId > 0 && 
-              <Grid item>
-                <TextField
-                  id="create-case-term-select"
-                  label="Term"
-                  size="small"
-                  color="primary"
-                  variant="outlined"
-                  required
-                  fullWidth
-                  select
-                  value={termId}
-                  onChange={changeTermId}
-                >
-                  {allTerms.map(term => (
-                    <MenuItem key={term.id} value={term.id}>{term.name}</MenuItem>
-                  ))}
-                </TextField>
-              </Grid>
             }
-            <Grid item>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={important}
-                    onChange={changeImportant}
-                    name="caseImportant"
-                    color="primary"
-                  />
-                }
-                label="Important?"
+            label="Important?"
+          />
+          <Autocomplete<BareDocket, true>
+            multiple
+            id="case-create-docket-autocomplete"
+            options={unassignedDockets}
+            // eslint-disable-next-line react/jsx-no-bind
+            getOptionLabel={(docket) => docket.title}
+            onChange={changeDockets}
+            value={dockets}
+            filterSelectedOptions
+            // eslint-disable-next-line react/jsx-no-bind
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                variant="outlined"
+                label="Linked Dockets"
               />
+            )}
+          />
+          <Grid container spacing={2}>
+            <Grid size={6}>
+              <Button 
+                disabled={ submitting || !!caseError || !!shortSummaryError }
+                color="primary"
+                variant="contained"
+                fullWidth
+                onClick={save}
+              >Create</Button>
             </Grid>
-            <Grid item>
-              <Autocomplete<BareDocket, true>
-                multiple
-                id="case-create-docket-autocomplete"
-                options={unassignedDockets}
-                // eslint-disable-next-line react/jsx-no-bind
-                getOptionLabel={(docket) => docket.title}
-                onChange={changeDockets}
-                value={dockets}
-                filterSelectedOptions
-                // eslint-disable-next-line react/jsx-no-bind
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    variant="outlined"
-                    label="Linked Dockets"
-                  />
-                )}
-              />
-            </Grid>
-            <Grid item>
-              <Grid container spacing={2}>
-                <Grid item xs={6}>
-                  <Button 
-                    disabled={ submitting || !!caseError || !!shortSummaryError }
-                    color="primary"
-                    variant="contained"
-                    fullWidth
-                    onClick={save}
-                  >Create</Button>
-                </Grid>
-                <Grid item xs={6}>
-                  <Button 
-                    disabled={ submitting || !!caseError || !!shortSummaryError }
-                    color="secondary"
-                    variant="contained"
-                    fullWidth
-                    onClick={saveAndEdit}
-                  >Create and Edit</Button>
-                </Grid>
-              </Grid>
+            <Grid size={6}>
+              <Button 
+                disabled={ submitting || !!caseError || !!shortSummaryError }
+                color="secondary"
+                variant="contained"
+                fullWidth
+                onClick={saveAndEdit}
+              >Create and Edit</Button>
             </Grid>
           </Grid>
-        </form>
-      </Grid>
-    </Grid>
+        </Stack>
+      </form>
+    </Stack>
   );
 };
 

@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
-import { Grid, Typography, IconButton, TextField, Theme, Button, MenuItem } from '@mui/material';
+import { Typography, IconButton, TextField, Theme, Button, MenuItem, Stack } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import BackIcon from '@mui/icons-material/ArrowBack';
 import { observer } from 'mobx-react';
@@ -11,10 +11,10 @@ const useStyles = makeStyles((theme: Theme) => ({
   formContainer: {
     marginTop: theme.spacing(2),
     [theme.breakpoints.down('md')]: {
-      maxWidth: 320,
+      width: 320,
     },
     [theme.breakpoints.up('md')]: {
-      maxWidth: 450,
+      width: 450,
     },
   },
 }));
@@ -100,121 +100,100 @@ const CreateDocketPage = () => {
   const courts = courtStore.allCourts;
   const classes = useStyles();
   return (
-    <Grid container direction="column">
-      <Grid item>
-        <IconButton onClick={back} size="large">
-          <BackIcon color="action" />
-        </IconButton>
-      </Grid>
-      <Grid item>
-        <Typography variant="h4" component="h2">Create Docket</Typography>
-      </Grid>
-      <Grid item>
-        <form className={classes.formContainer} onSubmit={submit}>
-          <Grid container direction="column" spacing={2}>
-            {!!formError ? (
-              <Grid item>
-                <Typography color="error">{formError}</Typography>
-              </Grid>) 
-              : ''
-            }
-            <Grid item>
-              <TextField
-                id="create-docket-title"
-                name="title"
-                size="small"
-                color="primary"
-                variant="outlined"
-                fullWidth
-                required
-                label="Title"
-                onChange={changeTitle}
-                value={title ?? ''}
-                error={!!titleError}
-                helperText={titleError}
-              />
-            </Grid>
-            <Grid item>
-              <TextField
-                id="create-docket-number"
-                name="docketNumber"
-                size="small"
-                color="primary"
-                variant="outlined"
-                fullWidth
-                required
-                label="Docket Number"
-                onChange={changeDocketNumber}
-                value={docketNumber ?? ''}
-                error={!!docketNumberError}
-                helperText={docketNumberError}
-              />
-            </Grid>
-            <Grid item>
-              <TextField
-                id="create-docket-court-select"
-                label="Lower Court"
-                size="small"
-                color="primary"
-                variant="outlined"
-                required
-                fullWidth
-                select
-                error={!!lowerCourtError}
-                helperText={lowerCourtError}
-                value={lowerCourtId}
-                onChange={changeLowerCourt}
-              >
-                <MenuItem value={0} disabled>Choose a lower court</MenuItem>
-                {courts.map(court => (
-                  <MenuItem key={court.id} value={court.id}>{court.name}</MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-            <Grid item>
-              <TextField 
-                id="create-docket-lower-court-ruling"
-                label="Lower Court Ruling"
-                color="primary"
-                variant="outlined"
-                fullWidth
-                multiline
-                minRows={4}
-                value={lowerCourtRuling}
-                onChange={changeRuling}
-              />
-            </Grid>
-            <Grid item>
-              <TextField
-                id="create-docket-status"
-                label="Status"
-                size="small"
-                color="primary"
-                variant="outlined"
-                required
-                fullWidth
-                select
-                value={status}
-                onChange={changeStatus}
-              >
-                {Object.values(DocketStatus).map((status, index) => (
-                  <MenuItem key={index} value={status}>{status}</MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-            <Grid item>
-              <Button 
-                disabled={ submitting || !!titleError || !!docketNumberError || !!lowerCourtError }
-                color="primary"
-                variant="contained"
-                fullWidth
-                onClick={submit}
-              >Create</Button>
-            </Grid>
-          </Grid>
-        </form>
-      </Grid>
-    </Grid>
+    <Stack alignItems="start">
+      <IconButton onClick={back} size="large">
+        <BackIcon color="action" />
+      </IconButton>
+      <Typography variant="h4" component="h2">Create Docket</Typography>
+      <form className={classes.formContainer} onSubmit={submit}>
+        <Stack spacing={2}>
+          {!!formError &&
+            <Typography color="error">{formError}</Typography>
+          }
+          <TextField
+            id="create-docket-title"
+            name="title"
+            size="small"
+            color="primary"
+            variant="outlined"
+            fullWidth
+            required
+            label="Title"
+            onChange={changeTitle}
+            value={title ?? ''}
+            error={!!titleError}
+            helperText={titleError}
+          />
+          <TextField
+            id="create-docket-number"
+            name="docketNumber"
+            size="small"
+            color="primary"
+            variant="outlined"
+            fullWidth
+            required
+            label="Docket Number"
+            onChange={changeDocketNumber}
+            value={docketNumber ?? ''}
+            error={!!docketNumberError}
+            helperText={docketNumberError}
+          />
+          <TextField
+            id="create-docket-court-select"
+            label="Lower Court"
+            size="small"
+            color="primary"
+            variant="outlined"
+            required
+            fullWidth
+            select
+            error={!!lowerCourtError}
+            helperText={lowerCourtError}
+            value={lowerCourtId}
+            onChange={changeLowerCourt}
+          >
+            <MenuItem value={0} disabled>Choose a lower court</MenuItem>
+            {courts.map(court => (
+              <MenuItem key={court.id} value={court.id}>{court.name}</MenuItem>
+            ))}
+          </TextField>
+          <TextField 
+            id="create-docket-lower-court-ruling"
+            label="Lower Court Ruling"
+            color="primary"
+            variant="outlined"
+            fullWidth
+            multiline
+            minRows={4}
+            value={lowerCourtRuling}
+            onChange={changeRuling}
+          />
+          <TextField
+            id="create-docket-status"
+            label="Status"
+            size="small"
+            color="primary"
+            variant="outlined"
+            required
+            fullWidth
+            select
+            value={status}
+            onChange={changeStatus}
+          >
+            {Object.values(DocketStatus).map((status, index) => (
+              <MenuItem key={index} value={status}>{status}</MenuItem>
+            ))}
+          </TextField>
+          <Button 
+            disabled={ submitting || !!titleError || !!docketNumberError || !!lowerCourtError }
+            color="primary"
+            variant="contained"
+            fullWidth
+            onClick={submit}
+          >Create</Button>
+        </Stack>
+      </form>
+    </Stack>
   );
 };
 

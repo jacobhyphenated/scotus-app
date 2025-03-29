@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState, useContext } from 'react';
-import { Grid, Typography, IconButton, TextField, Theme, Button, MenuItem } from '@mui/material';
+import { Typography, IconButton, TextField, Theme, Button, MenuItem, Stack } from '@mui/material';
 import BackIcon from '@mui/icons-material/ArrowBack';
 import { JusticeStoreContext } from '../../../stores/justiceStore';
 import { LocalDate } from '@js-joda/core';
@@ -11,10 +11,10 @@ const useStyles = makeStyles((theme: Theme) => ({
   formContainer: {
     marginTop: theme.spacing(2),
     [theme.breakpoints.down('md')]: {
-      maxWidth: 280,
+      width: 280,
     },
     [theme.breakpoints.up('md')]: {
-      maxWidth: 400,
+      width: 400,
     },
   },
 }));
@@ -102,92 +102,73 @@ const CreateJusticePage = () => {
   const classes = useStyles();
 
   return (
-    <Grid container direction="column">
-      <Grid item>
-        <IconButton onClick={back} size="large">
-          <BackIcon color="action" />
-        </IconButton>
-      </Grid>
-      <Grid item>
-        <Typography variant="h4" component="h2">Create Justice</Typography>
-      </Grid>
-      <Grid item>
-        <form className={classes.formContainer} onSubmit={submit}>
-          <Grid container direction="column" spacing={2}>
-            {!!formError ? (
-              <Grid item>
-                <Typography color="error">{formError}</Typography>
-              </Grid>) 
-              : ''
-            }
-            <Grid item>
-              <TextField
-                id="create-justice-name"
-                name="name"
-                size="small"
-                color="primary"
-                variant="outlined"
-                fullWidth
-                required
-                label="Name"
-                onChange={changeName}
-                value={name}
-                error={!!nameError}
-                helperText={nameError}
-              />
-            </Grid>
-            <Grid item>
-              <DatePicker
-                required
-                fullWidth
-                onChange={changeBirthday}
-                value={birthday}
-                label="Birthday"
-                error={!!birthdayError}
-                helperText={birthdayError}
-              />
-            </Grid>
-            <Grid item>
-              <DatePicker
-                required
-                fullWidth
-                onChange={changeConfirmDate}
-                value={dateConfirmed}
-                label="Confirmation Date"
-                error={!!confirmDateError}
-                helperText={confirmDateError}
-              />
-            </Grid>
-            <Grid item>
-              <TextField
-                id="create-justice-party"
-                label="Appointing Party"
-                size="small"
-                color="primary"
-                variant="outlined"
-                required
-                fullWidth
-                select
-                value={party}
-                onChange={changeParty}
-              >
-                <MenuItem value="R">Republican</MenuItem>
-                <MenuItem value="D">Democrat</MenuItem>
-              </TextField>
-            </Grid>
-            <Grid item>
-              <Button 
-                disabled={submitting || !!nameError || !!birthdayError || !!confirmDateError}
-                color="primary"
-                variant="contained"
-                fullWidth
-                onClick={submit}
-              >Create</Button>
-            </Grid>
-          </Grid>
-        </form>
-      </Grid>
-    </Grid>
+    <Stack alignItems="start">
+      <IconButton onClick={back} size="large">
+        <BackIcon color="action" />
+      </IconButton>
+      <Typography variant="h4" component="h2">Create Justice</Typography>
+      <form className={classes.formContainer} onSubmit={submit}>
+        <Stack spacing={2}>
+          {!!formError &&
+            <Typography color="error">{formError}</Typography>
+          }
+          <TextField
+            id="create-justice-name"
+            name="name"
+            size="small"
+            color="primary"
+            variant="outlined"
+            fullWidth
+            required
+            label="Name"
+            onChange={changeName}
+            value={name}
+            error={!!nameError}
+            helperText={nameError}
+          />
+          <DatePicker
+            required
+            fullWidth
+            onChange={changeBirthday}
+            value={birthday}
+            label="Birthday"
+            error={!!birthdayError}
+            helperText={birthdayError}
+          />
+          <DatePicker
+            required
+            fullWidth
+            onChange={changeConfirmDate}
+            value={dateConfirmed}
+            label="Confirmation Date"
+            error={!!confirmDateError}
+            helperText={confirmDateError}
+          />
+          <TextField
+            id="create-justice-party"
+            label="Appointing Party"
+            size="small"
+            color="primary"
+            variant="outlined"
+            required
+            fullWidth
+            select
+            value={party}
+            onChange={changeParty}
+          >
+            <MenuItem value="R">Republican</MenuItem>
+            <MenuItem value="D">Democrat</MenuItem>
+          </TextField>
+          <Button 
+            disabled={submitting || !!nameError || !!birthdayError || !!confirmDateError}
+            color="primary"
+            variant="contained"
+            fullWidth
+            onClick={submit}
+          >Create</Button>
+        </Stack>
+      </form>
+    </Stack>
   );
 };
 
