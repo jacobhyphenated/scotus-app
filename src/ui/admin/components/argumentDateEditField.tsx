@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import { Typography, Paper, Grid, Button, Theme, TextField, MenuItem } from '@mui/material';
+import { Typography, Paper, Grid2 as Grid, Button, Theme, TextField, MenuItem, Stack } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import { LocalDate, DateTimeFormatter } from "@js-joda/core";
 import DatePicker from './datePicker';
@@ -62,33 +62,34 @@ const ArgumentDateEditField = (props: Props) => {
     <>
       {!editMode ?
         <Paper variant="outlined" className={classes.paper}>
-          <Grid container direction="row" alignItems="center" justifyContent="space-between">
-            <Grid item xs={10}>
-              <Grid container direction="column" spacing={1}>
-                <Grid item>
+          <Grid container alignItems="center" justifyContent="space-between">
+            <Grid size={10}>
+              <Stack spacing={1}>
+                <div>
                   <Typography color="textSecondary" variant="subtitle2">Argument Date</Typography>
                   <Typography>{argumentDate?.format(formatter) ?? 'None'}</Typography>
-                </Grid>
+                </div>
                 {sitting &&
-                  <Grid item>
+                  <div>
                     <Typography color="textSecondary" variant="subtitle2">Sitting</Typography>
                     <Typography>{sitting}</Typography>
-                  </Grid>
+                  </div>
                 }
-              </Grid>
+              </Stack>
             </Grid>
-            <Grid item xs={2}>
+            <Grid size={2}>
               <Button disabled={props.disabled} color="primary" onClick={onEditClick}>edit</Button>
             </Grid>
           </Grid>
         </Paper>
       :
         <Grid container direction="row" alignItems="center">
-          <Grid xs={10} item>
-            <Grid container direction="column">
+          <Grid size={10}>
+            <Stack>
               <DatePicker 
                 onChange={onChangeDate}
                 label="Argument Date"
+                clearable
                 value={editArgumentDate}
                 {...inputProps}
               />
@@ -107,9 +108,9 @@ const ArgumentDateEditField = (props: Props) => {
                   <MenuItem key={index} value={val}>{val}</MenuItem>
                 ))}
               </TextField>
-            </Grid>
+            </Stack>
           </Grid>
-          <Grid xs={2} item>
+          <Grid size={2}>
             <Button color="secondary" disabled={disableSave} onClick={onSaveClick}>save</Button>
           </Grid>
         </Grid>

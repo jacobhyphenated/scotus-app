@@ -16,10 +16,10 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   createForm: {
     [theme.breakpoints.down('md')]: {
-      maxWidth: 280,
+      width: 280,
     },
     [theme.breakpoints.up('md')]: {
-      maxWidth: 400,
+      width: 400,
     },
     padding: theme.spacing(1),
   },

@@ -1,5 +1,5 @@
-import React, { useCallback, useState } from "react";
-import { Typography, Paper, Grid, Button, Theme } from '@mui/material';
+import { useCallback, useState } from "react";
+import { Typography, Paper, Grid2 as Grid, Button, Theme } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import { LocalDate, DateTimeFormatter } from "@js-joda/core";
 import DatePicker from './datePicker';
@@ -53,21 +53,21 @@ const ViewEditDatePicker = (props: Props) => {
     <>
       {!editMode ?
         <Paper variant="outlined" className={classes.paper}>
-          <Grid container direction="row" alignItems="center" justifyContent="space-between">
-            <Grid item xs={10}>
+          <Grid container alignItems="center" justifyContent="space-between">
+            <Grid size={10}>
               <Grid container direction="column">
                 <Typography color="textSecondary" variant="subtitle2">{label}</Typography>
                 <Typography>{value?.format(formatter) ?? 'None'}</Typography>
               </Grid>
             </Grid>
-            <Grid item xs={2}>
+            <Grid size={2}>
               <Button disabled={props.disabled} color="primary" onClick={onEditClick}>edit</Button>
             </Grid>
           </Grid>
         </Paper>
       :
-        <Grid container direction="row" alignItems="center">
-          <Grid xs={10} item>
+        <Grid container alignItems="center">
+          <Grid size={10}>
             <DatePicker 
               onChange={onChange}
               label={label}
@@ -75,7 +75,7 @@ const ViewEditDatePicker = (props: Props) => {
               {...inputProps}
             />
           </Grid>
-          <Grid xs={2} item>
+          <Grid size={2}>
             <Button color="secondary" disabled={disableSave} onClick={onSaveClick}>save</Button>
           </Grid>
         </Grid>

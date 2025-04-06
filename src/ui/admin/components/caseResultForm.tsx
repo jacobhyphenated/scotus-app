@@ -2,7 +2,6 @@ import React, { useCallback, useState, useMemo } from "react";
 import {
   Typography,
   Paper,
-  Grid,
   Button,
   TextField,
   Theme,
@@ -12,6 +11,7 @@ import {
   FormLabel,
   RadioGroup,
   Radio,
+  Stack,
 } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import { CaseDocket, CaseStatus, EditCase, FullCase } from "../../../stores/caseStore";
@@ -94,103 +94,87 @@ const CaseResultForm = (props: Props) => {
 
   return (
     <Paper variant="elevation" className={classes.paper}>
-      <Grid container direction="column" spacing={1}>
-        <Grid item>
-          <Typography variant="h5">Record Case Result</Typography>
-        </Grid>
+      <Stack spacing={1}>
+        <Typography variant="h5">Record Case Result</Typography>
         {!!formError &&
-          <Grid item>
-            <Typography color="error">{formError}</Typography>
-          </Grid>
+          <Typography color="error">{formError}</Typography>
         }
-        <Grid item>
-          <TextField
-            id="case-result-status"
-            variant="outlined"
-            color="secondary"
-            fullWidth
-            required
-            name="result-status"
-            label="Result Status"
-            size="small"
-            select
-            onChange={onResultStatusChange}
-            value={resultStatus ?? ''}
-          >
-            <MenuItem value="">Select a result</MenuItem>
-            {Object.values(CaseStatus)
-            .filter(status => ![CaseStatus.ARGUED, CaseStatus.ARGUMENT_SCHEDULED, CaseStatus.GRANTED].includes(status))
-            .map((status, index) => (
-              <MenuItem key={index} value={status}>{status}</MenuItem>
-            ))}
-          </TextField>
-        </Grid>
-        <Grid item>
-          <DatePicker
-            fullWidth
-            required
-            label="Decision Date"
-            value={decisionDate}
-            onChange={onDecisionDateChange}
-          />
-        </Grid>
-        <Grid item>
-          <TextField
-            id="case-result"
-            variant="outlined"
-            color="secondary"
-            fullWidth
-            name="result"
-            label="Result"
-            size="small"
-            onChange={onResultChange}
-            value={result}
-          />
-        </Grid>
-        <Grid item>
-          <TextField
-            id="case-result-decision-link"
-            variant="outlined"
-            color="secondary"
-            fullWidth
-            name="decision-link"
-            label="Decision Link"
-            size="small"
-            onChange={onDecisionLinkChange}
-            value={decisionLink ?? ''}
-          />
-        </Grid>
-        <Grid item>
-          <TextField
-            id="case-result-decisionSummary"
-            variant="outlined"
-            color="secondary"
-            fullWidth
-            required
-            minRows={3}
-            multiline
-            name="decisionSummary"
-            label="Decision Summary"
-            onChange={onDecisionSummaryChange}
-            value={decisionSummary}
-          />
-        </Grid>
+        <TextField
+          id="case-result-status"
+          variant="outlined"
+          color="secondary"
+          fullWidth
+          required
+          name="result-status"
+          label="Result Status"
+          size="small"
+          select
+          onChange={onResultStatusChange}
+          value={resultStatus ?? ''}
+        >
+          <MenuItem value="">Select a result</MenuItem>
+          {Object.values(CaseStatus)
+          .filter(status => ![CaseStatus.ARGUED, CaseStatus.ARGUMENT_SCHEDULED, CaseStatus.GRANTED].includes(status))
+          .map((status, index) => (
+            <MenuItem key={index} value={status}>{status}</MenuItem>
+          ))}
+        </TextField>
+        <DatePicker
+          fullWidth
+          required
+          clearable
+          label="Decision Date"
+          value={decisionDate}
+          onChange={onDecisionDateChange}
+        />
+        <TextField
+          id="case-result"
+          variant="outlined"
+          color="secondary"
+          fullWidth
+          name="result"
+          label="Result"
+          size="small"
+          onChange={onResultChange}
+          value={result}
+        />
+        <TextField
+          id="case-result-decision-link"
+          variant="outlined"
+          color="secondary"
+          fullWidth
+          name="decision-link"
+          label="Decision Link"
+          size="small"
+          onChange={onDecisionLinkChange}
+          value={decisionLink ?? ''}
+        />
+        <TextField
+          id="case-result-decisionSummary"
+          variant="outlined"
+          color="secondary"
+          fullWidth
+          required
+          minRows={3}
+          multiline
+          name="decisionSummary"
+          label="Decision Summary"
+          onChange={onDecisionSummaryChange}
+          value={decisionSummary}
+        />
         {fullCase.dockets.map(docket => (
-          <Grid item key={docket.docketId}>
-            <DocketResultForm
-              docket={docket}
-              onSave={createEditDocketOverruled(docket.docketId)}
-            />
-          </Grid>
+          <DocketResultForm
+            key={docket.docketId}
+            docket={docket}
+            onSave={createEditDocketOverruled(docket.docketId)}
+          />
         ))}
-        <Grid item>
-          <Button
-            color="secondary"
-            disabled={!enableSave}
-            onClick={save}
-          >Save</Button>
-        </Grid>
-      </Grid>
+        <Button
+          color="secondary"
+          disabled={!enableSave}
+          onClick={save}
+        >Save</Button>
+      </Stack>
     </Paper>
   );
 };
@@ -220,29 +204,25 @@ const DocketResultForm = (props: DocketResultProps) => {
   const classes = useStyles();
   return (
     <Paper className={classes.paper} variant="outlined">
-      <Grid container direction="column" spacing={2}>
+      <Stack spacing={2}>
         {!!formError && 
-          <Grid item>
-            <Typography color="error">{formError}</Typography>
-          </Grid>
+          <Typography color="error">{formError}</Typography>
         } 
-        <Grid item>
+        <div>
           <Typography variant="subtitle1">{props.docket.title}</Typography>
           <Typography variant="subtitle2" color="textSecondary">{props.docket.docketNumber} - {props.docket.lowerCourt.shortName}</Typography>
-        </Grid>
-        <Grid item>
-          <FormControl component="fieldset">
-            <FormLabel component="legend">Lower Court Overruled?</FormLabel>
-            <RadioGroup row aria-label="lower court overruled" name="lowerCourtOverruled"
-              value={radioValue}
-              onChange={changeLowerCourtOverruled}
-            >
-              <FormControlLabel value={true} control={<Radio />} label="Yes" />
-              <FormControlLabel value={false} control={<Radio />} label="No" />
-            </RadioGroup>
-          </FormControl>
-        </Grid>
-      </Grid>
+        </div>
+        <FormControl component="fieldset">
+          <FormLabel component="legend">Lower Court Overruled?</FormLabel>
+          <RadioGroup row aria-label="lower court overruled" name="lowerCourtOverruled"
+            value={radioValue}
+            onChange={changeLowerCourtOverruled}
+          >
+            <FormControlLabel value={true} control={<Radio />} label="Yes" />
+            <FormControlLabel value={false} control={<Radio />} label="No" />
+          </RadioGroup>
+        </FormControl>
+      </Stack>
     </Paper>
   );
 };

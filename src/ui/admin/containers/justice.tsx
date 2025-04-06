@@ -11,8 +11,8 @@ import {
   DialogActions,
   Button,
   Fab,
-  Grid,
   FormControlLabel,
+  Stack,
 } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import JusticeCard from '../components/justiceCard';
@@ -94,23 +94,19 @@ const JusticePage = () => {
 
   return (
     <>
-      <Grid container direction="column" spacing={1}>
-        <Grid item>
-          <Typography variant="h5">{showAll ? 'All Justices' : 'Active Justices'}:</Typography>
-        </Grid>
-        <Grid item>
-          <FormControlLabel
-            control={
-              <Switch
-                checked={showAll}
-                onChange={toggleShowAll}
-                color="primary"
-              />
-            }
-            label="Show all justices"
-          />
-        </Grid>
-      </Grid>
+      <Stack alignItems="start" spacing={1}>
+        <Typography variant="h5">{showAll ? 'All Justices' : 'Active Justices'}:</Typography>
+        <FormControlLabel
+          control={
+            <Switch
+              checked={showAll}
+              onChange={toggleShowAll}
+              color="primary"
+            />
+          }
+          label="Show all justices"
+        />
+      </Stack>
       {justiceList?.map( justice => (
         <JusticeCard key={justice.id} justice={justice} retireCallback={attemptRetire}></JusticeCard>
       )) }

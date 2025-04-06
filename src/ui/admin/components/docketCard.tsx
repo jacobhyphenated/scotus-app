@@ -1,5 +1,5 @@
-import React, { useCallback, useState } from 'react';
-import { Paper, Theme, Grid, Typography, IconButton, Button } from '@mui/material';
+import { useCallback, useState } from 'react';
+import { Paper, Theme, Grid2 as Grid, Typography, IconButton, Button } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import ArrowRight from '@mui/icons-material/ArrowRight';
 import ArrowDown from '@mui/icons-material/ArrowDropDown';
@@ -10,15 +10,6 @@ const useStyles = makeStyles( (theme: Theme) => ({
   docketCard: {
     margin: theme.spacing(1),
     padding: theme.spacing(1),
-    [theme.breakpoints.down('md')]: {
-      maxWidth: 300,
-    },
-    [theme.breakpoints.up('md')]: {
-      maxWidth: 350,
-    },
-    [theme.breakpoints.up('xl')]: {
-      maxWidth: 450,
-    },
   },
 }));
 
@@ -59,18 +50,22 @@ const DocketCard = (props: Props) => {
 
   return (
     <Paper className={classes.docketCard} variant="elevation">
-      <Grid container direction="row" justifyContent="space-between" alignItems="center">
-        <Typography color="textSecondary" variant="subtitle2">
-          {props.docket.docketNumber}
-        </Typography>
-        <IconButton onClick={toggleExpanded} size="large">
-          {expanded ? <ArrowDown /> : <ArrowRight />}
-        </IconButton>
+      <Grid container justifyContent="space-between" alignItems="center">
+        <Grid>
+          <Typography color="textSecondary" variant="subtitle2">
+            {props.docket.docketNumber}
+          </Typography>
+        </Grid>
+        <Grid>
+          <IconButton onClick={toggleExpanded} size="large">
+            {expanded ? <ArrowDown /> : <ArrowRight />}
+          </IconButton>
+        </Grid>
       </Grid>
       <Typography variant="h6">{props.docket.title}</Typography>
       {expanded &&
         <>
-          <Grid container direction="row" justifyContent="space-between">
+          <Grid container justifyContent="space-between">
             <Typography color="textSecondary">
               {fullDocket ? fullDocket.lowerCourt.shortName : ''}
             </Typography>
@@ -80,7 +75,7 @@ const DocketCard = (props: Props) => {
           </Grid>
           <Typography paragraph>{props.docket.lowerCourtRuling}</Typography>
           {!!fullDocket?.case && 
-            <Grid container direction="row">
+            <Grid container>
               {!!fullDocket?.case?.result ?
                 <Typography color="textSecondary">
                   Result: {fullDocket.case.result} ({fullDocket.case.decisionDate?.format(formatter) ?? ''})
@@ -93,7 +88,7 @@ const DocketCard = (props: Props) => {
               }
             </Grid>
           }
-          <Grid container direction="row" justifyContent="flex-end" spacing={1}>
+          <Grid container justifyContent="flex-end" spacing={1}>
             {props.onEditClick &&
               <Button onClick={editClick} color="primary">Edit</Button>
             }

@@ -1,6 +1,5 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import {
-  Grid,
   Typography,
   IconButton,
   Theme,
@@ -10,6 +9,7 @@ import {
   FormLabel,
   RadioGroup,
   Radio,
+  Stack,
 } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import BackIcon from '@mui/icons-material/ArrowBack';
@@ -21,10 +21,10 @@ const useStyles = makeStyles((theme: Theme) => ({
   formContainer: {
     marginTop: theme.spacing(2),
     [theme.breakpoints.down('md')]: {
-      maxWidth: 320,
+      width: 320,
     },
     [theme.breakpoints.up('md')]: {
-      maxWidth: 450,
+      width: 450,
     },
   },
 }));
@@ -119,96 +119,79 @@ const EditDocketPage = () => {
   const classes = useStyles();
 
   return (
-    <Grid container direction="column">
-      <Grid item>
-        <IconButton onClick={back} size="large">
-          <BackIcon color="action" />
-        </IconButton>
-      </Grid>
-      <Grid item>
-        <Typography variant="h4" component="h2">Edit Docket</Typography>
-      </Grid>
-      <Grid item>
-        {!!docket ?
-          <Grid className={classes.formContainer} container direction="row" spacing={2}>
-            {!!formError ? (
-              <Grid item>
-                <Typography color="error">{formError}</Typography>
-              </Grid>) 
-              : ''
-            }
-            <Grid item xs={12}>
-              <ViewEditInputText
-                id="docket-edit-title"
-                fullWidth
-                required
-                disabled={submitting}
-                name="title"
-                label="Title"
-                value={docket.title}
-                onSave={saveTitle}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <ViewEditInputText
-                id="docket-edit-docket-number"
-                fullWidth
-                required
-                disabled={submitting}
-                name="docketNumber"
-                label="Docket Number"
-                value={docket.docketNumber}
-                onSave={saveDocketNumber}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <ViewEditInputText
-                id="docket-edit-lower-court-ruling"
-                fullWidth
-                required
-                disabled={submitting}
-                name="lowerCourt"
-                label="Lower Court Ruling"
-                multiline
-                minRows={4}
-                value={docket.lowerCourtRuling}
-                onSave={saveCourtRuling}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <ViewEditInputText
-                id="docket-edit-status"
-                fullWidth
-                required
-                disabled={submitting}
-                name="status"
-                label="Status"
-                select
-                value={docket.status}
-                onSave={saveStatus}
-              >
-                {Object.values(DocketStatus).map((status, index) => (
-                  <MenuItem key={index} value={status}>{status}</MenuItem>
-                ))}
-              </ViewEditInputText>
-            </Grid>
-            <Grid item xs={12}>
-              <FormControl component="fieldset">
-                <FormLabel component="legend">Lower Court Overruled?</FormLabel>
-                <RadioGroup row aria-label="lower court overruled" name="lowerCourtOverruled"
-                  value={docket.lowerCourtOverruled}
-                  onChange={changeLowerCourtOverruled}
-                >
-                  <FormControlLabel value={true} control={<Radio />} label="Yes" />
-                  <FormControlLabel value={false} control={<Radio />} label="No" />
-                </RadioGroup>
-              </FormControl>
-            </Grid>
-          </Grid> 
-        :
-          <></>}
-      </Grid>
-    </Grid>
+    <Stack alignItems="start">
+      <IconButton onClick={back} size="large">
+        <BackIcon color="action" />
+      </IconButton>
+      <Typography variant="h4" component="h2">Edit Docket</Typography>
+      {!!docket &&
+        <Stack className={classes.formContainer} spacing={2}>
+          {!!formError &&
+            <Typography color="error">{formError}</Typography>
+          }
+
+          <ViewEditInputText
+            id="docket-edit-title"
+            fullWidth
+            required
+            disabled={submitting}
+            name="title"
+            label="Title"
+            value={docket.title}
+            onSave={saveTitle}
+          />
+
+          <ViewEditInputText
+            id="docket-edit-docket-number"
+            fullWidth
+            required
+            disabled={submitting}
+            name="docketNumber"
+            label="Docket Number"
+            value={docket.docketNumber}
+            onSave={saveDocketNumber}
+          />
+
+          <ViewEditInputText
+            id="docket-edit-lower-court-ruling"
+            fullWidth
+            required
+            disabled={submitting}
+            name="lowerCourt"
+            label="Lower Court Ruling"
+            multiline
+            minRows={4}
+            value={docket.lowerCourtRuling}
+            onSave={saveCourtRuling}
+          />
+          <ViewEditInputText
+            id="docket-edit-status"
+            fullWidth
+            required
+            disabled={submitting}
+            name="status"
+            label="Status"
+            select
+            value={docket.status}
+            onSave={saveStatus}
+          >
+            {Object.values(DocketStatus).map((status, index) => (
+              <MenuItem key={index} value={status}>{status}</MenuItem>
+            ))}
+          </ViewEditInputText>
+          <FormControl component="fieldset">
+            <FormLabel component="legend">Lower Court Overruled?</FormLabel>
+            <RadioGroup row aria-label="lower court overruled" name="lowerCourtOverruled"
+              value={docket.lowerCourtOverruled}
+              onChange={changeLowerCourtOverruled}
+            >
+              <FormControlLabel value={true} control={<Radio />} label="Yes" />
+              <FormControlLabel value={false} control={<Radio />} label="No" />
+            </RadioGroup>
+          </FormControl>
+        </Stack> 
+      }
+    </Stack>
   );
 };
 

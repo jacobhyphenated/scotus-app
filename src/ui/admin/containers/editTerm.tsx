@@ -1,6 +1,5 @@
 import { useCallback, useContext, useEffect, useState } from 'react';
 import {
-  Grid,
   Typography,
   IconButton,
   Theme,
@@ -9,6 +8,7 @@ import {
   FormLabel,
   RadioGroup,
   Radio,
+  Stack,
 } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import BackIcon from '@mui/icons-material/ArrowBack';
@@ -22,10 +22,10 @@ const useStyles = makeStyles((theme: Theme) => ({
   formContainer: {
     marginTop: theme.spacing(2),
     [theme.breakpoints.down('md')]: {
-      maxWidth: 320,
+      width: 320,
     },
     [theme.breakpoints.up('md')]: {
-      maxWidth: 500,
+      width: 500,
     },
   },
   helperText: {
@@ -110,71 +110,61 @@ const EditTermPage = () => {
 
   const classes = useStyles();
 
-  return <>
-    <Grid container direction="column">
-      <Grid item>
-        <IconButton onClick={back} size="large">
-          <BackIcon color="action" />
-        </IconButton>
-      </Grid>
-      <Grid item>
-        <Typography variant="h4" component="h2">Edit Docket</Typography>
-      </Grid>
-      <Grid item>
-        {term &&
-          <Grid className={classes.formContainer} container direction="row" spacing={2}>
-            {!!formError && (
-              <Grid item>
-                <Typography color="error">{formError}</Typography>
-              </Grid>)
-            }
-            <Grid item xs={12}>
-              <ViewEditInputText
-                id="term-edit-name"
-                fullWidth
-                required
-                disabled={submitting}
-                name="name"
-                label="Name"
-                value={term.name}
-                onSave={saveName}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <ViewEditInputText
-                id="term-edit-otname"
-                fullWidth
-                required
-                disabled={submitting}
-                name="otName"
-                label="OT Name"
-                value={term.otName}
-                onSave={saveOtName}
-              />
-              <Typography className={classes.helperText} variant="subtitle1" color="textSecondary">
-                October term notation
-              </Typography>
-            </Grid>
-            <Grid item xs={12}>
-              <FormControl component="fieldset">
-                <FormLabel component="legend">Inactive</FormLabel>
-                <RadioGroup row aria-label="inactive" name="inactive"
-                  value={term.inactive}
-                  onChange={changeInactive}
-                >
-                  <FormControlLabel value={true} control={<Radio />} label="Inactive" />
-                  <FormControlLabel value={false} control={<Radio />} label="Active" />
-                </RadioGroup>
-              </FormControl>
-              <Typography className={classes.helperText} variant="subtitle1" color="textSecondary">
-                Inactive terms do not appear in the home screen drop down menu
-              </Typography>
-            </Grid>
-          </Grid>
-        }
-      </Grid>
-    </Grid>
-  </>;
+  return (
+    <Stack alignItems="start">
+      <IconButton onClick={back} size="large">
+        <BackIcon color="action" />
+      </IconButton>
+      <Typography variant="h4" component="h2">Edit Docket</Typography>
+      {term &&
+        <Stack className={classes.formContainer} spacing={2}>
+          {!!formError && 
+            <Typography color="error">{formError}</Typography>
+          }
+          <ViewEditInputText
+            id="term-edit-name"
+            fullWidth
+            required
+            disabled={submitting}
+            name="name"
+            label="Name"
+            value={term.name}
+            onSave={saveName}
+          />
+          <div>
+            <ViewEditInputText
+              id="term-edit-otname"
+              fullWidth
+              required
+              disabled={submitting}
+              name="otName"
+              label="OT Name"
+              value={term.otName}
+              onSave={saveOtName}
+            />
+            <Typography className={classes.helperText} variant="subtitle1" color="textSecondary">
+              October term notation
+            </Typography>
+          </div>
+          <div>
+            <FormControl component="fieldset">
+              <FormLabel component="legend">Inactive</FormLabel>
+              <RadioGroup row aria-label="inactive" name="inactive"
+                value={term.inactive}
+                onChange={changeInactive}
+              >
+                <FormControlLabel value={true} control={<Radio />} label="Inactive" />
+                <FormControlLabel value={false} control={<Radio />} label="Active" />
+              </RadioGroup>
+            </FormControl>
+            <Typography className={classes.helperText} variant="subtitle1" color="textSecondary">
+              Inactive terms do not appear in the home screen drop down menu
+            </Typography>
+          </div>
+        </Stack>
+      }
+    </Stack>
+  );
 };
 
 export default observer(EditTermPage);

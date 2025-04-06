@@ -1,5 +1,5 @@
-import React, { useCallback, useState } from 'react';
-import { Paper, Theme, Grid, Typography, IconButton, Button } from '@mui/material';
+import { useCallback, useState } from 'react';
+import { Paper, Theme, Grid2 as Grid, Typography, IconButton, Button, Stack } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import ArrowRight from '@mui/icons-material/ArrowRight';
 import ArrowDown from '@mui/icons-material/ArrowDropDown';
@@ -10,18 +10,6 @@ const useStyles = makeStyles( (theme: Theme) => ({
   caseCard: {
     margin: theme.spacing(1),
     padding: theme.spacing(1),
-    [theme.breakpoints.down('sm')]: {
-      maxWidth: 300,
-    },
-    [theme.breakpoints.down('md')]: {
-      maxWidth: 400,
-    },
-    [theme.breakpoints.up('md')]: {
-      maxWidth: 450,
-    },
-    [theme.breakpoints.up('lg')]: {
-      maxWidth: 600,
-    },
   },
 }));
 
@@ -44,17 +32,21 @@ const CaseCard = (props: Props) => {
 
   return (
     <Paper className={classes.caseCard}>
-      <Grid container direction="row" justifyContent="space-between" alignItems="center">
-        <Typography color="textSecondary" variant="subtitle2">
-          {props.case.status}{props.case.result && `: ${props.case.result}`}
-        </Typography>
-        <IconButton onClick={toggleExpanded} size="large">
-          {expanded ? <ArrowDown /> : <ArrowRight />}
-        </IconButton>
+      <Grid container justifyContent="space-between" alignItems="center">
+        <Grid>
+          <Typography color="textSecondary" variant="subtitle2">
+            {props.case.status}{props.case.result && `: ${props.case.result}`}
+          </Typography>
+        </Grid>
+        <Grid>
+          <IconButton onClick={toggleExpanded} size="large">
+            {expanded ? <ArrowDown /> : <ArrowRight />}
+          </IconButton>
+        </Grid>
       </Grid>
       <Typography variant="h6">{props.case.case}</Typography>
       {expanded &&
-        <Grid container direction="column">
+        <Stack>
           <Typography color="textSecondary">
             {props.case.decisionDate ? `Decision date: ${props.case.decisionDate.format(formatter)}`
             :
@@ -69,7 +61,7 @@ const CaseCard = (props: Props) => {
               <Button color="primary" onClick={editButton}>Edit</Button>
             </Grid>
           }
-        </Grid>
+        </Stack>
       }
     </Paper>
   );

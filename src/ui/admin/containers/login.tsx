@@ -1,22 +1,22 @@
 import React, { useCallback, useEffect, useState, useContext } from 'react';
 import { UserStoreContext } from '../../../stores/userStore';
-import { Grid, TextField, Button, Theme } from '@mui/material';
+import { TextField, Button, Theme, Stack, Typography } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import { Alert } from '@mui/material';
 
 const useStyles = makeStyles((theme: Theme) => ({
   paper: {
     [theme.breakpoints.down('md')]: {
-      maxWidth: 600,
+      width: 600,
     },
     [theme.breakpoints.up('md')]: {
-      maxWidth: 768,
+      width: 768,
     },
     [theme.breakpoints.up('xl')]: {
-      maxWidth: 1200,
+      width: 1200,
     },
     margin: `${theme.spacing(1)} auto`,
-    padding: '16px',
+    padding: theme.spacing(2),
   },
 }));
 
@@ -61,49 +61,40 @@ const Login = () => {
 
   const classes = useStyles();
   return (
-    <Grid className={classes?.paper} container direction="column" justifyContent="center" alignItems="stretch" spacing={2}>
-      <Grid item>
-        <h2>Log In</h2>
-      </Grid>
+    <Stack className={classes?.paper} justifyContent="center" alignItems="stretch" spacing={2}>
+      <Typography variant='h4'>Log In</Typography>
       {error ? (<Alert severity="error">{error}</Alert>) : '' }
-      <Grid item>
-        <TextField
-          size="small"
-          fullWidth
-          color="secondary"
-          variant="filled"
-          name="username"
-          required
-          label="Username"
-          onChange={changeUsername}
-          value={username}
-        />
-      </Grid>
-      <Grid item>
-        <TextField
-          size="small"
-          color="secondary"
-          variant="filled"
-          fullWidth
-          name="password"
-          type="password"
-          required
-          label="Password"
-          onChange={changePassword}
-          onKeyPress={keyPress}
-          value={password}
-        />  
-      </Grid>
-      
-      <Grid item>
-        <Button 
-          color="primary"
-          variant="contained"
-          fullWidth
-          onClick={submit}
-        >Log In</Button>
-      </Grid>
-    </Grid>
+      <TextField
+        size="small"
+        fullWidth
+        color="secondary"
+        variant="filled"
+        name="username"
+        required
+        label="Username"
+        onChange={changeUsername}
+        value={username}
+      />
+      <TextField
+        size="small"
+        color="secondary"
+        variant="filled"
+        fullWidth
+        name="password"
+        type="password"
+        required
+        label="Password"
+        onChange={changePassword}
+        onKeyPress={keyPress}
+        value={password}
+      />  
+      <Button 
+        color="primary"
+        variant="contained"
+        fullWidth
+        onClick={submit}
+      >Log In</Button>
+    </Stack>
   );
 };
 

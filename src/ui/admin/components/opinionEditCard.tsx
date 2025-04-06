@@ -2,7 +2,7 @@ import React, { useCallback, useState } from "react";
 import {
   Typography,
   Paper,
-  Grid,
+  Grid2 as Grid,
   Button,
   TextField,
   Theme,
@@ -13,6 +13,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogActions,
+  Stack,
 } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import CloseIcon from '@mui/icons-material/Close';
@@ -21,12 +22,12 @@ import { Opinion } from '../../../stores/opinionStore';
 const useStyles = makeStyles( (theme: Theme) => ({
   paper: {
     padding: theme.spacing(1),
-    'margin-top': theme.spacing(1),
+    marginTop: theme.spacing(1),
   },
   chip: {
-    'margin-left': '4px',
-    'margin-bottom': '2px',
-    'height': theme.spacing(3),
+    marginLeft: '4px',
+    marginBottom: '2px',
+    height: theme.spacing(3),
   },
   opinionSummary: {
     'white-space': 'pre-line',
@@ -76,65 +77,60 @@ const OpinionEditCard = (props: Props) => {
 
   return (
     <Paper variant="elevation" className={classes.paper}>
-      <Grid container direction="column" spacing={1}>
-        <Grid item>
-          <Grid container direction="row" justifyContent="space-between" alignItems="baseline">
-            <Grid item>
-              <Typography variant="subtitle2" color="textSecondary">
-                {opinion.opinionType}
-              </Typography>
-            </Grid>
-            <Grid item>
-              <IconButton onClick={toggleConfirmDelete} size="large">
-                <CloseIcon />
-              </IconButton>
-            </Grid>
+      <Stack spacing={1}>
+        <Grid container justifyContent="space-between" alignItems="baseline">
+          <Grid>
+            <Typography variant="subtitle2" color="textSecondary">
+              {opinion.opinionType}
+            </Typography>
+          </Grid>
+          <Grid>
+            <IconButton onClick={toggleConfirmDelete} size="large">
+              <CloseIcon />
+            </IconButton>
           </Grid>
         </Grid>
-        <Grid item>
-          {!editMode ?
-            <Grid container direction="row" alignItems="center" justifyContent="space-between">
-              <Grid item xs={10}>
-                <Grid container direction="column">
-                  <Typography className={classes.opinionSummary}>{opinion.summary}</Typography>
-                </Grid>
-              </Grid>
-              <Grid item xs={2}>
-                <Button color="primary" onClick={toggleEditMode}>edit</Button>
-              </Grid>
+        {!editMode ?
+          <Grid container alignItems="center" justifyContent="space-between">
+            <Grid size={10}>
+              <Typography className={classes.opinionSummary}>{opinion.summary}</Typography>
             </Grid>
-          :
-            <Grid container direction="row" alignItems="center">
-              <Grid xs={10} item>
-                <TextField
-                  label="Summary"
-                  fullWidth
-                  multiline
-                  minRows={4}
-                  maxRows={10}
-                  value={summaryText}
-                  variant="outlined"
-                  color="secondary"
-                  onChange={onChangeSummary}
-                />
-              </Grid>
-              <Grid xs={2} item>
-                <Button color="secondary" onClick={saveSummary}>save</Button>
-              </Grid>
+            <Grid size={2}>
+              <Button color="primary" onClick={toggleEditMode}>edit</Button>
             </Grid>
-          }
-        </Grid>
-        <Grid item>
+          </Grid>
+        :
+          <Grid container alignItems="center">
+            <Grid size={10}>
+              <TextField
+                label="Summary"
+                fullWidth
+                multiline
+                minRows={4}
+                maxRows={10}
+                value={summaryText}
+                variant="outlined"
+                color="secondary"
+                onChange={onChangeSummary}
+              />
+            </Grid>
+            <Grid size={2}>
+              <Button color="secondary" onClick={saveSummary}>save</Button>
+            </Grid>
+          </Grid>
+        }
+        <div>
           <Typography>Author: <strong>{author?.justiceName}</strong></Typography>
           {joined.length > 0 &&
             <>
               <Typography component="span">Joined By:</Typography>
-              {joined.map(j => (<Chip key={j.justiceId} label={j.justiceName} className={classes.chip} variant="outlined" />))}
+              {joined.map(j => (
+                <Chip key={j.justiceId} label={j.justiceName} className={classes.chip} variant="outlined" />
+              ))}
             </>
           }
-          
-        </Grid>
-      </Grid>
+        </div>
+      </Stack>
       <Dialog
         open={confirmDelete}
         onClose={toggleConfirmDelete}

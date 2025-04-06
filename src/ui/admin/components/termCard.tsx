@@ -1,4 +1,4 @@
-import { Grid, Paper, Theme, Typography } from "@mui/material";
+import { Grid2 as Grid, Paper, Stack, Theme, Typography } from "@mui/material";
 import makeStyles from '@mui/styles/makeStyles';
 import { useCallback } from "react";
 import { Term } from "../../../stores/caseStore";
@@ -15,16 +15,16 @@ const useStyles = makeStyles( (theme: Theme) => ({
     paddingRight: theme.spacing(3),
     cursor: 'pointer',
     [theme.breakpoints.down('sm')]: {
-      maxWidth: '100%',
+      width: '100%',
     },
     [theme.breakpoints.up('sm')]: {
-      maxWidth: 400,
+      width: 400,
     },
     [theme.breakpoints.up('md')]: {
-      maxWidth: 600,
+      width: 600,
     },
     [theme.breakpoints.up('xl')]: {
-      maxWidth: 900,
+      width: 900,
     },
   },
 }));
@@ -41,18 +41,14 @@ const TermCard = (props: Props) => {
 
   return (
     <Paper elevation={1} onClick={clickEvent} className={classes.termCard}>
-      <Grid container direction="row" justifyContent='space-between' alignItems='center'>
-        <Grid item>
-          <Grid container direction="column">
-            <Grid item>
-              <Typography variant="h6">{term.otName}</Typography>
-            </Grid>
-            <Grid item>
-              <Typography>{term.name}</Typography>
-            </Grid>
-          </Grid>
+      <Grid container justifyContent='space-between' alignItems='center'>
+        <Grid>
+          <Stack>
+            <Typography variant="h6">{term.otName}</Typography>
+            <Typography>{term.name}</Typography>
+          </Stack>
         </Grid>
-        <Grid item>
+        <Grid>
           <Typography color={ term.inactive ? 'error' : 'textPrimary' }>
             {term.inactive ? 'Inactive' : 'Active'} 
           </Typography>

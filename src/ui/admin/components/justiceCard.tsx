@@ -1,5 +1,5 @@
-import React, { useCallback, useMemo } from 'react';
-import { Theme, Typography, Button, Paper, Grid } from '@mui/material';
+import { useCallback, useMemo } from 'react';
+import { Theme, Typography, Button, Paper, Grid2 as Grid } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import { Justice } from '../../../stores/justiceStore';
 import { DateTimeFormatter } from '@js-joda/core';
@@ -9,13 +9,13 @@ const useStyles = makeStyles( (theme: Theme) => ({
     margin: theme.spacing(1),
     padding: theme.spacing(1),
     [theme.breakpoints.down('md')]: {
-      maxWidth: 300,
+      width: 300,
     },
     [theme.breakpoints.up('md')]: {
-      maxWidth: 450,
+      width: 450,
     },
     [theme.breakpoints.up('xl')]: {
-      maxWidth: 600,
+      width: 600,
     },
   },
 }));

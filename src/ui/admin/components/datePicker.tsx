@@ -12,6 +12,7 @@ interface Props {
   error?: boolean;
   helperText?: string | null;
   fullWidth?: boolean;
+  clearable?: boolean;
 }
 
 /**
@@ -29,15 +30,6 @@ interface Props {
  * 
  * Once complete, we can remove the `moment` dependency from the project
  * 
- */
-
-
-/**
- * TODO:
- * Issue 2: The DatePicker API does not currently offer a Clear button or interface for clearing a date from the field.
- * The workaround is to clear the year, month, and day individually in the keyboard (unclear how this works for mobile)
- * 
- * Open Issue in MUI-X: https://github.com/mui/mui-x/issues/4450
  */
 
 const ScotusDatePicker = (props: Props) => {
@@ -73,6 +65,9 @@ const ScotusDatePicker = (props: Props) => {
             error: props.error,
             size: 'small',
             fullWidth: props.fullWidth,
+          },
+          field: {
+            clearable: props.clearable,
           },
         }}
       />

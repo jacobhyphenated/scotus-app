@@ -1,7 +1,7 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import { BareDocket, FullDocket, DocketStoreContext } from '../../../stores/docketStore';
-import { Typography, Theme, Grid, Fab, TextField, InputAdornment, Button } from '@mui/material';
+import { Typography, Theme, Grid2 as Grid, Fab, TextField, InputAdornment, Button } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
@@ -77,31 +77,34 @@ const DocketPage = () => {
   return (
     <>
       <Typography variant="h4">Dockets</Typography>
-      <Grid container direction="row" alignItems="baseline">
-        <TextField
-          className={classes.search}
-          label="search all"
-          variant="outlined"
-          size="small"
-          onChange={updateSearchText}
-          onKeyPress={keyPress}
-          value={searchText}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon color="action" />
-              </InputAdornment>
-            ),
-          }}
-        />
-        <Button color="primary" onClick={search}>Search</Button>
+      <Grid container alignItems="center" className={classes.search}>
+        <Grid>
+          <TextField
+            label="search all"
+            variant="outlined"
+            size="small"
+            onChange={updateSearchText}
+            onKeyPress={keyPress}
+            value={searchText}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon color="action" />
+                </InputAdornment>
+              ),
+            }}
+          />
+        </Grid>
+        <Grid>
+          <Button color="primary" onClick={search}>Search</Button>
+        </Grid>
       </Grid>
       {searchResults.length === 0 &&
         <Typography variant="h5">Unassigned:</Typography>
       }
       <Grid container>
         {(searchResults.length === 0 ? unassigned : searchResults).map( docket => (
-          <Grid item key={docket.id} xs={12} md={6} lg={4} xl={3}>
+          <Grid key={docket.id} size={{ xs: 12, md: 6, lg: 4, xl: 3 }}>
             <DocketCard
               docket={docket}
               getFullDocket={getFullDocketFun(docket.id)}

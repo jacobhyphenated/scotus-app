@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react";
-import { Typography, Paper, Grid, Button, TextField, Theme, IconButton } from '@mui/material';
+import { Typography, Paper, Grid2 as Grid, Button, TextField, Theme, IconButton, Stack } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import CloseIcon from '@mui/icons-material/Close';
 
@@ -16,7 +16,9 @@ const useStyles = makeStyles( (theme: Theme) => ({
     marginRight: theme.spacing(-1),
   },
   topSpacer: {
-    marginTop: theme.spacing(1),
+    '&&': {
+      marginTop: theme.spacing(2),
+    },
   },
 }));
 
@@ -57,24 +59,20 @@ const AlternateTitleEditCard = (props: Props) => {
 
   return (
     <Paper variant="outlined" className={classes.paper}>
-      <Grid container direction="column">
-        <Grid item className={classes.bottomSpacer}>
-          <Typography color="textSecondary" variant="subtitle2">Alternate Titles</Typography>
-        </Grid>
+      <Stack spacing={1}>
+        <Typography color="textSecondary" variant="subtitle2">Alternate Titles</Typography>
         {existingTitles.map(existingTitle => (
-          <Grid item key={existingTitle} className={classes.bottomSpacer}>
-            <ExistingTitleCard title={existingTitle} onDelete={deleteExisting} />
-          </Grid>
+          <ExistingTitleCard key={existingTitle} title={existingTitle} onDelete={deleteExisting} />
         ))}
         {newTitleIds.map(id => (
-          <Grid item key={id} className={`${classes.topSpacer} ${classes.bottomSpacer}`}>
+          <div className={classes.topSpacer} key={id}>
             <NewTitleCard id={id} createNewTitle={createNewTitle} />
-          </Grid>
+          </div>
         ))}
-        <Grid item>
+        <div>
           <Button onClick={onClickNewTitle} color="primary">Add Title</Button>
-        </Grid>
-      </Grid>
+        </div>
+      </Stack>
     </Paper>
   );
 };
@@ -97,11 +95,11 @@ const ExistingTitleCard = (props: ExistingTitleProps) => {
 
   return (
     <Paper variant="outlined" className={classes.paper}>
-      <Grid container direction="row" alignItems="center">
-        <Grid item className={classes.title} xs={11}>
+      <Grid container alignItems="center">
+        <Grid className={classes.title} size={11}>
           <Typography>{props.title}</Typography>
         </Grid>
-        <Grid item xs={1}>
+        <Grid size={1}>
           <IconButton size="small" onClick={onDeleteTitle}><CloseIcon /></IconButton>
         </Grid>
       </Grid>
@@ -134,8 +132,8 @@ const NewTitleCard = (props: NewTitleProps) => {
   }, [save]);
 
   return (
-    <Grid container direction="row" alignItems="center">
-      <Grid xs={10} item>
+    <Grid container alignItems="center">
+      <Grid size={10}>
         <TextField
           label="Title"
           value={title}
@@ -146,7 +144,7 @@ const NewTitleCard = (props: NewTitleProps) => {
           onKeyPress={keyPress}
           onChange={onChange} />
       </Grid>
-      <Grid xs={2} item>
+      <Grid size={2}>
         <Button color="secondary" onClick={save}>save</Button>
       </Grid>
     </Grid>

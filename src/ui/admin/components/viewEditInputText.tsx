@@ -1,5 +1,5 @@
 import React, { useState, ReactNode, useCallback } from "react";
-import { Typography, Paper, Grid, Button, TextField, Theme } from '@mui/material';
+import { Typography, Paper, Grid2 as Grid, Button, TextField, Theme, Stack } from '@mui/material';
 
 import makeStyles from '@mui/styles/makeStyles';
 
@@ -65,25 +65,21 @@ const ViewEditInputText = (props: Props) => {
     <>
       {!editMode ?
       <Paper variant="outlined" className={classes.paper}>
-        <Grid container direction="row" alignItems="center" justifyContent="space-between">
-          <Grid item xs={10}>
-            <Grid container direction="column" className={classes.noOverflow}>
-              <Grid item>
-                <Typography color="textSecondary" variant="subtitle2">{label}</Typography>
-              </Grid>
-              <Grid item>
-                <Typography className={!!forceWrap ? classes.forceWrap : ''}>{display ?? value}</Typography>
-              </Grid>
-            </Grid>
+        <Grid container alignItems="center" justifyContent="space-between">
+          <Grid size={10}>
+            <Stack className={classes.noOverflow}>
+              <Typography color="textSecondary" variant="subtitle2">{label}</Typography>
+              <Typography className={!!forceWrap ? classes.forceWrap : ''}>{display ?? value}</Typography>
+            </Stack>
           </Grid>
-          <Grid item xs={2}>
+          <Grid size={2}>
             <Button disabled={props.disabled} color="primary" onClick={onEditClick}>edit</Button>
           </Grid>
         </Grid>
       </Paper>
       :
-      <Grid container direction="row" alignItems="center">
-        <Grid xs={10} item>
+      <Grid container alignItems="center">
+        <Grid size={10}>
           <TextField
             label={label}
             value={editValue}
@@ -95,7 +91,7 @@ const ViewEditInputText = (props: Props) => {
               {children}
           </TextField>
         </Grid>
-        <Grid xs={2} item>
+        <Grid size={2}>
           <Button color="secondary" onClick={onSaveClick}>save</Button>
         </Grid>
       </Grid>

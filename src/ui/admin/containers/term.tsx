@@ -1,22 +1,13 @@
 import { useCallback, useContext, useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
-import { Typography, Theme, Grid, Fab } from '@mui/material';
+import { Typography, Fab, Stack } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import AddIcon from '@mui/icons-material/Add';
 import { CaseStoreContext, Term } from '../../../stores/caseStore';
 import TermCard from '../components/termCard';
 import { useNavigate } from 'react-router';
 
-const useStyles = makeStyles((theme: Theme) => ({
-  formContainer: {
-    marginTop: theme.spacing(2),
-    [theme.breakpoints.down('md')]: {
-      maxWidth: 280,
-    },
-    [theme.breakpoints.up('md')]: {
-      maxWidth: 400,
-    },
-  },
+const useStyles = makeStyles(() => ({
   fab: {
     position: 'fixed',
     right: '25%',
@@ -52,13 +43,11 @@ const TermAdminPage = () => {
   return (
     <>
       <Typography variant='h4'>Terms</Typography>
-      <Grid container direction='column'>
+      <Stack>
         {terms.map(term => (
-          <Grid item key={term.id}>
-            <TermCard term={term} onClick={selectTerm} />
-          </Grid>
+          <TermCard key={term.id} term={term} onClick={selectTerm} />
         ))}
-      </Grid>
+      </Stack>
       <Fab className={classes.fab} onClick={createTerm} color="primary" aria-label="add">
         <AddIcon />
       </Fab>
