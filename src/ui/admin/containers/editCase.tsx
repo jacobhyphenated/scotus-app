@@ -38,6 +38,7 @@ import { CaseTagEditCard } from '../components/caseTagEditCard';
 const useStyles = makeStyles((theme: Theme) => ({
   formContainer: {
     marginTop: theme.spacing(1),
+    width: '100%',
   },
   docketCard: {
     marginTop: theme.spacing(1),
