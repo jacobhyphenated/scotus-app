@@ -1,4 +1,4 @@
-import { Grid, IconButton, Paper, Theme, Typography } from "@mui/material";
+import { Grid2 as Grid, IconButton, Paper, Stack, Theme, Typography } from "@mui/material";
 import makeStyles from '@mui/styles/makeStyles';
 import BackIcon from '@mui/icons-material/ArrowBack';
 import { useCallback, useContext, useEffect, useState } from "react";
@@ -102,84 +102,66 @@ const LowerCourtPage = () => {
 
   return (
     <Paper className={styles.paper}>
-      <Grid container direction="column" spacing={1}>
-        <Grid item>
-          <Grid container direction="row" alignItems="baseline" justifyContent="space-between">
-            <Grid item>
-              <Grid container direction="row" justifyContent="flex-start" alignItems="baseline" spacing={2}>
-                <Grid item>
-                  <IconButton onClick={back} size="large">
-                    <BackIcon color="action" />
-                  </IconButton>
-                </Grid>
-                <Grid item>
-                  {fullCase &&
-                    <Typography color="textSecondary" variant="subtitle2">
-                      {fullCase.status === CaseStatus.ARGUED && !!fullCase.sitting ? 
-                        `${fullCase.status} (${fullCase.sitting})`
-                      : fullCase.status}{fullCase.result && `: ${fullCase.result}` }
-                    </Typography>
-                  }
-                </Grid>
+      <Stack spacing={1}>
+        <Grid container alignItems="baseline" justifyContent="space-between">
+          <Grid>
+            <Grid container justifyContent="flex-start" alignItems="baseline" spacing={2}>
+              <Grid>
+                <IconButton onClick={back} size="large">
+                  <BackIcon color="action" />
+                </IconButton>
               </Grid>
-            </Grid>
-            <Grid item className={styles.flexEnd}>
-              <Grid container direction="row" justifyContent="flex-start" alignItems="baseline" spacing={2}>
-                <Grid item>
-                  {fullCase &&
-                    <Typography color="textSecondary" variant="subtitle2">
-                      Term: {fullCase.term.name}
-                    </Typography>
-                  }
-                </Grid>
+              <Grid>
+                {fullCase &&
+                  <Typography color="textSecondary" variant="subtitle2">
+                    {fullCase.status === CaseStatus.ARGUED && !!fullCase.sitting ? 
+                      `${fullCase.status} (${fullCase.sitting})`
+                    : fullCase.status}{fullCase.result && `: ${fullCase.result}` }
+                  </Typography>
+                }
               </Grid>
             </Grid>
           </Grid>
+          <Grid className={styles.flexEnd}>
+            {fullCase &&
+              <Typography color="textSecondary" variant="subtitle2">
+                Term: {fullCase.term.name}
+              </Typography>
+            }
+          </Grid>
         </Grid>
-        <Grid item>
-          {fullCase &&
-            <Typography variant="h5">
-              {fullCase.case}
-            </Typography>
-          }
-        </Grid>
-        <Grid item>
-          <Typography color="textPrimary" variant="subtitle1">
-            Lower Court Rulings:
+        {fullCase &&
+          <Typography variant="h5">
+            {fullCase.case}
           </Typography>
-        </Grid>
-        <Grid item>
-          { lowerCourtRulings &&
-            <Grid container direction="row" justifyContent="flex-start" >
-              {lowerCourtRulings.map( ruling => (
-                <Grid item xs={12} md={6} key={ruling.docketIdentifiers[0].docketId}>
-                  <Paper className={styles.lowerCourt}>
-                    <Grid container direction="column">
-                      <Grid item>
-                        <Typography variant="subtitle2" color="textSecondary">
-                          {ruling.lowerCourt}
-                        </Typography>
-                      </Grid>
-                      { ruling.docketIdentifiers.map( docket => (
-                        <Grid item key={docket.docketId}>
-                          <Typography className={styles.bottomPad}>
-                            <span className={styles.bold}>{docket.title}</span> ({docket.docketNumber})
-                          </Typography>
-                        </Grid>
-                      ))}
-                      <Grid item>
-                        <Typography paragraph className={styles.paragraph}>
-                          <LinkableText text={ruling.lowerCourtRuling} />
-                        </Typography>
-                      </Grid>
-                    </Grid>
-                  </Paper>
-                </Grid>
-              ))}
-            </Grid>
-          }
-        </Grid>
-      </Grid>
+        }
+        <Typography color="textPrimary" variant="subtitle1">
+          Lower Court Rulings:
+        </Typography>
+        { lowerCourtRulings &&
+          <Grid container justifyContent="flex-start" >
+            {lowerCourtRulings.map( ruling => (
+              <Grid size={{ xs: 12, md: 6 }} key={ruling.docketIdentifiers[0].docketId}>
+                <Paper className={styles.lowerCourt}>
+                  <Stack>
+                    <Typography variant="subtitle2" color="textSecondary">
+                      {ruling.lowerCourt}
+                    </Typography>
+                    { ruling.docketIdentifiers.map( docket => (
+                      <Typography className={styles.bottomPad} key={docket.docketId}>
+                        <span className={styles.bold}>{docket.title}</span> ({docket.docketNumber})
+                      </Typography>
+                    ))}
+                    <Typography paragraph className={styles.paragraph}>
+                      <LinkableText text={ruling.lowerCourtRuling} />
+                    </Typography>
+                  </Stack>
+                </Paper>
+              </Grid>
+            ))}
+          </Grid>
+        }
+      </Stack>
     </Paper>
   );
 };

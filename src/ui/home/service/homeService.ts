@@ -13,8 +13,8 @@ interface JusticeAgreementMap {
 
 const ideologyMap = [
   'Sonia Sotomayor',
-  'Elena Kagan',
   'Ketanji Brown Jackson',
+  'Elena Kagan',
   'Ruth Bader Ginsburg',
   'Stephen Breyer',
   'John Roberts',

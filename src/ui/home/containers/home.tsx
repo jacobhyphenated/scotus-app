@@ -4,7 +4,7 @@ import {
   TextField,
   InputAdornment,
   Paper,
-  Grid,
+  Grid2 as Grid,
   Typography,
   MenuItem,
   Button,
@@ -148,8 +148,8 @@ const Home = () => {
 
   return (
     <Paper className={classes.paper}>
-      <Grid container direction="row" justifyContent="center">
-        <Grid item>
+      <Grid container justifyContent="center">
+        <Grid>
           <TextField
             className={classes.search}
             label="Search Cases"
@@ -169,11 +169,11 @@ const Home = () => {
         </Grid>
       </Grid>
       { searchResults.length === 0 && !(searchText.length >= 3) &&
-        <Grid container direction="row" justifyContent="center" alignItems="center">
-          <Grid item className={classes.searchSpacing}>
+        <Grid container justifyContent="center" alignItems="center">
+          <Grid className={classes.searchSpacing}>
             <Typography>Term: </Typography>
           </Grid>
-          <Grid item>
+          <Grid>
             {selectedTermId && 
               <TextField
                 id="admin-case-term-filter"
@@ -190,7 +190,7 @@ const Home = () => {
               </TextField>
             }
           </Grid>
-          <Grid item marginLeft={1}>
+          <Grid marginLeft={1}>
             <Button variant="text" color="secondary" onClick={allCasesClick}>All Term Cases</Button>
           </Grid>
         </Grid>
@@ -200,9 +200,9 @@ const Home = () => {
           {searchResults.length > 0 ? 
             <>
               <Typography variant="h5" color="textSecondary">Search results</Typography>
-              <Grid container direction="row" justifyContent="flex-start" spacing={2} className={classes.searchGrid}>
+              <Grid container justifyContent="flex-start" spacing={2} className={classes.searchGrid}>
               {searchResults.map(r => (
-                <Grid item xs={12} sm={6} md={4} lg={3} key={r.id}>
+                <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3}} key={r.id}>
                   <CasePreviewCard case={r} onClick={onCaseClick} />
                 </Grid>
               ))}

@@ -1,6 +1,6 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { makeStyles } from '@mui/styles';
-import { Theme, Paper, Grid, Typography, IconButton } from '@mui/material';
+import { Theme, Paper, Grid2 as Grid, Typography, IconButton, Stack } from '@mui/material';
 import BackIcon from '@mui/icons-material/ArrowBack';
 import { Case, CaseStoreContext, FullCase, Term } from '../../../stores/caseStore';
 import { forkJoin } from 'rxjs';
@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     marginRight: theme.spacing(1),
     padding: theme.spacing(2),
     height: `calc(100vh - ${theme.spacing(8)})`,
-    overflow: 'scroll',
+    overflowY: 'scroll',
   },
   caseGroup: {
     padding: theme.spacing(1),
@@ -106,16 +106,14 @@ const TermJusticeSummary = () => {
       return <></>;
     }
     return (
-      <Grid item>
-        <div className={classes.caseGroup}>
-          <Grid container direction="column">
-            <Grid item><Typography variant="h6">{header} ({cases.length})</Typography></Grid>
-            {cases.map(c => (
-              <CaseListItem key={c.id} onCaseClick={onCaseClick} scotusCase={c} caseStore={caseStore} />
-            ))}
-          </Grid>
-        </div>
-      </Grid>
+      <div className={classes.caseGroup}>
+        <Stack>
+          <Typography variant="h6">{header} ({cases.length})</Typography>
+          {cases.map(c => (
+            <CaseListItem key={c.id} onCaseClick={onCaseClick} scotusCase={c} caseStore={caseStore} />
+          ))}
+        </Stack>
+      </div>
     );
   }, [classes.caseGroup, onCaseClick, caseStore]);
 
@@ -145,19 +143,17 @@ const TermJusticeSummary = () => {
 
   return (
     <Paper className={classes.paper}>
-      <Grid container direction="column" spacing={2}>
-        <Grid item>
-          <Grid container direction="row" justifyContent="flex-start" alignItems="center" spacing={1}>
-            <Grid item>
-              <IconButton onClick={back} size="large">
-                <BackIcon color="action" />
-              </IconButton>
-            </Grid>
-            <Grid item>
-              <Typography variant="h5">
-                Argued Cases for {justice.name} for the {term?.name} term 
-              </Typography>
-            </Grid>
+      <Stack spacing={2}>
+        <Grid container justifyContent="flex-start" alignItems="center" spacing={1}>
+          <Grid>
+            <IconButton onClick={back} size="large">
+              <BackIcon color="action" />
+            </IconButton>
+          </Grid>
+          <Grid>
+            <Typography variant="h5">
+              Argued Cases for {justice.name} for the {term?.name} term 
+            </Typography>
           </Grid>
         </Grid>
         {caseGroupRow(majorityAuthor, 'Authored Opinions of the Court')}
@@ -166,7 +162,7 @@ const TermJusticeSummary = () => {
         {caseGroupRow(dissentAuthor, 'Dissenting Opinions')}
         {caseGroupRow(otherMajority, 'Other Cases in Majority')}
         {caseGroupRow(otherDissent, 'Other Cases in Dissent')}
-      </Grid>
+      </Stack>
     </Paper>
   );
 };

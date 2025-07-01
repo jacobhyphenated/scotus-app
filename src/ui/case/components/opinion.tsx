@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 import { Opinion, OpinionType, displayType } from '../../../stores/opinionStore';
 import { makeStyles } from '@mui/styles';
-import { Theme, Paper, Grid, Typography } from '@mui/material';
+import { Theme, Paper, Typography, Stack } from '@mui/material';
 import LinkableText from './linkableText';
 
 const useStyles = makeStyles( (theme: Theme) => ({
@@ -38,8 +38,7 @@ const OpinionView = (props: Props) => {
 
   return (
     <Paper className={classes.paper} onClick={onClick}>
-      <Grid container direction="column" spacing={1}>
-        
+      <Stack>
         <Typography variant="subtitle2" color="textSecondary">
         {opinion.opinionType !== OpinionType.PER_CURIUM ?
           author?.justiceName
@@ -58,8 +57,7 @@ const OpinionView = (props: Props) => {
             <strong>Joined By:</strong> {joinedBy.map(j => j.justiceName).join(", ")}
           </Typography>
         } 
-      </Grid>
-
+      </Stack>
     </Paper>
   );
 };

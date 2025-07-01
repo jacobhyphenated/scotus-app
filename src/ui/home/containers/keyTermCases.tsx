@@ -1,4 +1,4 @@
-import { Grid, IconButton, Paper, Theme, Typography } from "@mui/material";
+import { Grid2 as Grid, IconButton, Paper, Theme, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { autorun } from "mobx";
 import { useCallback, useContext, useEffect, useState } from "react";
@@ -73,21 +73,21 @@ const KeyTermCases = () => {
 
   return (
     <Paper className={classes.paper}>
-      <Grid container direction="row" justifyContent="flex-start" alignItems="center" spacing={1}>
-        <Grid item>
+      <Grid container justifyContent="flex-start" alignItems="center" spacing={1}>
+        <Grid>
           <IconButton onClick={back} size="large">
             <BackIcon color="action" />
           </IconButton>
         </Grid>
-        <Grid item>
+        <Grid>
           <Typography variant="h4">
             Key Cases for the {term?.name} term 
           </Typography>
         </Grid>
       </Grid>
-      <Grid container direction="row" justifyContent="flex-start" spacing={2} className={classes.row}>
+      <Grid container justifyContent="flex-start" spacing={2} className={classes.row}>
         {keyTermCases.map(r => (
-          <Grid item xs={12} sm={6} md={4} lg={3} key={r.id}>
+          <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3}} key={r.id}>
             <CasePreviewCard case={r} onClick={onCaseClick} />
           </Grid>
         ))}

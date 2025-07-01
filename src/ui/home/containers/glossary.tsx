@@ -1,4 +1,4 @@
-import { Grid, Paper, Theme, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
+import { Paper, Stack, Theme, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import makeStyles from '@mui/styles/makeStyles';
 import { GlossaryItem, GlossaryService } from "../service/glossaryService";
@@ -51,47 +51,39 @@ const GlossaryPage = () => {
 
   return (
     <Paper className={classes.paper}>
-      <Grid container direction="row">
-        <Grid item>
-          <ToggleButtonGroup
-            color="primary"
-            value={displayType}
-            exclusive
-            onChange={changeDisplayType}
-            aria-label="Platform"
-          >
-            <ToggleButton value="group">Grouped</ToggleButton>
-            <ToggleButton value="alpha">Alphabetical</ToggleButton>
-          </ToggleButtonGroup>
-        </Grid>
+      <Stack>
+        <ToggleButtonGroup
+          color="primary"
+          value={displayType}
+          exclusive
+          onChange={changeDisplayType}
+          aria-label="Platform"
+        >
+          <ToggleButton value="group">Grouped</ToggleButton>
+          <ToggleButton value="alpha">Alphabetical</ToggleButton>
+        </ToggleButtonGroup>
 
-        <Grid item>
-          {(displayType === 'group') ? 
-            Array.from(glossaryByGroup.keys()).sort().map((groupName) => (
-              <Grid item key={groupName}>
-                <Paper elevation={2} className={classes.body}>
-                  <Grid container direction="row">
-                    <Grid item xs={12} className={classes.item}>
-                      <Typography variant="h5">{groupName}</Typography>
-                    </Grid>
-                    {glossaryByGroup.get(groupName)?.map((item) => (
-                      <GlossaryLine key={item.name} glossaryItem={item}></GlossaryLine>
-                    ))}
-                  </Grid>
-                </Paper>
-              </Grid>
-            ))
-          : 
-            <Paper className={classes.body}>
-              {glossaryByAlphabetical.map((item) => (
-                <GlossaryLine key={item.name} glossaryItem={item}></GlossaryLine>
-              ))}
+        {(displayType === 'group') ? 
+          Array.from(glossaryByGroup.keys()).sort().map((groupName) => (
+            <Paper key={groupName} elevation={2} className={classes.body}>
+              <Stack>
+                <div className={classes.item}>
+                  <Typography variant="h5">{groupName}</Typography>
+                </div>
+                {glossaryByGroup.get(groupName)?.map((item) => (
+                  <GlossaryLine key={item.name} glossaryItem={item}></GlossaryLine>
+                ))}
+              </Stack>
             </Paper>
-          }
-        </Grid>
-      </Grid>
-      
-
+          ))
+        : 
+          <Paper className={classes.body}>
+            {glossaryByAlphabetical.map((item) => (
+              <GlossaryLine key={item.name} glossaryItem={item}></GlossaryLine>
+            ))}
+          </Paper>
+        }
+      </Stack>
     </Paper>
   );
 };
@@ -107,10 +99,8 @@ const GlossaryLine = (props: Props) => {
   const classes = useStyles();
 
   return (
-    <Grid item>
-      <div id={props.glossaryItem.name} className={classes.item}>
-        <strong>{props.glossaryItem.name}</strong> {"\u2014"} <Typography display="inline" variant="body1">{props.glossaryItem.definition}</Typography>
-      </div>
-    </Grid>
+    <div id={props.glossaryItem.name} className={classes.item}>
+      <strong>{props.glossaryItem.name}</strong> {"\u2014"} <Typography display="inline" variant="body1">{props.glossaryItem.definition}</Typography>
+    </div>
   );
 };

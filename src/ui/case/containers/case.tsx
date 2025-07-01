@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState, useContext } from 'react';
-import { Theme, Paper, Grid, Typography, IconButton, Button, Link } from '@mui/material';
+import { Theme, Paper, Grid2 as Grid, Typography, IconButton, Button, Link, Stack } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import BackIcon from '@mui/icons-material/ArrowBack';
 import { useNavigate, useParams } from 'react-router';
@@ -95,9 +95,7 @@ const CasePage = () => {
         break;
     }
     return text ? 
-      <Grid item>
-        <Typography paragraph>{text}</Typography>
-      </Grid>
+      <Typography paragraph>{text}</Typography>
     : <></>;
   }, [classes]);
 
@@ -115,74 +113,63 @@ const CasePage = () => {
   return (
     <Paper className={classes.paper}>
       {fullCase &&
-        <Grid container direction="column" spacing={1}>
-          <Grid item>
-            <Grid container direction="row" alignItems="baseline" justifyContent="space-between">
-              <Grid item>
-                <Grid container direction="row" justifyContent="flex-start" alignItems="baseline" spacing={2}>
-                  <Grid item>
-                    <IconButton onClick={back} size="large">
-                      <BackIcon color="action" />
-                    </IconButton>
-                  </Grid>
-                  <Grid item>
-                    <Typography color="textSecondary" variant="subtitle2">
-                      {fullCase.status === CaseStatus.ARGUED && !!fullCase.sitting ? 
-                        `${fullCase.status} (${fullCase.sitting})`
-                      : fullCase.status}{fullCase.result && `: ${fullCase.result}` }
-                    </Typography>
-                  </Grid>
+        <Stack spacing={2}>
+          <Grid container alignItems="baseline" justifyContent="space-between">
+            <Grid>
+              <Grid container justifyContent="flex-start" alignItems="baseline" spacing={2}>
+                <Grid>
+                  <IconButton onClick={back} size="large">
+                    <BackIcon color="action" />
+                  </IconButton>
                 </Grid>
-              </Grid>
-              <Grid item className={classes.flexEnd}>
-                <Grid container direction="row" justifyContent="flex-start" alignItems="baseline" spacing={2}>
-                  <Grid item>
-                    <Typography color="textSecondary" variant="subtitle2">
-                      Term: {fullCase.term.name}
-                    </Typography>
-                  </Grid>
-                  {isAdmin && 
-                    <Grid item>
-                      <Button variant="text" color="secondary" onClick={editClick}>EDIT</Button>
-                    </Grid>
-                  }
+                <Grid>
+                  <Typography color="textSecondary" variant="subtitle2">
+                    {fullCase.status === CaseStatus.ARGUED && !!fullCase.sitting ? 
+                      `${fullCase.status} (${fullCase.sitting})`
+                    : fullCase.status}{fullCase.result && `: ${fullCase.result}` }
+                  </Typography>
                 </Grid>
               </Grid>
             </Grid>
-            
+            <Grid className={classes.flexEnd}>
+              <Grid container justifyContent="flex-start" alignItems="baseline" spacing={2}>
+                <Grid>
+                  <Typography color="textSecondary" variant="subtitle2">
+                    Term: {fullCase.term.name}
+                  </Typography>
+                </Grid>
+                {isAdmin && 
+                  <Grid>
+                    <Button variant="text" color="secondary" onClick={editClick}>EDIT</Button>
+                  </Grid>
+                }
+              </Grid>
+            </Grid>
           </Grid>
-          <Grid item>
-            <Typography variant="h5">{fullCase.case}</Typography>
-          </Grid>
+          <Typography variant="h5">{fullCase.case}</Typography>
           {combinedWith.length > 0 &&
-            <Grid item>
+            <div>
               <Typography variant="subtitle1">Combined With:</Typography>
               {combinedWith.map(d => (
                 <Typography key={d.docketId} color="textSecondary">
                   {d.title}
                 </Typography> 
               ))}
-            </Grid>
+            </div>
           }
-          <Grid item>
-            <Typography><Link href={`/case/${fullCase.id}/lowerCourt`}>lower court rulings</Link></Typography>
-          </Grid>
+          <Typography><Link href={`/case/${fullCase.id}/lowerCourt`}>lower court rulings</Link></Typography>
           {courtStatusText(fullCase)}
-          <Grid item>
-            <Typography className={classes.paragraph} paragraph color="textPrimary">
-              <span className={classes.bold}>At Issue: </span>
-              <LinkableText text={fullCase.shortSummary} />
-            </Typography>
-          </Grid>
+          <Typography className={classes.paragraph} paragraph color="textPrimary">
+            <span className={classes.bold}>At Issue: </span>
+            <LinkableText text={fullCase.shortSummary} />
+          </Typography>
           {fullCase.decisionSummary ?
-            <Grid item>
-              <Typography className={classes.paragraph} paragraph color="textPrimary">
-                <span className={classes.bold}>Ruling ({fullCase.result || 'opinion of the court'}): </span>
-                <LinkableText text={fullCase.decisionSummary} />
-              </Typography>
-            </Grid>
+            <Typography className={classes.paragraph} paragraph color="textPrimary">
+              <span className={classes.bold}>Ruling ({fullCase.result || 'opinion of the court'}): </span>
+              <LinkableText text={fullCase.decisionSummary} />
+            </Typography>
           :
-            <Grid item>
+            <div>
               {fullCase.argumentDate &&
                 <Typography className={classes.paragraph} color="textPrimary">
                   {fullCase.argumentDate.isBefore(LocalDate.now()) ?
@@ -192,23 +179,21 @@ const CasePage = () => {
                   }
                 </Typography>
               }
-            </Grid>
+            </div>
           }
-          <Grid container direction="row" justifyContent="flex-start">
-            {fullCase.decisionLink && 
-              <Grid item xs={12}>
-                <Typography className={classes.paragraph}>
-                  <Link color="secondary" href={fullCase.decisionLink} target="_blank" rel="noreferrer">View the full opinion</Link>
-                </Typography>
-              </Grid>
-            }
+          {fullCase.decisionLink && 
+            <Typography className={classes.paragraph}>
+              <Link color="secondary" href={fullCase.decisionLink} target="_blank" rel="noreferrer">View the full opinion</Link>
+            </Typography>
+          }
+          <Grid container justifyContent="flex-start">
             {fullCase.opinions.sort(opinionSort).map(opinion => (
-              <Grid item key={opinion.id} xs={12} sm={6} md={4} lg={3}>
+              <Grid key={opinion.id} size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
                 <OpinionView opinion={opinion} />
               </Grid>
             ))}
           </Grid>
-        </Grid>
+        </Stack>
       }
     </Paper>
   );

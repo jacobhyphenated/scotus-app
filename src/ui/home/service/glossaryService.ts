@@ -114,5 +114,9 @@ const glossary: GlossaryItem[] = [
     definition: 'A type of writ in which a higher court (often an appeals court) reviews the decision of a lower court. Certiorari is granted in cases where SCOTUS agrees to hear arguments in the case.',
     group: 'Judicial Procedure',
   },
-  
+  {
+    name: 'Ultra Vires',
+    definition: 'Translates to "Beyond the Powers." Meaning an entity acts entirely beyond the scope of their statutory scheme or constitutional authority.',
+    group: 'Legal Elements',
+  },
 ];

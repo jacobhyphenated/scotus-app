@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { Theme, TextField, InputAdornment, Paper, Grid, Typography, IconButton, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, MenuItem } from '@mui/material';
+import { Theme, TextField, InputAdornment, Paper, Grid2 as Grid, Typography, IconButton, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, MenuItem, Stack } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import SearchIcon from '@mui/icons-material/Search';
 import BackIcon from '@mui/icons-material/ArrowBack';
@@ -195,13 +195,13 @@ const AllTermCasesPage = () => {
 
   return (
     <Paper className={classes.paper}>
-      <Grid container direction="row" justifyContent="flex-start" alignItems="center" spacing={1}>
-        <Grid item>
+      <Grid container justifyContent="flex-start" alignItems="center" spacing={1}>
+        <Grid>
           <IconButton onClick={back} size="large">
             <BackIcon color="action" />
           </IconButton>
         </Grid>
-        <Grid item>
+        <Grid>
           <Typography variant="h4">
             Cases for the {term?.name} term 
           </Typography>
@@ -241,18 +241,16 @@ const AllTermCasesPage = () => {
         </Grid>
       }
 
-      <Grid container direction="column" spacing={2}>
+      <Stack spacing={2}>
         {[...Object.values(CaseSitting), 'None'].filter(sitting => mappedCases.has(sitting)).map((sitting) => (
-          <Grid item key={sitting}>
-            <Paper className={classes.sitting}>
-              {sitting !== 'None' && <Typography variant="h4">{sitting} ({mappedCases.get(sitting)?.length})</Typography> }
-              {mappedCases.get(sitting)?.sort(caseSorter).map(termCase => (
-                <CaseListItem key={termCase.id} onCaseClick={onCaseClick} scotusCase={termCase} caseStore={caseStore} onEditClick={onEditClick} />
-              ))}
-            </Paper>
-          </Grid>
+          <Paper className={classes.sitting} key={sitting}>
+            {sitting !== 'None' && <Typography variant="h4">{sitting} ({mappedCases.get(sitting)?.length})</Typography> }
+            {mappedCases.get(sitting)?.sort(caseSorter).map(termCase => (
+              <CaseListItem key={termCase.id} onCaseClick={onCaseClick} scotusCase={termCase} caseStore={caseStore} onEditClick={onEditClick} />
+            ))}
+          </Paper>
         ))}
-      </Grid>
+      </Stack>
       <Dialog
         open={!!editModal}
         onClose={closeEditModal}
