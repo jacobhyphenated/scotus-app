@@ -2,7 +2,7 @@ import { useEffect, useMemo, useContext } from 'react';
 import { observer } from 'mobx-react';
 import Login from './login';
 import { UserStoreContext } from '../../../stores/userStore';
-import { Grid2 as Grid, Paper, Button, Theme } from '@mui/material';
+import { Grid, Paper, Button, Theme } from '@mui/material';
 import { Route, Routes, useNavigate } from 'react-router';
 import { makeStyles } from '@mui/styles';
 import JusticePage from './justice';

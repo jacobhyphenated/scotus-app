@@ -1,4 +1,4 @@
-import { Grid2 as Grid, Paper, Stack, Theme, Typography } from "@mui/material";
+import { Grid, Paper, Stack, Theme, Typography } from "@mui/material";
 import makeStyles from '@mui/styles/makeStyles';
 import { useCallback } from "react";
 import { Term } from "../../../stores/caseStore";

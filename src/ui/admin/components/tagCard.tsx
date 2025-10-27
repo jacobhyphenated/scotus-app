@@ -1,4 +1,4 @@
-import { Button, Grid2, Paper, TextField, Theme, Typography } from "@mui/material";
+import { Button, Grid, Paper, TextField, Theme, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import { Stack } from "@mui/system";
 import { useCallback, useState } from "react";
@@ -128,14 +128,14 @@ export const TagCard = (props: Props) => {
       </Paper>
       :
       <Paper className={`${classes.tagItem} ${classes.pointer}`} onClick={editTagClick}>
-        <Grid2 container spacing={1}>
-          <Grid2 size={{ xs: 12, sm: 3, lg: 2 }}>
+        <Grid container spacing={1}>
+          <Grid size={{ xs: 12, sm: 3, lg: 2 }}>
             <Typography><strong>{props.tag.name}</strong></Typography>
-          </Grid2>
-          <Grid2 size={{ xs: 12, sm: 9, lg: 10 }}>
+          </Grid>
+          <Grid size={{ xs: 12, sm: 9, lg: 10 }}>
             <Typography component='p'>{props.tag.description}</Typography>
-          </Grid2>
-        </Grid2>
+          </Grid>
+        </Grid>
       </Paper>
     }
     </>

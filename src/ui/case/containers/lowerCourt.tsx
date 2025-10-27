@@ -1,4 +1,4 @@
-import { Grid2 as Grid, IconButton, Paper, Stack, Theme, Typography } from "@mui/material";
+import { Grid, IconButton, Paper, Stack, Theme, Typography } from "@mui/material";
 import makeStyles from '@mui/styles/makeStyles';
 import BackIcon from '@mui/icons-material/ArrowBack';
 import { useCallback, useContext, useEffect, useState } from "react";

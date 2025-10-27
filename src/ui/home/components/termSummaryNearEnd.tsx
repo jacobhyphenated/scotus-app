@@ -38,9 +38,9 @@ const TermSummaryNearEnd = (props: Props) => {
       <CaseGridRow cases={decided} title="Key Decisions" onCaseClick={props.onCaseClick} link={keyLink} />
 
       <Typography variant="h5" color="textSecondary">Anticipated Cases</Typography>
-      <Grid container direction="row" justifyContent="flex-start" spacing={2} className={classes.row}>
+      <Grid container justifyContent="flex-start" spacing={2} className={classes.row}>
         {undecided.map(r => (
-          <Grid item xs={12} sm={6} md={4} lg={3} key={r.id}>
+          <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={r.id}>
             <CasePreviewCard case={r} onClick={props.onCaseClick} />
           </Grid>
         ))}

@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { Typography, Paper, Grid2 as Grid, Button, Theme } from '@mui/material';
+import { Typography, Paper, Grid, Button, Theme } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import { LocalDate, DateTimeFormatter } from "@js-joda/core";
 import DatePicker from './datePicker';

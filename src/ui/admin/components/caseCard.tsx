@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { Paper, Theme, Grid2 as Grid, Typography, IconButton, Button, Stack } from '@mui/material';
+import { Paper, Theme, Grid, Typography, IconButton, Button, Stack } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import ArrowRight from '@mui/icons-material/ArrowRight';
 import ArrowDown from '@mui/icons-material/ArrowDropDown';

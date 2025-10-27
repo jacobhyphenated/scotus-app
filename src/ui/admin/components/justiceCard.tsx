@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react';
-import { Theme, Typography, Button, Paper, Grid2 as Grid } from '@mui/material';
+import { Theme, Typography, Button, Paper, Grid } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import { Justice } from '../../../stores/justiceStore';
 import { DateTimeFormatter } from '@js-joda/core';

@@ -1,6 +1,6 @@
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { observer } from 'mobx-react';
-import { Typography, Theme, Grid2 as Grid, Fab, TextField, MenuItem } from '@mui/material';
+import { Typography, Theme, Grid, Fab, TextField, MenuItem } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import AddIcon from '@mui/icons-material/Add';
 import { Case, CaseStatus, CaseStoreContext } from '../../../stores/caseStore';

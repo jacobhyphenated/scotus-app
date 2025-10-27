@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { makeStyles } from '@mui/styles';
-import { Theme, Typography, Grid, Paper, useMediaQuery } from '@mui/material';
+import { makeStyles, useTheme } from '@mui/styles';
+import { Typography, Grid, Paper, Stack, Theme, useMediaQuery } from '@mui/material';
 import { Case, TermSummary, CaseStore, TermJusticeSummary, TermCourtSummary } from '../../../stores/caseStore';
 import { shuffleArray } from '../../../util';
 import { CaseGridRow, CasePreviewCard } from './';
@@ -136,7 +136,9 @@ const TermSummaryComplete = (props: Props) => {
     return createJusticeAgreementMap(summary);
   }, [summary]);
 
-  const hideMdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down('md'));
+
+  const theme = useTheme();
+  const hideMdDown = useMediaQuery(theme.breakpoints.down('md'));
 
   const heatMapStyle = useCallback((percentage: number) => {
     if (percentage <= .255) {
@@ -189,18 +191,18 @@ const TermSummaryComplete = (props: Props) => {
     <>
       <CaseGridRow cases={importantCases} title="Key Decision Highlights" onCaseClick={props.onCaseClick} link={keyLink} />
       <Typography variant="h5" color="textSecondary">The Justices</Typography>
-      <Grid container direction="row" className={classes.termSummaryGrid} spacing={1}>
+      <Grid container className={classes.termSummaryGrid} spacing={1}>
         {summary && summary.justiceSummary.sort(sortJusticeSummary).map(item => (
-          <Grid item key={item.justice.id} xs={12} sm={6} md={3} lg={3} xl={2}>
+          <Grid key={item.justice.id} size={{xs: 12, sm: 6, md: 3, lg: 3, xl: 2 }}>
             <TermJusticeSummaryBox onJusticeClick={onJusticeClick} item={item} />
           </Grid>
         ))}
       </Grid>
 
       <Typography variant="h5" color="textSecondary">Appeals Court Stats</Typography>
-      <Grid container direction="row" className={classes.termSummaryGrid} spacing={1}>
+      <Grid container className={classes.termSummaryGrid} spacing={1}>
         {summary && summary.courtSummary.filter(c => c.cases > 1).sort(sortCourtSummary).map(item => (
-          <Grid item key={item.court.id} xs={12} sm={6} md={4} lg={3} xl={2}>
+          <Grid key={item.court.id}  size={{xs: 12, sm: 6, md: 4, lg: 3, xl: 2 }}>
             <TermCourtSummaryBox item={item} />
           </Grid>
         ))}
@@ -227,9 +229,9 @@ const TermSummaryComplete = (props: Props) => {
       <Typography><>Median Decision Time: {summary?.medianDecisionDays} days</></Typography>
 
       <Typography variant="h5" color="textSecondary" className={classes.extraTopMargin}>Opinions Along Party Lines ({summary?.partySplit.length})</Typography>
-      <Grid container direction="row" className={classes.termSummaryGrid} spacing={1}>
+      <Grid container className={classes.termSummaryGrid} spacing={1}>
         {summary && summary.partySplit.map(c => (
-          <Grid key={c.id} item xs={12} sm={6} md={4} lg={3}>
+          <Grid key={c.id}  size={{xs: 12, sm: 6, md: 3, lg: 3 }}>
             <CasePreviewCard case={c} onClick={props.onCaseClick} />
           </Grid>
         ))}
@@ -238,7 +240,7 @@ const TermSummaryComplete = (props: Props) => {
       <Typography variant="h5" color="textSecondary">Unanimous Opinions ({summary?.unanimous.length})</Typography>
       <Grid container direction="row" className={classes.termSummaryGrid} spacing={1}>
         {summary && summary.unanimous.map(c => (
-          <Grid key={c.id} item xs={12} sm={6} md={4} lg={3}>
+          <Grid key={c.id} size={{xs: 12, sm: 6, md: 3, lg: 3 }}>
             <CasePreviewCard case={c} onClick={props.onCaseClick} />
           </Grid>
         ))}
@@ -267,29 +269,17 @@ const TermJusticeSummaryBox = (props: TermJusticeSummaryProps) => {
 
   return (
     <Paper elevation={1} className={`${classes.summaryBox} ${classes.clickable}`} onClick={onClick}>
-      <Grid container direction="column">
-        <Grid item>
-          <Typography variant="subtitle2" color="textSecondary">Cases: {item.casesWithOpinion}</Typography>
-        </Grid>
-        <Grid item>
-          <Typography variant="h6">{item.justice.name}</Typography>
-        </Grid>
-        <Grid item>
-          <Grid item>
-            <Typography>In Majority: {Math.round(item.percentInMajority * 100)}%</Typography>
-          </Grid>
-          <Grid item>
-            <Typography>Authored Opinions: {item.majorityAuthor + item.concurringAuthor + 
-              item.concurJudgementAuthor + item.dissentAuthor + item.dissentJudgementAuthor}</Typography>
-          </Grid>
-          <Grid item>
-            <Typography>Concurrences Authored: {item.concurringAuthor + item.concurJudgementAuthor}</Typography>
-          </Grid>
-          <Grid item>
-            <Typography>Dissents Authored: {item.dissentAuthor + item.dissentJudgementAuthor}</Typography>
-          </Grid>
-        </Grid>
-      </Grid>
+      <Stack>
+        <Typography variant="subtitle2" color="textSecondary">Cases: {item.casesWithOpinion}</Typography>
+        <Typography variant="h6">{item.justice.name}</Typography>
+        <Stack>
+          <Typography>In Majority: {Math.round(item.percentInMajority * 100)}%</Typography>
+          <Typography>Authored Opinions: {item.majorityAuthor + item.concurringAuthor + 
+            item.concurJudgementAuthor + item.dissentAuthor + item.dissentJudgementAuthor}</Typography>
+          <Typography>Concurrences Authored: {item.concurringAuthor + item.concurJudgementAuthor}</Typography>
+          <Typography>Dissents Authored: {item.dissentAuthor + item.dissentJudgementAuthor}</Typography>
+        </Stack>
+      </Stack>
     </Paper>
   );
 };
@@ -304,19 +294,11 @@ const TermCourtSummaryBox = (props: TermCourtSummaryProps) => {
 
   return (
     <Paper elevation={1} className={classes.summaryBox}>
-      <Grid container direction="column">
-        <Grid item>
-          <Typography variant="h6" title={props.item.court.name}>{props.item.court.name}</Typography>
-        </Grid>
-        <Grid item>
-          <Typography>Cases: {props.item.cases}</Typography>
-        </Grid>
-        <Grid item>
-          <Grid item>
-            <Typography>Overturned: {Math.round(props.item.reversedRemanded / props.item.cases * 100)}%</Typography>
-          </Grid>
-        </Grid>
-      </Grid>
+      <Stack>
+        <Typography variant="h6" title={props.item.court.name}>{props.item.court.name}</Typography>
+        <Typography>Cases: {props.item.cases}</Typography>
+        <Typography>Overturned: {Math.round(props.item.reversedRemanded / props.item.cases * 100)}%</Typography>
+      </Stack>
     </Paper>
   );
 };

@@ -10,7 +10,7 @@ import {
   Checkbox,
   Button,
   Stack,
-  Grid2,
+  Grid,
 } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import BackIcon from '@mui/icons-material/ArrowBack';
@@ -327,8 +327,8 @@ const EditCasePage = () => {
       </IconButton>
       <Typography variant="h4" component="h2">Edit Case</Typography>
       {!!fullCase && 
-        <Grid2 container className={classes.formContainer} spacing={4}>
-          <Grid2 size={{ xs: 12, md: 6 }}>
+        <Grid container className={classes.formContainer} spacing={4}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <Stack spacing={2}>
               {!!formError &&
                 <Typography color="error">{formError}</Typography>
@@ -469,27 +469,27 @@ const EditCasePage = () => {
                 />
               }
             </Stack>
-          </Grid2>
-          <Grid2 size={{ xs: 12, md: 6 }}>
+          </Grid>
+          <Grid size={{ xs: 12, md: 6 }}>
             <Stack spacing={4}>
               <div>
                 <Typography variant="h5" component="h4">Dockets</Typography>
                 {fullCase.dockets?.map(docket => (
                   <Paper key={docket.docketId} variant="elevation" className={classes.docketCard}>
-                    <Grid2 container justifyContent="space-between" alignItems="center">
-                      <Grid2>
+                    <Grid container justifyContent="space-between" alignItems="center">
+                      <Grid>
                         <Button disableRipple color="primary" onClick={onClickDocket(docket)}>
                           {docket.docketNumber} {'\u2014'} {docket.lowerCourt.shortName}
                         </Button>
-                      </Grid2>
-                      <Grid2>
+                      </Grid>
+                      <Grid>
                         <IconButton onClick={onDeleteDocket(docket)} size="large"><CloseIcon /></IconButton>
-                      </Grid2>
-                    </Grid2>
+                      </Grid>
+                    </Grid>
                   </Paper>
                 ))}
-                <Grid2 container alignItems="center">
-                  <Grid2 size={11}>
+                <Grid container alignItems="center">
+                  <Grid size={11}>
                     <Autocomplete<BareDocket>
                       id="case-create-docket-autocomplete"
                       // Tells component to re-render when docket list changes
@@ -511,11 +511,11 @@ const EditCasePage = () => {
                         />
                       )}
                     />
-                  </Grid2>
-                  <Grid2 size={1}>
+                  </Grid>
+                  <Grid size={1}>
                     <IconButton onClick={newDocket} size="large"><AddIcon /></IconButton>
-                  </Grid2>
-                </Grid2>
+                  </Grid>
+                </Grid>
               </div>
               <div>
                 <Typography variant="h5" component="h4">Opinions</Typography>
@@ -538,8 +538,8 @@ const EditCasePage = () => {
                 }
               </div>
             </Stack>
-          </Grid2>
-        </Grid2>
+          </Grid>
+        </Grid>
       }
     </Stack>
   );

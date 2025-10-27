@@ -4,11 +4,11 @@ import './index.css';
 import { App } from './App';
 import * as serviceWorker from './serviceWorker';
 import {
-  ThemeProvider,
   Theme,
   StyledEngineProvider,
-  createTheme,
   CssBaseline,
+  createTheme,
+  ThemeProvider as TP,
 } from '@mui/material';
 import { UserStore } from './stores/userStore';
 import { JusticeStore, JusticeStoreContext } from './stores/justiceStore';
@@ -20,6 +20,7 @@ import { OpinionStore, OpinionStoreContext } from './stores/opinionStore';
 import { UserStoreContext } from './stores/userStore';
 import { BrowserRouter } from 'react-router-dom';
 import { TagStore, TagStoreContext } from './stores/tagStore';
+import { ThemeProvider } from '@mui/styles';
 
 
 declare module '@mui/styles/defaultTheme' {
@@ -65,9 +66,15 @@ root.render(
               <TagStoreContext.Provider value={tagStore}>
                 <BrowserRouter>
                   <StyledEngineProvider injectFirst>
+                    {/* Need both @mui/styles and @mui/materail theme providers
+                        Styles is needed for the create and make style hooks
+                        Material is needed for applying the theme to base components
+                    */}
                     <ThemeProvider theme={theme}>
-                      <CssBaseline />
-                      <App />
+                      <TP theme={theme}>
+                        <CssBaseline />
+                        <App />
+                      </TP>
                     </ThemeProvider>
                   </StyledEngineProvider>
                 </BrowserRouter>

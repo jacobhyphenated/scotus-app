@@ -2,7 +2,7 @@ import React, { useCallback, useState } from "react";
 import {
   Typography,
   Paper,
-  Grid2 as Grid,
+  Grid,
   Button,
   TextField,
   Theme,

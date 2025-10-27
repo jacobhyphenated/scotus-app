@@ -1,6 +1,6 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { makeStyles } from '@mui/styles';
-import { Theme, Paper, Grid2 as Grid, Typography, IconButton, Stack } from '@mui/material';
+import { Theme, Paper, Grid, Typography, IconButton, Stack } from '@mui/material';
 import BackIcon from '@mui/icons-material/ArrowBack';
 import { Case, CaseStoreContext, FullCase, Term } from '../../../stores/caseStore';
 import { forkJoin } from 'rxjs';

@@ -1,6 +1,6 @@
 import { useCallback, useContext, useEffect } from 'react';
 import { observer } from 'mobx-react';
-import { Typography, Paper, Theme, Grid2 as Grid, Fab } from '@mui/material';
+import { Typography, Paper, Theme, Grid, Fab } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import AddIcon from '@mui/icons-material/Add';
 import { CourtStoreContext } from '../../../stores/courtStore';

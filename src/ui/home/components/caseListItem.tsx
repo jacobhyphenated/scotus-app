@@ -161,8 +161,8 @@ const CaseListItem = (props: Props) => {
 
   return (
     <Paper elevation={1} className={classes.row} onClick={onClick}>
-      <Grid container direction="row" alignItems='center'>
-        <Grid item xs={10} sm={10} md={7}>
+      <Grid container alignItems='center'>
+        <Grid size={{ xs: 10, sm: 10, md: 7 }}>
           <div className={classes.flex}>
             {scotusCase.important &&
               <div className={classes.starGrid}>
@@ -177,16 +177,16 @@ const CaseListItem = (props: Props) => {
         {/* sx={{ display }} replaces <Hidden mdDown>
             <Hidden> is now deprecated
          */}
-        <Grid sx={{ display: { xs: 'none', md: 'block' } }} item md={2} lg={1}>
+        <Grid sx={{ display: { xs: 'none', md: 'block' } }} size={{ md: 2, lg: 1 }}>
           <Typography title="Date Argued">{scotusCase.argumentDate?.format(formatter)}</Typography>
         </Grid>
-        <Grid sx={{ display: { xs: 'none', md: 'block' } }} item md={2} lg={1} className={classes.noWrap}>
+        <Grid sx={{ display: { xs: 'none', md: 'block' } }} size={{ md: 2, lg: 1 }} className={classes.noWrap}>
           <Typography noWrap title={scotusCase.status}>{scotusCase.status}</Typography>
         </Grid>
-        <Grid sx={{ display: {xs: 'none', lg: 'block' } }} item lg={2}>
+        <Grid sx={{ display: {xs: 'none', lg: 'block' } }}size={{ lg: 2 }}>
           <Typography title="Author">{author}</Typography>
         </Grid>
-        <Grid item xs={2} sm={2} md={1}>
+        <Grid size={{ xs: 2, sm: 2, md: 1 }}>
           <div className={classes.flex}>
             <div className={classes.noWrap + ' ' +  (isAdmin ? classes.editGridText : '')}>
               <Typography noWrap component="span">{scotusCase.result}</Typography>

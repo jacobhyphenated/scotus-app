@@ -17,7 +17,6 @@ export const App = () => (
     <Paper elevation={2}>
       <Grid
         container
-        direction="row"
         justifyContent="space-between"
         alignItems="center"
       >
@@ -27,7 +26,7 @@ export const App = () => (
           </IconButton>
         </Link>
         SCOTUS App
-        <Grid item>
+        <Grid>
           <Button component={Link} to="/glossary" color="primary" variant="text">Glossary</Button>
           <Button component={Link} to="/admin" color="primary" variant="text">admin</Button>
         </Grid>

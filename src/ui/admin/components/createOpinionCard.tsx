@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import { Typography, Paper, Grid2 as Grid, Button, TextField, Theme, IconButton, MenuItem, Stack } from '@mui/material';
+import { Typography, Paper, Grid, Button, TextField, Theme, IconButton, MenuItem, Stack } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import CloseIcon from '@mui/icons-material/Close';
 import { OpinionType, CreateOpinionJustice, Opinion } from '../../../stores/opinionStore';

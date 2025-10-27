@@ -1,4 +1,4 @@
-import { Autocomplete, Button, Chip, Grid2, Paper, TextField, Theme, Typography } from "@mui/material";
+import { Autocomplete, Button, Chip, Grid, Paper, TextField, Theme, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import { useCallback, useEffect, useState } from "react";
 import { Tag } from "../../../stores/tagStore";
@@ -50,16 +50,16 @@ export const CaseTagEditCard = (props: Props) => {
     <>
     {!editing ?
       <Paper variant="outlined" className={classes.paper}>
-        <Grid2 container alignItems="center" justifyContent="space-between">
-          <Grid2 size={10}>
+        <Grid container alignItems="center" justifyContent="space-between">
+          <Grid size={10}>
             <Typography color="textSecondary" variant="subtitle2">Tags</Typography>
             {props.tags.length === 0 ? 'None'
             :
             props.tags.map(tag => (
               <Chip key={tag.id} label={tag.name} variant="outlined" className={classes.chip} />
             ))}
-          </Grid2>
-          <Grid2 size={2}>
+          </Grid>
+          <Grid size={2}>
             <Button
               color="primary"
               onClick={editClick}
@@ -67,12 +67,12 @@ export const CaseTagEditCard = (props: Props) => {
             >
               Edit
             </Button>
-          </Grid2>
-        </Grid2>
+          </Grid>
+        </Grid>
       </Paper>
     :
-      <Grid2 container alignItems="center" justifyContent="space-between">
-        <Grid2 size={10}>
+      <Grid container alignItems="center" justifyContent="space-between">
+        <Grid size={10}>
           <Autocomplete<number, true>
             multiple
             id="case-tags-autocomplete"
@@ -90,8 +90,8 @@ export const CaseTagEditCard = (props: Props) => {
               />
             )}
           />
-        </Grid2>
-        <Grid2 size={2}>
+        </Grid>
+        <Grid size={2}>
           <Button
             color="primary"
             disabled={props.disabled}
@@ -99,8 +99,8 @@ export const CaseTagEditCard = (props: Props) => {
           >
             Save
           </Button>
-        </Grid2>
-      </Grid2>
+        </Grid>
+      </Grid>
     }
     </>
   );

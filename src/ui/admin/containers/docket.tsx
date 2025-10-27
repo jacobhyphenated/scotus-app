@@ -1,7 +1,7 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import { BareDocket, FullDocket, DocketStoreContext } from '../../../stores/docketStore';
-import { Typography, Theme, Grid2 as Grid, Fab, TextField, InputAdornment, Button } from '@mui/material';
+import { Typography, Theme, Grid, Fab, TextField, InputAdornment, Button } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';

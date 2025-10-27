@@ -1,4 +1,4 @@
-import { Grid2 as Grid, IconButton, Paper, Theme, Typography } from "@mui/material";
+import { Grid, IconButton, Paper, Theme, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { autorun } from "mobx";
 import { useCallback, useContext, useEffect, useState } from "react";

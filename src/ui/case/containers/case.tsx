@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState, useContext } from 'react';
-import { Theme, Paper, Grid2 as Grid, Typography, IconButton, Button, Link, Stack } from '@mui/material';
+import { Theme, Paper, Grid, Typography, IconButton, Button, Link, Stack } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import BackIcon from '@mui/icons-material/ArrowBack';
 import { useNavigate, useParams } from 'react-router';

@@ -1,5 +1,5 @@
 import React, { useState, ReactNode, useCallback } from "react";
-import { Typography, Paper, Grid2 as Grid, Button, TextField, Theme, Stack } from '@mui/material';
+import { Typography, Paper, Grid, Button, TextField, Theme, Stack } from '@mui/material';
 
 import makeStyles from '@mui/styles/makeStyles';
 
